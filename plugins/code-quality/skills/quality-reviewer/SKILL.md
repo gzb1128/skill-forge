@@ -58,6 +58,22 @@ Baseline testing showed a single-pass review misses correctness issues that a fo
 
 If the Task tool is available, dispatch the three passes in parallel as subagents. Otherwise do them inline as three separate read-throughs of the diff with the question above held in mind. **Do not collapse into one pass.**
 
+### 2a. Run conditional lenses when the diff triggers them
+
+Some diffs need a focused lens beyond the three standard passes. Run only the lenses that match the changed files or hunks:
+
+| Trigger | Lens | Single question |
+|---|---|---|
+| Added or changed `catch`/`except`/`rescue`, fallback/default behavior, retries, ignored errors, optional chaining on required data, or log-and-continue handling | **Silent failure** | Could this hide a failure that the user, caller, operator, or test should see? |
+| Added or changed tests for new logic, validation, error paths, contracts, or branches | **Test quality** | Would these tests fail for the important regressions this diff could introduce? |
+| Changed `plugins/*/skills/*/SKILL.md` or any `SKILL.md` beyond spelling/formatting-only edits | **Skill quality** | Will another agent reliably trigger and follow this skill under pressure? |
+
+Silent-failure findings should check whether the error is specific, visible, logged with useful context, propagated when needed, and whether fallback behavior is intentional rather than masking a broken path.
+
+Test-quality findings should focus on behavior, not line coverage. Passing tests are not enough if assertions only exercise implementation details, bless the new behavior without proving the contract, or skip negative/error cases introduced by the diff.
+
+Skill-quality findings should check frontmatter trigger quality, especially whether `description` describes when to use the skill rather than summarizing the workflow. Also check for vague triggers, missing common-mistake guidance for discipline skills, one-off narrative content, broken references, and missing RED/GREEN verification evidence when skill behavior changed. Treat trigger changes, workflow changes, new/removed rules, tool-scope changes, and changed stop/approval conditions as behavior changes; spelling-only or formatting-only edits do not trigger this lens.
+
 ### 3. Grep for callers of changed public symbols
 
 Before claiming the diff is safe, for each public function/method/exported symbol whose **signature, return shape, or error contract changed**:
@@ -108,13 +124,14 @@ Tests passing is not enough. If any unresolved `Critical` or `Important` finding
 2. **Scope the diff.** `git status`, `git diff --stat`, `git diff`, `git diff --cached`, untracked files from `git status --short`, and branch diff when scope includes branch changes. If empty, say so and stop.
 3. **Detect toolchain.** Probe project files. If `AGENTS.md` declares lint/test commands, prefer those.
 4. **Three-pass review** (rule 2). In report-only mode, do not edit. In fix mode, apply only safe in-scope fixes and flag the rest.
-5. **Post-fix re-review** (rule 6) if any file was edited.
-6. **Diff hygiene.** `git diff --check` for whitespace/conflict markers.
-7. **Lint.** Run the detected linter on changed paths. If the linter is genuinely unavailable, say so explicitly - do not silently skip. Try one alternative (e.g., `go vet`/`gofmt` if `golangci-lint` missing).
-8. **Tests.** Run the focused test command for affected modules. Use a writable cache if the default is blocked. If no tests exist for the changed code, say so - that is itself a finding.
-9. **Caller check** (rule 3) for any changed public symbol.
-10. **Validate findings** (rule 5) against current source lines.
-11. **Report** in the structure below. Do not freeform-narrate.
+5. **Conditional lenses** (rule 2a) for silent failures, test quality, and skill quality when triggered.
+6. **Post-fix re-review** (rule 6) if any file was edited.
+7. **Diff hygiene.** `git diff --check` for whitespace/conflict markers.
+8. **Lint.** Run the detected linter on changed paths. If the linter is genuinely unavailable, say so explicitly - do not silently skip. Try one alternative (e.g., `go vet`/`gofmt` if `golangci-lint` missing).
+9. **Tests.** Run the focused test command for affected modules. Use a writable cache if the default is blocked. If no tests exist for the changed code, say so - that is itself a finding. When tests were added or changed, apply the test-quality lens (rule 2a) before treating passing tests as sufficient.
+10. **Caller check** (rule 3) for any changed public symbol.
+11. **Validate findings** (rule 5) against current source lines.
+12. **Report** in the structure below. Do not freeform-narrate.
 
 ## Report format (use these headings)
 
@@ -129,6 +146,7 @@ Tests passing is not enough. If any unresolved `Critical` or `Important` finding
 - Mode: <report-only / fix safe issues / loopfix>
 - Scope: <working tree / branch diff / both> via <commands>
 - Three-pass review: <pass/issues found>
+- Conditional lenses: <not triggered / silent failure / test quality / skill quality results>
 - Post-fix re-review: <not needed / pass / findings>
 - Diff hygiene: <pass/fail>
 - Lint: <command run> → <pass/fail/unavailable>
@@ -140,6 +158,14 @@ Tests passing is not enough. If any unresolved `Critical` or `Important` finding
 Ready to commit: <yes / no / yes-after-flags-resolved>
 If no: one concrete next step the user can take in <2 minutes.
 ```
+
+## Common Mistakes
+
+- Collapsing the three review passes into one broad scan. Keep Simplify, Correctness, and Efficiency separate.
+- Treating passing tests as proof of safety when the test-quality lens was triggered but not run.
+- Running the skill-quality lens for spelling-only or formatting-only `SKILL.md` edits. Record it as not triggered instead.
+- Marking a diff ready while Important findings remain because validation commands passed.
+- Copying subagent findings into the report without re-opening current source lines.
 
 ## Never
 

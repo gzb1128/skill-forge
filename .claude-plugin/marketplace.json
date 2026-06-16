@@ -37,7 +37,7 @@
     },
     {
       "name": "opencode-customize",
-      "description": "OpenCode customization tools — hydrate custom provider model metadata from the Models.dev catalog",
+      "description": "OpenCode customization tools — hydrate custom provider model metadata from the Models.dev catalog and integrate external project directories with references",
       "author": {
         "name": "Skill Forge Team"
       },

@@ -16,7 +16,9 @@ Applicable scenarios:
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations |
 | `learn` | — | — | Pre-existing |
 | `hydrate-opencode-models` | — | — | Pre-existing; belongs to `opencode-customize` |
-| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics |
+| `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal |
+| `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, and runtime-neutral stopping |
+| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics; E covers conditional lenses |
 | `remember` | — | — | Pre-existing |
 
 > GREEN tests use a fallback mode (subagent directly reads `~/.agents/skills/<name>/SKILL.md`
@@ -93,10 +95,16 @@ Current scripts:
 docs/verify/scenarios/
 ├── diff-cleanup/
 │   └── build-b.sh          # AI slop cleanup scenario on a feature branch
+├── integrate-projects/
+│   ├── build-a.sh          # Normal reference integration, no external_directory rules
+│   └── build-b.sh          # Read-only request must stop, not claim enforcement
+├── loopfix/
+│   └── build-a.sh          # Completion criteria + runtime-neutral fix loop
 └── quality-reviewer/
     ├── build-a.sh          # Mixed Go+Python pre-commit review
     ├── build-c.sh          # Urgent hotfix pressure scenario
-    └── build-d.sh          # Review modes + branch/working-tree scope
+    ├── build-d.sh          # Review modes + branch/working-tree scope
+    └── build-e.sh          # Conditional lenses for errors, tests, and SKILL.md
 ```
 
 ## Subagent Invocation: Background + Structured Report
@@ -140,6 +148,7 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Verify skip excuses | When user says "skip tests", subagent reports actual runtime before deciding |
 | Review mode selection | "quality review" is report-only; "quality review and fix" edits only safe issues; "loopfix" delegates to `loopfix` |
 | Review scope declaration | Report states whether it reviewed working tree, branch diff (`main..HEAD` intent), or both |
+| Conditional lenses | Triggered diffs run silent-failure / test-quality / skill-quality lenses and report them under Gates |
 | Post-fix re-review | Any edit is followed by a focused review of updated source/diff lines |
 | Source-line validation | Subagent findings are checked against current source lines before final reporting |
 | Ready-to-commit verdict | Unresolved Important/Critical findings produce `Ready to commit: no`, even if tests pass |

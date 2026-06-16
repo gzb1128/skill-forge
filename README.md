@@ -35,7 +35,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 |---|---|---|
 | `agent-docs` | Scaffold Agent-First documentation and maintain non-derivable team knowledge | `bootstrap-agent-docs`, `learn`, `remember` |
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
-| `opencode-customize` | Customize OpenCode configuration, especially hydrating custom provider model metadata | `hydrate-opencode-models` |
+| `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
 
 ## Skill Catalog
 
@@ -63,6 +63,7 @@ The template payload used by `bootstrap-agent-docs` lives at `plugins/agent-docs
 | Skill | Type | Purpose |
 |---|---|---|
 | `hydrate-opencode-models` | model-invoked | Look up model metadata from the Models.dev catalog and map it to OpenCode custom provider model config |
+| `integrate-projects` | model-invoked | Add external codebases to project-level OpenCode `references` so agents can discover and inspect them when relevant |
 
 ## What `agent-docs` Scaffolds
 

@@ -13,6 +13,8 @@ Loopfix is an autonomous work-review-fix loop for the current approved goal. The
 
 Completion is an evidence-backed judgment by the main agent, not a hook, state file, forced re-prompt, or arbitrary iteration count. Do not add runtime-specific loop mechanisms. Continue only when an in-scope issue remains.
 
+**Iteration budget.** If the loop reaches **5 iterations** on the same goal without converging — the same class of issue keeps recurring, or fixes are not reducing the reviewer's findings — stop, report the stall, and ask the user. A loop that disagrees with its reviewer forever is a signal to surface the conflict, not to grind. When you stop, summarize: how many iterations ran, what the recurring issue is, what you have tried, and why you cannot resolve it without a human decision.
+
 ## Completion Criteria
 
 Before the first fix, define a short checklist for this run with all five fields:
@@ -59,7 +61,7 @@ digraph loopfix {
 
 1. Re-read the approved design, plan, or current user goal. Define the scope boundary and fill all five Completion Criteria fields before fixing.
 2. Implement or repair the next in-scope slice yourself.
-3. Dispatch at least one reviewer subagent scoped to the goal, diff, tests, and risk areas. Ask for correctness bugs, regressions, missing tests, edge cases, and overbroad changes.
+3. Dispatch at least one reviewer subagent scoped to the goal, diff, tests, and risk areas. **The reviewer subagent must follow the `quality-reviewer` discipline**: three independent passes (Simplify, Correctness, Efficiency), any triggered conditional lenses, mechanical gates, caller grep for changed public symbols, and the three-filter finding validation (source-line check, confidence ≥ 80, false-positive suppression). Do not accept freeform review — load `quality-reviewer` in the subagent prompt and require its report format. This is how loopfix and quality-reviewer stay consistent: the same review bar applies inside and outside the loop.
 4. Report the review result in the conversation: findings, accepted fixes, rejected findings, deferred audit items, and next action.
 5. Fix accepted current-goal issues. Verify with the smallest meaningful command first, then broader checks when risk warrants it.
 6. Repeat review after meaningful code, test, behavior, schema, API, UX, or config changes.
@@ -107,6 +109,7 @@ Final response must include:
 - "Targeted tests passed, so no reviewer is needed"
 - "A hook/runtime should keep looping for me"
 - "No explicit completion criteria are needed; I will know done when I see it"
+- "I must keep looping past 5 iterations to prove thoroughness" — a stall is a signal to stop and surface the conflict, not to grind
 
 ## Rationalizations
 
@@ -122,6 +125,8 @@ Final response must include:
 ## Common Mistakes
 
 - Letting the subagent decide scope. The main agent must inspect findings and own the decision.
+- Dispatching a freeform reviewer subagent instead of one that follows `quality-reviewer`'s three-pass + lenses discipline. The same review bar applies inside the loop.
+- Looping past 5 iterations on a recurring disagreement instead of stopping to surface the conflict.
 - Running review before reconstructing the current goal. Review without scope creates noisy refactors.
 - Treating deferred audit items as hidden work. Report them when found and summarize them at the end.
 - Claiming ready while checks are stale. Any accepted fix requires fresh relevant verification.

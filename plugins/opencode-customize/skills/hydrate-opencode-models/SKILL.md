@@ -97,6 +97,16 @@ Transform the Models.dev fields into opencode model config:
 
 Apply the hydrated model definitions to the opencode config file using the `edit` tool. Preserve all existing fields the user did not ask to change.
 
+### Step 5: Validate the config after writing
+
+Do not leave the config in a broken state. After editing:
+
+1. **Re-read the edited file** and confirm the JSON/JSONC structure is intact (balanced braces, no trailing commas, valid keys).
+2. **Confirm required fields** on every hydrated model: `limit.context` and `limit.output` are present and ≥ 1. Missing `limit` crashes opencode (`maxOutputTokens must be >= 1`).
+3. **Confirm the edited provider block still parses** — for `opencode.json`, run `jq empty <file>`; for `opencode.jsonc`, re-read and confirm structure by eye (jq does not parse comments).
+4. If validation fails, revert the edit and report the parse error. Tell the user exactly what broke.
+5. Remind the user to restart opencode and watch for startup errors.
+
 Example output:
 
 ```jsonc
@@ -141,3 +151,4 @@ cat /tmp/models-dev.json | jq '.minimax.models["MiniMax-M2.7"]'
 - **Missing `limit`**: This causes a crash (`maxOutputTokens must be >= 1`). Always include `limit.context` and `limit.output`.
 - **Forgetting `interleaved`**: GLM and Kimi models use `{ "field": "reasoning_content" }` for interleaved thinking. Without this, reasoning output may be lost.
 - **Skipping the security gate**: Never read opencode config without explicit user consent. API keys and tokens in config files are secrets.
+- **Leaving config broken after edit**: Always run Step 5 validation. A half-written config crashes opencode on startup.

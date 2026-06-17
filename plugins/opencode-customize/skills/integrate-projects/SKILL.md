@@ -69,7 +69,17 @@ Do NOT add `"*": "ask"` catch-alls in `permission.external_directory`. The defau
 
 Deep-merge all changes: preserve all existing fields the user didn't ask to change.
 
-### Step 3: Report
+### Step 3: Validate the config after writing
+
+Do not leave the config in a broken state. After editing:
+
+1. **Re-read the edited config file** and confirm the `references` object parses and each entry has both `path` and `description`.
+2. **Confirm no `"*": "ask"`** was introduced anywhere in `permission.external_directory` — it would override the reference auto-allow.
+3. **Confirm referenced paths exist** (or are explicitly marked `[missing]` in the summary). A typo in a path means the reference silently resolves to nothing.
+4. **Confirm the overall config structure is intact** — balanced braces, valid keys, no trailing commas.
+5. If validation fails, revert the edit and report what broke.
+
+### Step 4: Report
 
 | Alias | Path | Access | Added |
 |-------|------|--------|-------|
@@ -92,3 +102,4 @@ Remind the user: **Restart opencode for changes to take effect.**
 - **Modifying `AGENTS.md`**: Do not add integration context to the project's `AGENTS.md`. That file belongs to the project's own knowledge. The `description` field in `references` is the right place — opencode injects it into the agent's system prompt directly.
 - **Promising read-only references**: Do not add `permission.edit` deny rules and report read-only access as enforced. Current opencode behavior can fail open for edits under externally allowed reference paths.
 - **Forgetting to restart opencode**: Config changes have no effect until restart.
+- **Leaving config broken after edit**: Always run Step 3 validation. A malformed `references` block or a stray `"*": "ask"` breaks either the references or the permission flow.

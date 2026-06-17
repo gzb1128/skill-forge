@@ -67,6 +67,7 @@ Some diffs need a focused lens beyond the three standard passes. Run only the le
 | Added or changed `catch`/`except`/`rescue`, fallback/default behavior, retries, ignored errors, optional chaining on required data, or log-and-continue handling | **Silent failure** | Could this hide a failure that the user, caller, operator, or test should see? |
 | Added or changed tests for new logic, validation, error paths, contracts, or branches | **Test quality** | Would these tests fail for the important regressions this diff could introduce? |
 | Changed `plugins/*/skills/*/SKILL.md` or any `SKILL.md` beyond spelling/formatting-only edits | **Skill quality** | Will another agent reliably trigger and follow this skill under pressure? |
+| Added or changed comments, docstrings, or inline docs beyond trivial formatting | **Comment accuracy** | Does the comment still match the code, or has it rotted into a lie? |
 
 Silent-failure findings should check whether the error is specific, visible, logged with useful context, propagated when needed, and whether fallback behavior is intentional rather than masking a broken path.
 
@@ -74,7 +75,9 @@ Test-quality findings should focus on behavior, not line coverage. Passing tests
 
 Skill-quality findings should check frontmatter trigger quality, especially whether `description` describes when to use the skill rather than summarizing the workflow. Also check for vague triggers, missing common-mistake guidance for discipline skills, one-off narrative content, broken references, and missing RED/GREEN verification evidence when skill behavior changed. Treat trigger changes, workflow changes, new/removed rules, tool-scope changes, and changed stop/approval conditions as behavior changes; spelling-only or formatting-only edits do not trigger this lens.
 
-Triggered lenses are review passes, just conditional ones. Dispatch them in the same parallel batch as Simplify/Correctness/Efficiency (rule 2), not as a separate sequential step. Evaluate triggers first, then launch 3-6 passes in one batch.
+Comment-accuracy findings should check that comments describe current behavior, not a previous version of the code; that docstrings match signatures and return shapes; and that `TODO`/`FIXME` markers reference real follow-ups. A comment that contradicts the code is worse than no comment — flag it as at least Important.
+
+Triggered lenses are review passes, just conditional ones. Dispatch them in the same parallel batch as Simplify/Correctness/Efficiency (rule 2), not as a separate sequential step. Evaluate triggers first, then launch 3-7 passes in one batch.
 
 ### 2b. Run mechanical gates concurrent with the review
 
@@ -104,15 +107,25 @@ The user can skip gates explicitly. But verify the skip is justified before comp
 | "skip lint" | Honor it. Lint is taste; tests are correctness. |
 | "production is down, just commit" | Refusing to commit is incomplete. Pair every refusal with a concrete next step the user can take in <2 minutes (revert SHA, minimal diff, what bug to confirm). |
 
-### 5. Validate findings against current source before reporting
+### 5. Validate and filter findings before reporting
 
-Reviewer subagents are advisors, not ground truth. Before finalizing any finding from a subagent or earlier pass:
+Reviewer passes produce raw findings. Before any finding reaches the report, it must pass three independent filters. Each filter removes findings; survivors are reported.
 
-1. Open the current source lines or current diff hunk.
-2. Confirm the issue still exists at the reported location.
-3. Drop stale findings, false positives, and findings made obsolete by later edits.
+**Filter 1 — Source-line validation.** Reviewer subagents are advisors, not ground truth. Open the current source lines or current diff hunk. Confirm the issue still exists at the reported location. Drop stale findings and findings made obsolete by later edits. Do not paste subagent findings into the report without this check.
 
-Do not paste subagent findings into the final report without this source-line check.
+**Filter 2 — Confidence scoring.** Score each surviving finding 0-100 for "how certain am I this is a real defect introduced by this diff?" Only report findings scored **≥ 80**. Confidence is orthogonal to severity: a low-confidence Critical is still suppressed. Severity says *how bad*; confidence says *how real*. If you suppress a high-severity finding for low confidence, list it under `Suppressed (low confidence)` with the score and a one-line reason so the user can investigate.
+
+**Filter 3 — False-positive suppression.** Do not report these categories regardless of confidence score:
+
+| Suppressed category | How to confirm it is not new |
+|---|---|
+| Pre-existing issue not introduced by this diff | Check the branch diff or `git blame` — the line predates the change |
+| Issue a linter/formatter would already flag at the same location | The tool is configured and runs in this repo |
+| Pedantic style nitpick with no correctness or maintainability impact | Pure taste, not a defect |
+| Issue the diff explicitly addresses or the user explicitly accepted | Stated intent or skip flag |
+| "Could be more elegant" commentary that is not a concrete defect | No observable wrong behavior |
+
+A finding must survive all three filters to appear in the report. A high-confidence Critical that survives suppression blocks the commit; a Minor that survives is flagged but does not block.
 
 ### 6. Re-review after any fix
 
@@ -147,19 +160,22 @@ Tests passing is not enough. If any unresolved `Critical` or `Important` finding
 - <file>:<line> — what changed and why
 
 ### Flagged (not fixed)
-- <file>:<line> — issue, severity (Critical/Important/Minor), why not auto-fixed
+- <file>:<line> — issue, severity (Critical/Important/Minor), confidence (0-100), why not auto-fixed
+
+### Suppressed (low confidence)
+- <file>:<line> — issue, severity, confidence score, one-line reason for suppression
 
 ### Gates
 - Mode: <report-only / fix safe issues / loopfix>
 - Scope: <working tree / branch diff / both> via <commands>
 - Three-pass review: <pass/issues found>
-- Conditional lenses: <not triggered / silent failure / test quality / skill quality results>
+- Conditional lenses: <not triggered / silent failure / test quality / skill quality / comment accuracy results>
 - Post-fix re-review: <not needed / pass / findings>
 - Diff hygiene: <pass/fail>
 - Lint: <command run> → <pass/fail/unavailable>
 - Tests: <command run> → <pass/fail/none-exist>
 - Caller check: <symbols checked> → <findings>
-- Finding validation: <source lines checked / stale findings dropped>
+- Finding validation: <source lines checked / stale findings dropped / suppressed count>
 
 ### Verdict
 Ready to commit: <yes / no / yes-after-flags-resolved>
@@ -171,8 +187,11 @@ If no: one concrete next step the user can take in <2 minutes.
 - Collapsing the three review passes into one broad scan. Keep Simplify, Correctness, and Efficiency separate.
 - Running triggered conditional lenses sequentially after the three passes. They join the parallel review batch.
 - Serializing mechanical gates (diff hygiene, lint, tests) behind the review. They depend only on changed paths — run them concurrent with the review passes.
+- Reporting a finding without a confidence score. Every reported finding needs a ≥80 score or it belongs under Suppressed.
+- Treating severity and confidence as the same axis. A Critical at confidence 50 is suppressed, not blocking; a Minor at confidence 95 is flagged, not blocking.
+- Silently dropping a suppressed high-severity finding. Always list it under `Suppressed (low confidence)` with the score and reason.
 - Treating passing tests as proof of safety when the test-quality lens was triggered but not run.
-- Running the skill-quality lens for spelling-only or formatting-only `SKILL.md` edits. Record it as not triggered instead.
+- Running the skill-quality or comment-accuracy lens for spelling-only or formatting-only edits. Record them as not triggered instead.
 - Marking a diff ready while Important findings remain because validation commands passed.
 - Copying subagent findings into the report without re-opening current source lines.
 

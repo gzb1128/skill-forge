@@ -5,18 +5,9 @@
 
 `skill-forge` is a Claude Code plugin marketplace for forging agent runtime environments. The repo hosts the marketplace catalog, plugin source code, skill verification flows, and Agent-First documentation templates.
 
-## Project Language
+## Golden Rules
 
-**All project-facing content must be written in English.** This includes:
-
-- `README.md`, `AGENTS.md`, and all files under `docs/`
-- Commit messages (English, standard IT terminology)
-- Code comments, inline notes, and documentation strings
-- Plugin descriptions and marketplace metadata
-- Makefile comments and help text
-- GitHub repository description and topics
-
-The only exception is content that is intentionally localized for end users.
+1. **Project-facing content is in English** — `README.md`, `AGENTS.md`, `docs/`, commit messages, code comments, plugin metadata, Makefile help text, GitHub description/topics. Exception: intentionally localized end-user content.
 
 ## Current Plugins
 
@@ -109,7 +100,6 @@ claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
 
 - **`bootstrap-agent-docs` resolves templates from `${CLAUDE_PLUGIN_ROOT}/templates/`**. This env var is set automatically by Claude Code when the plugin is enabled. Do NOT reference templates by repo-relative paths — the plugin is installed into `~/.claude/plugins/cache/...` and cannot see this repo's working tree.
 - **Plugin install only copies content inside the plugin directory.** Paths outside `plugins/<name>/` are invisible to installed plugins. Never write `../../something` in a skill; pack everything the skill needs into its plugin directory.
-- **Omitting `version` is deliberate.** Adding a fixed version breaks the "every push is a new version" SHA-based strategy.
 - **Marketplace source uses the `git-subdir.url` field.** The current Claude Code schema requires `git-subdir` sources to use `url`, not the legacy `repo` field.
 
 ## Development Workflow

@@ -7,7 +7,7 @@ description: Use when the user asks to remove AI slop, clean up AI-generated cod
 
 Remove AI-generated bloat from a feature branch's diff.
 
-You already have good instincts for what looks like slop (restating-the-code comments, dead type-system-redundant guards, manual loops that reflow a one-liner). The three rules below address what agents skip without guidance.
+You already have good instincts for what looks like slop (restating-the-code comments, dead type-system-redundant guards, manual loops that reflow a one-liner). The three rules below address what agents skip without guidance, and the procedure adds a preview-then-verify gate so nothing is removed blindly.
 
 ## Three required rules
 
@@ -55,9 +55,24 @@ If you find yourself wanting to redesign, **stop and flag it**. Do not silently 
 
 ## Procedure
 
-1. Resolve `$BASE` (rule 1)
-2. `git diff "$BASE"...HEAD` — read the full branch diff
-3. For each candidate removal, run `git blame` on the line range
-4. Apply removals with Edit. Do not rewrite logic.
-5. `git diff "$BASE"...HEAD --stat` to confirm
-6. Report in 2–4 sentences: categories removed, design concerns flagged but not touched, final stat.
+1. Resolve `$BASE` (rule 1).
+2. `git diff "$BASE"...HEAD` — read the full branch diff.
+3. For each candidate removal, run `git blame` on the line range. Confirm every candidate is branch-authored (rule 2).
+4. **Preview before applying.** Group candidates by file and list each one: the line(s), the slop category, and the blame evidence. Do not edit yet.
+5. **Approval gate.** Show the preview and get explicit confirmation before removing anything. If the user says "just do it," still state the removal count and categories, then proceed only on explicit confirmation. A removal the user cannot see coming is a wrong removal.
+6. Apply removals with Edit. Do not rewrite logic.
+7. **Verify after cleanup.** Removing code changes behavior, so confirm it did not break anything:
+   - Re-run the project linter on touched paths.
+   - Run a focused test on touched paths (or the smallest meaningful command). If none exist, say so.
+   - If a removed line turns out load-bearing (a test fails, lint errors), revert that removal and report it — it was not slop.
+   - Optionally load `quality-reviewer` for a focused pass on the cleaned diff.
+8. `git diff "$BASE"...HEAD --stat` to confirm the final shape.
+9. Report: categories removed, design concerns flagged but not touched, verification results, and final stat.
+
+## Common Mistakes
+
+- Applying removals without showing a preview first. The user cannot catch a wrong removal after the edit.
+- Treating a redundant-looking guard as slop when it protects a dynamic call path or external input. Verify with tests, not intuition — a failed test means revert.
+- Cleaning up merge-commit deltas. `git diff "$BASE"...HEAD` on a branch with merges from main includes their noise; if the branch has merges, scope to feature-branch commits only.
+- Running cleanup without verifying afterward. Removing code changes behavior; confirm with lint and tests before claiming done.
+- Removing lines predating the feature branch. `git blame` is the authority, not your sense of style.

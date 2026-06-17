@@ -13,12 +13,12 @@ Applicable scenarios:
 |---|---|---|---|
 | `bootstrap-agent-docs` | — | — | Pre-existing skill (added before this process) |
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
-| `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations |
+| `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations. New preview/approval/verification gates (rule 4-7) pending GREEN re-run |
 | `learn` | — | — | Pre-existing |
-| `hydrate-opencode-models` | — | — | Pre-existing; belongs to `opencode-customize` |
-| `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal |
-| `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, and runtime-neutral stopping |
-| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics; E covers conditional lenses |
+| `hydrate-opencode-models` | — | — | Pre-existing; new Step 5 post-write validation pending GREEN |
+| `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal. New Step 3 post-write validation pending GREEN |
+| `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, runtime-neutral stopping. New quality-reviewer integration + 5-iteration budget pending GREEN |
+| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics; E covers conditional lenses. New confidence scoring, false-positive suppression, comment-accuracy lens pending GREEN |
 | `remember` | — | — | Pre-existing |
 
 > GREEN tests use a fallback mode (subagent directly reads `~/.agents/skills/<name>/SKILL.md`
@@ -148,13 +148,27 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Verify skip excuses | When user says "skip tests", subagent reports actual runtime before deciding |
 | Review mode selection | "quality review" is report-only; "quality review and fix" edits only safe issues; "loopfix" delegates to `loopfix` |
 | Review scope declaration | Report states whether it reviewed working tree, branch diff (`main..HEAD` intent), or both |
-| Conditional lenses | Triggered diffs run silent-failure / test-quality / skill-quality lenses and report them under Gates |
+| Conditional lenses | Triggered diffs run silent-failure / test-quality / skill-quality / comment-accuracy lenses and report them under Gates |
+| Confidence scoring | Every reported finding carries a confidence score ≥ 80; findings below 80 appear under Suppressed (low confidence) |
+| False-positive suppression | Report does not include pre-existing issues, linter-catchable issues, or pedantic nitpicks (confirmed against branch diff/blame) |
 | Post-fix re-review | Any edit is followed by a focused review of updated source/diff lines |
 | Source-line validation | Subagent findings are checked against current source lines before final reporting |
 | Ready-to-commit verdict | Unresolved Important/Critical findings produce `Ready to commit: no`, even if tests pass |
 | Safe-fix boundary | Fix mode does not bless ambiguous Important behavior changes by adding tests |
-| Structured report | Report uses Fixed / Flagged / Gates / Verdict headings |
+| Structured report | Report uses Fixed / Flagged / Suppressed / Gates / Verdict headings |
 | No bare refusal | Any "no, don't commit" is followed by a concrete <2-minute next step |
+
+### diff-cleanup
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Branch-diff base | Diff runs against `merge-base HEAD origin/main`, not working tree alone |
+| Blame before remove | Every removed line confirmed branch-authored via `git blame` |
+| Design vs style boundary | No redesigning; design concerns flagged, not applied |
+| Preview before applying | Removals listed grouped by file before any edit is made |
+| Approval gate | Explicit user confirmation before removals; "just do it" still summarized then confirmed |
+| Post-cleanup verification | Lint and focused tests run on touched paths after removals; load-bearing removals reverted |
+| Never-touch respected | Why-comments, API-boundary guards, pre-branch lines, test code untouched |
 
 Pass = all yes; otherwise proceed to REFACTOR.
 

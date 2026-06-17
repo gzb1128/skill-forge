@@ -56,7 +56,7 @@ Baseline testing showed a single-pass review misses correctness issues that a fo
 | **Correctness** | Where could this be wrong? Edge cases, error paths, narrowed failure tolerance, mutation of caller-owned data, broken invariants, missing tests for new branches. |
 | **Efficiency** | Where does this do more work than needed? N+1 calls, repeated I/O on hot paths, unbounded growth, leaked goroutines/handles, redundant writes. |
 
-If the Task tool is available, dispatch the three passes in parallel as subagents. Otherwise do them inline as three separate read-throughs of the diff with the question above held in mind. **Do not collapse into one pass.**
+If the Task tool is available, dispatch the three passes in parallel as subagents, and include any triggered conditional lenses (rule 2a) in the **same batch**. Otherwise do them inline as separate read-throughs of the diff with the question above held in mind. **Do not collapse into one pass, and do not run triggered lenses after the three passes — they join the batch.**
 
 ### 2a. Run conditional lenses when the diff triggers them
 
@@ -73,6 +73,16 @@ Silent-failure findings should check whether the error is specific, visible, log
 Test-quality findings should focus on behavior, not line coverage. Passing tests are not enough if assertions only exercise implementation details, bless the new behavior without proving the contract, or skip negative/error cases introduced by the diff.
 
 Skill-quality findings should check frontmatter trigger quality, especially whether `description` describes when to use the skill rather than summarizing the workflow. Also check for vague triggers, missing common-mistake guidance for discipline skills, one-off narrative content, broken references, and missing RED/GREEN verification evidence when skill behavior changed. Treat trigger changes, workflow changes, new/removed rules, tool-scope changes, and changed stop/approval conditions as behavior changes; spelling-only or formatting-only edits do not trigger this lens.
+
+Triggered lenses are review passes, just conditional ones. Dispatch them in the same parallel batch as Simplify/Correctness/Efficiency (rule 2), not as a separate sequential step. Evaluate triggers first, then launch 3-6 passes in one batch.
+
+### 2b. Run mechanical gates concurrent with the review
+
+Diff hygiene (`git diff --check`), lint, and tests depend only on **which files changed**, not on review findings. Run them in the same time window as the review passes (rule 2) and conditional lenses (rule 2a), not after. If the Task tool is available, dispatch them as additional parallel subagents alongside the review batch.
+
+Two gates are NOT mechanical and must wait for the review to finish:
+- **Caller grep** (rule 3) — consumes the list of changed-contract symbols from the review.
+- **Finding validation** (rule 5) — consumes findings from the passes and lenses.
 
 ### 3. Grep for callers of changed public symbols
 
@@ -123,15 +133,12 @@ Tests passing is not enough. If any unresolved `Critical` or `Important` finding
 1. **Select mode and scope** (rule 1). If mode is Loopfix, load `loopfix` and stop this bounded procedure.
 2. **Scope the diff.** `git status`, `git diff --stat`, `git diff`, `git diff --cached`, untracked files from `git status --short`, and branch diff when scope includes branch changes. If empty, say so and stop.
 3. **Detect toolchain.** Probe project files. If `AGENTS.md` declares lint/test commands, prefer those.
-4. **Three-pass review** (rule 2). In report-only mode, do not edit. In fix mode, apply only safe in-scope fixes and flag the rest.
-5. **Conditional lenses** (rule 2a) for silent failures, test quality, and skill quality when triggered.
+4. **Review + lenses in parallel** (rules 2, 2a). Dispatch the three standard passes and any triggered conditional lenses in one parallel batch. In report-only mode, do not edit. In fix mode, apply only safe in-scope fixes and flag the rest.
+5. **Mechanical gates concurrent with review** (rule 2b). Diff hygiene (`git diff --check`), lint, and tests can run in the same window as step 4 — they depend only on changed paths, not on findings. If the Task tool is unavailable, run them after the review passes. Note the test-quality lens still applies when tests were added/changed (step 4), before treating passing tests as sufficient.
 6. **Post-fix re-review** (rule 6) if any file was edited.
-7. **Diff hygiene.** `git diff --check` for whitespace/conflict markers.
-8. **Lint.** Run the detected linter on changed paths. If the linter is genuinely unavailable, say so explicitly - do not silently skip. Try one alternative (e.g., `go vet`/`gofmt` if `golangci-lint` missing).
-9. **Tests.** Run the focused test command for affected modules. Use a writable cache if the default is blocked. If no tests exist for the changed code, say so - that is itself a finding. When tests were added or changed, apply the test-quality lens (rule 2a) before treating passing tests as sufficient.
-10. **Caller check** (rule 3) for any changed public symbol.
-11. **Validate findings** (rule 5) against current source lines.
-12. **Report** in the structure below. Do not freeform-narrate.
+7. **Caller check** (rule 3) for any changed public symbol. Runs after the review because it consumes the list of changed-contract symbols.
+8. **Validate findings** (rule 5) against current source lines. Runs after the review because it consumes findings from the passes and lenses.
+9. **Report** in the structure below. Do not freeform-narrate.
 
 ## Report format (use these headings)
 
@@ -162,6 +169,8 @@ If no: one concrete next step the user can take in <2 minutes.
 ## Common Mistakes
 
 - Collapsing the three review passes into one broad scan. Keep Simplify, Correctness, and Efficiency separate.
+- Running triggered conditional lenses sequentially after the three passes. They join the parallel review batch.
+- Serializing mechanical gates (diff hygiene, lint, tests) behind the review. They depend only on changed paths — run them concurrent with the review passes.
 - Treating passing tests as proof of safety when the test-quality lens was triggered but not run.
 - Running the skill-quality lens for spelling-only or formatting-only `SKILL.md` edits. Record it as not triggered instead.
 - Marking a diff ready while Important findings remain because validation commands passed.

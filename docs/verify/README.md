@@ -13,6 +13,7 @@ Applicable scenarios:
 |---|---|---|---|
 | `bootstrap-agent-docs` | — | — | Pre-existing skill (added before this process) |
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
+| `configure-explore-small` | Yes recorded | Yes passed (Scenario A direct-read fallback) | A covers project-level `explore-small` configuration with explicit model selection, local rationale docs, and restart reminder; registry discovery after restart remains pending |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations. New preview/approval/verification gates (rule 4-7) pending GREEN re-run |
 | `learn` | — | — | Pre-existing |
 | `hydrate-opencode-models` | — | — | Pre-existing; new Step 5 post-write validation pending GREEN |
@@ -93,6 +94,8 @@ Current scripts:
 
 ```text
 docs/verify/scenarios/
+├── configure-explore-small/
+│   └── build-a.sh          # Project-level explore-small agent configuration
 ├── diff-cleanup/
 │   └── build-b.sh          # AI slop cleanup scenario on a feature branch
 ├── integrate-projects/

@@ -25,6 +25,7 @@ claude plugin install opencode-customize@skill-forge
 #    "commit this"                -> gated commit with impact message
 #    "loopfix"                    -> autonomous review-fix loop
 #    "hydrate model config"       -> fill OpenCode custom model parameters
+#    "configure explore-small"    -> add a small-model quick reference subagent
 ```
 
 Plugin versions are resolved to git commit SHA. Every push produces a new installable version — no manual semver maintenance. Run `claude plugin update <plugin>@skill-forge` (or wait for auto-update) to pull the latest.
@@ -35,7 +36,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 |---|---|---|
 | `agent-docs` | Scaffold Agent-First documentation and maintain non-derivable team knowledge | `bootstrap-agent-docs`, `learn`, `remember` |
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
-| `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
+| `opencode-customize` | Customize OpenCode configuration, including model metadata hydration, external project references, and small-model exploration agents | `hydrate-opencode-models`, `integrate-projects`, `configure-explore-small` |
 
 ## Skill Catalog
 
@@ -64,6 +65,7 @@ The template payload used by `bootstrap-agent-docs` lives at `plugins/agent-docs
 |---|---|---|
 | `hydrate-opencode-models` | model-invoked | Look up model metadata from the Models.dev catalog and map it to OpenCode custom provider model config |
 | `integrate-projects` | model-invoked | Add external codebases to project-level OpenCode `references` so agents can discover and inspect them when relevant |
+| `configure-explore-small` | model-invoked | Configure an OpenCode `explore-small` subagent for small-model quick reference and narrow code exploration |
 
 ## What `agent-docs` Scaffolds
 

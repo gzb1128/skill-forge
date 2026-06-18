@@ -14,12 +14,55 @@ Do not ship `explore-small` as a static marketplace `agents/` entry.
 
 - The model must be user-selected. Ask for the concrete `provider/model-id`;
   do not silently reuse `small_model` from existing config.
-- Custom providers may need model metadata first. **REQUIRED SUB-SKILL:** Use
-  `hydrate-opencode-models` when the selected model is missing provider/model
-  metadata.
+- Custom (config-declared) providers may need model metadata first. **REQUIRED
+  SUB-SKILL:** Use `hydrate-opencode-models` only when the selected model
+  belongs to a custom provider in `opencode.json` and is missing metadata. This
+  does NOT apply to built-in providers — see "Provider Types" below.
 - OpenCode does not load global agents from `~/.agents/agents`. It loads agents
   from `~/.config/opencode/agent(s)` and project `.opencode/agent(s)`. The
   `~/.agents/skills` path is for external skills.
+
+## Provider Types: Built-in vs Custom
+
+OpenCode providers come in two kinds, and the validation path differs. Determine
+which kind `provider/model-id` refers to before validating tool-call support.
+
+### Built-in providers (no `opencode.json` entry needed)
+
+OpenCode ships providers as plugins registered in
+`packages/core/src/plugin/provider.ts` (e.g. `openai`, `anthropic`, `google`,
+`azure`, `google-vertex`, `xai`, `mistral`, `groq`, `cohere`, `perplexity`,
+`openrouter`, `vercel`, `amazon-bedrock`, and others).
+
+- They need NO entry in `opencode.json`. Looking for them in config and
+  rejecting the model as "not defined" is an anti-pattern.
+- Their model catalog is fetched from **models.dev**
+  (`packages/core/src/models-dev.ts`, source `https://models.dev`), not from
+  config. Trust the catalog or the user's claim for model existence; do not
+  force `hydrate-opencode-models`.
+- Their credentials are NOT stored in `opencode.json`. Auth (OAuth tokens or API
+  keys) lives in **`~/.local/share/opencode/auth.json`**
+  (`packages/opencode/src/auth/index.ts`, written mode `0600`). For example,
+  `openai` authenticates via OpenAI's Codex device/browser OAuth flow
+  (`packages/core/src/plugin/provider/openai-auth.ts`).
+- To check or establish auth for a built-in provider, tell the user to run
+  `opencode auth login` (OAuth) or set the provider's API-key environment
+  variable. Never paste API keys or OAuth tokens into `opencode.json` or the
+  agent file.
+
+### Custom providers (declared in `opencode.json`)
+
+Providers the user added under the `provider` block of `opencode.json` DO need a
+config entry with their `models` map and `options` (apiKey/baseURL). For these,
+verify the model block exists and `tool_call` is true, and use
+`hydrate-opencode-models` when metadata is missing.
+
+### Why this matters
+
+A model like `openai/<model>` is valid as long as the built-in `openai` plugin
+is registered (always) and OpenAI auth exists in `auth.json`. The skill must not
+block on "no `openai` provider in config" — there is nothing to read or add
+there. Only custom providers warrant a config read for model metadata.
 
 ## Security Gate
 
@@ -46,7 +89,7 @@ Ask these before writing anything:
 |---|---|---|
 | Concrete model | Yes | No default. The user must provide `provider/model-id`. |
 | Scope | Yes | Project-level `.opencode/agent/explore-small.md` unless the user asks for global. |
-| Model metadata | Conditional | If provider metadata is missing or tool-call support is unknown, use `hydrate-opencode-models`. |
+| Model metadata | Conditional | Only for **custom** providers declared in `opencode.json`: use `hydrate-opencode-models` if metadata/tool-call support is missing. For **built-in** providers, do not require config metadata; model info comes from models.dev. |
 
 Never infer the model from `small_model`. If the user says "use my current
 small model", ask them to provide the concrete model string instead, or ask for
@@ -120,9 +163,15 @@ After writing:
 
 1. Re-read the generated agent file and confirm the frontmatter is valid YAML.
 2. Confirm `mode: subagent` and `model: <provider/model-id>` are present.
-3. Confirm the selected model supports tool calls. If provider metadata is
-   missing or `tool_call` is false, stop and use `hydrate-opencode-models` or
-   ask the user for a different model.
+3. Confirm the selected model supports tool calls, by provider type:
+   - **Built-in provider** (in `packages/core/src/plugin/provider.ts`): trust
+     models.dev for tool-call support; do NOT search `opencode.json`. Confirm
+     auth exists in `~/.local/share/opencode/auth.json`; if missing, tell the
+     user to run `opencode auth login` or set the provider API-key env var. Do
+     not invoke `hydrate-opencode-models` for built-in providers.
+   - **Custom provider** (declared in `opencode.json`): read its `models` block
+     and require `tool_call: true`. If metadata is missing or false, use
+     `hydrate-opencode-models` or ask for a different model.
 4. Confirm the description includes both the allowed quick-reference cases and
    the forbidden complex-exploration cases.
 5. Confirm no `~/.agents/agents` path was created or recommended.
@@ -170,3 +219,11 @@ Restart required: yes
   can accidentally block reference-directory behavior; prefer targeted denials
   for mutating or out-of-scope tools.
 - Forgetting to restart OpenCode after writing the agent file.
+- Treating a built-in provider (e.g. `openai`, `anthropic`) as missing because
+  it has no entry in `opencode.json`. Built-in providers are plugins; their
+  models come from models.dev and their auth lives in `auth.json`. Do not block
+  the agent on a non-existent config entry, and do not force
+  `hydrate-opencode-models` for them.
+- Writing API keys or OAuth tokens into `opencode.json` or the agent file.
+  Built-in provider credentials belong in `auth.json` (via `opencode auth
+  login`) or an environment variable, never in config.

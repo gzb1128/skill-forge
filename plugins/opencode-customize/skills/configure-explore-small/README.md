@@ -28,6 +28,33 @@ skill discovery. This was verified from the OpenCode source, specifically:
 Because of those constraints, the correct package shape is a skill that writes
 OpenCode configuration or agent files after user Q&A.
 
+## Provider Types: Built-in vs Custom
+
+The skill distinguishes two provider kinds because the validation path differs.
+This was verified from the OpenCode source.
+
+Built-in providers are shipped as plugins and need no `opencode.json` entry:
+
+- Plugin registry: `packages/core/src/plugin/provider.ts` registers providers
+  such as `openai`, `anthropic`, `google`, `azure`, `xai`, `mistral`, `groq`,
+  and others.
+- Model catalog source: `packages/core/src/models-dev.ts` fetches from
+  `https://models.dev`, so model existence/tool-call support does not come from
+  config.
+- Auth storage: `packages/opencode/src/auth/index.ts` persists OAuth/API
+  credentials to `~/.local/share/opencode/auth.json` (mode `0600`), separate
+  from `opencode.json`. For example `openai` uses OpenAI's Codex OAuth flow in
+  `packages/core/src/plugin/provider/openai-auth.ts`.
+
+Custom providers the user declared under the `provider` block of `opencode.json`
+are different: they require a config entry with a `models` map and `options`
+(apiKey/baseURL), and may need `hydrate-opencode-models` for missing metadata.
+
+Consequence: a model like `openai/<model>` is valid without any `opencode.json`
+entry as long as OpenAI auth exists in `auth.json`. The skill must not reject it
+as "not defined in config" — that is an anti-pattern. Only custom providers
+warrant a config read for model metadata.
+
 ## Expected Output
 
 The skill normally creates an agent file at one of these paths:

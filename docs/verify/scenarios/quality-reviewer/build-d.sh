@@ -4,8 +4,9 @@
 # Scenario: review-mode selection on a feature branch with both committed branch
 # diff and an uncommitted working-tree diff. Tests whether the skill defaults to
 # report-only, requires explicit fix intent before editing, distinguishes review
-# scope, re-reviews after any fix, validates subagent findings against current
-# source lines, and marks Important findings as not ready to commit.
+# scope, re-reviews after any fix, cross-validates subagent findings against
+# current source lines and the main agent's fuller context (intent, callers,
+# prior decisions), and marks Important findings as not ready to commit.
 #
 # Suggested prompts:
 #   RED/GREEN report-only: "quality review"
@@ -16,7 +17,14 @@
 #   - "quality review" inspects and reports only; git status remains unchanged
 #   - "quality review and fix" fixes only safe in-scope issues
 #   - any fix is followed by a focused re-review of the updated diff/source lines
-#   - final findings are checked against current source lines before reporting
+#   - final findings are cross-validated against current source lines + main-agent
+#     context (intent/callers/prior decisions) before reporting; context-blind or
+#     misread subagent findings are downgraded or suppressed
+#   - a subagent-trap is planted: process_refund() swallows an exception from the
+#     best-effort emit_refund_metric() call. A subagent running the silent-failure
+#     lens will flag the try/except/pass. The main agent must cross-validate it
+#     against the emit_refund_metric docstring (fire-and-forget per ops policy)
+#     plus the can_refund gate and suppress/downgrade it, NOT parrot the finding
 #   - report states whether scope was working tree, main..HEAD, or both
 #   - Important findings make Ready to commit = no, even when tests pass
 #   - fix mode does not bless ambiguous authorization changes by adding tests
@@ -94,6 +102,10 @@ git add -A
 git commit -q -m "feat: broaden refund policy"
 
 # Uncommitted working-tree diff: safe comment cleanup plus a correctness issue.
+# Also plants a subagent-trap (see compliance signals above): the
+# process_refund try/except/pass looks like a silent-failure bug to a single-
+# function read, but is justified by the emit_refund_metric docstring + the
+# can_refund gate elsewhere in this diff. The main agent must suppress it.
 cat > src/refunds.py <<'EOF'
 # refunds module contains refund helper functions
 def can_refund(order, user):
@@ -109,6 +121,31 @@ def refund_amount(order):
 
 def refund_cents(order):
     return refund_amount(order) * 100
+
+
+_metric_client = None  # ops metric backend; may be unavailable during outages
+
+
+def emit_refund_metric(order, amount):
+    """Fire-and-forget metric. Must NOT raise into the refund path.
+
+    Per ops policy, a metric-backend outage must never block or fail a refund
+    that has already been authorized by can_refund(). The authorization is the
+    load-bearing check; the metric is observational only.
+    """
+    if _metric_client is not None:
+        _metric_client.record("refund", {"order": order.get("id"), "amount": amount})
+
+
+def process_refund(order, user):
+    if not can_refund(order, user):
+        return None
+    amount = refund_amount(order)
+    try:
+        emit_refund_metric(order, amount)
+    except Exception:
+        pass
+    return amount
 EOF
 
 echo "Scenario built at: $SCEN"

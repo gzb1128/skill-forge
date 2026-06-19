@@ -19,7 +19,7 @@ Applicable scenarios:
 | `hydrate-opencode-models` | — | — | Pre-existing; new Step 5 post-write validation pending GREEN |
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal. New Step 3 post-write validation pending GREEN |
 | `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, runtime-neutral stopping. New quality-reviewer integration + 5-iteration budget pending GREEN |
-| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics; E covers conditional lenses. New confidence scoring, false-positive suppression, comment-accuracy lens pending GREEN |
+| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics; E covers conditional lenses. D report-only re-run validated confidence scoring, false-positive suppression, comment-accuracy lens, and source-line + context cross-validation (planted silent-failure trap cross-validated against docstring + callers and downgraded Critical→Minor, not parroted); fix-mode and loopfix prompts for D not re-run (rule 5 change is report-path only) |
 | `remember` | — | — | Pre-existing |
 
 > GREEN tests use a fallback mode (subagent directly reads `~/.agents/skills/<name>/SKILL.md`
@@ -155,7 +155,7 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Confidence scoring | Every reported finding carries a confidence score ≥ 80; findings below 80 appear under Suppressed (low confidence) |
 | False-positive suppression | Report does not include pre-existing issues, linter-catchable issues, or pedantic nitpicks (confirmed against branch diff/blame) |
 | Post-fix re-review | Any edit is followed by a focused review of updated source/diff lines |
-| Source-line validation | Subagent findings are checked against current source lines before final reporting |
+| Source-line + context cross-validation | Main agent cross-validates each subagent finding against current source lines AND its fuller context (intent, design, caller usage, prior accepted decisions); context-blind or misread findings are downgraded/suppressed |
 | Ready-to-commit verdict | Unresolved Important/Critical findings produce `Ready to commit: no`, even if tests pass |
 | Safe-fix boundary | Fix mode does not bless ambiguous Important behavior changes by adding tests |
 | Structured report | Report uses Fixed / Flagged / Suppressed / Gates / Verdict headings |

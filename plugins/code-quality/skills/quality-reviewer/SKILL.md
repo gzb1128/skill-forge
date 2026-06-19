@@ -85,7 +85,7 @@ Diff hygiene (`git diff --check`), lint, and tests depend only on **which files 
 
 Two gates are NOT mechanical and must wait for the review to finish:
 - **Caller grep** (rule 3) — consumes the list of changed-contract symbols from the review.
-- **Finding validation** (rule 5) — consumes findings from the passes and lenses.
+- **Finding validation** (rule 5) — consumes findings from the passes and lenses, and the rule-3 caller-grep results (used by Filter 1's context cross-validation).
 
 ### 3. Grep for callers of changed public symbols
 
@@ -111,7 +111,12 @@ The user can skip gates explicitly. But verify the skip is justified before comp
 
 Reviewer passes produce raw findings. Before any finding reaches the report, it must pass three independent filters. Each filter removes findings; survivors are reported.
 
-**Filter 1 — Source-line validation.** Reviewer subagents are advisors, not ground truth. Open the current source lines or current diff hunk. Confirm the issue still exists at the reported location. Drop stale findings and findings made obsolete by later edits. Do not paste subagent findings into the report without this check.
+**Filter 1 — Source-line and context cross-validation.** Reviewer subagents are advisors, not ground truth. This filter has two steps:
+
+1. **Source-line check.** Open the current source lines or current diff hunk. Confirm the issue still exists at the reported location. Drop stale findings and findings made obsolete by later edits.
+2. **Context cross-validation.** The main agent has more context than the subagent — the full diff, the stated intent, design constraints, the rule-3 caller-grep results, and prior accepted decisions elsewhere in the diff. Judge whether the reported issue is a genuine defect against that fuller context. Findings that misread the code's intent, ignore a valid caller/usage pattern, duplicate a constraint already satisfied elsewhere in the diff, or rest on a code reading the main agent cannot reproduce must be downgraded or suppressed (moved to `Suppressed (low confidence)` with the reason).
+
+**Principle:** The main agent is the ground-truth layer; subagents are advisors. A finding is not real just because a subagent reported it — it is real only if the main agent can independently confirm the defect against its fuller context. Source-line existence is a prerequisite, not proof of defect reality.
 
 **Filter 2 — Confidence scoring.** Score each surviving finding 0-100 for "how certain am I this is a real defect introduced by this diff?" Only report findings scored **≥ 80**. Confidence is orthogonal to severity: a low-confidence Critical is still suppressed. Severity says *how bad*; confidence says *how real*. If you suppress a high-severity finding for low confidence, list it under `Suppressed (low confidence)` with the score and a one-line reason so the user can investigate.
 
@@ -150,7 +155,7 @@ Tests passing is not enough. If any unresolved `Critical` or `Important` finding
 5. **Mechanical gates concurrent with review** (rule 2b). Diff hygiene (`git diff --check`), lint, and tests can run in the same window as step 4 — they depend only on changed paths, not on findings. If the Task tool is unavailable, run them after the review passes. Note the test-quality lens still applies when tests were added/changed (step 4), before treating passing tests as sufficient.
 6. **Post-fix re-review** (rule 6) if any file was edited.
 7. **Caller check** (rule 3) for any changed public symbol. Runs after the review because it consumes the list of changed-contract symbols.
-8. **Validate findings** (rule 5) against current source lines. Runs after the review because it consumes findings from the passes and lenses.
+8. **Validate findings** (rule 5): cross-validate each finding against current source lines AND the main agent's fuller context (intent, design, caller usage from rule 3, prior accepted decisions). Runs after the review because it consumes findings from the passes and lenses, and after the caller check because Filter 1 reuses its results.
 9. **Report** in the structure below. Do not freeform-narrate.
 
 ## Report format (use these headings)
@@ -175,7 +180,7 @@ Tests passing is not enough. If any unresolved `Critical` or `Important` finding
 - Lint: <command run> → <pass/fail/unavailable>
 - Tests: <command run> → <pass/fail/none-exist>
 - Caller check: <symbols checked> → <findings>
-- Finding validation: <source lines checked / stale findings dropped / suppressed count>
+- Finding validation: <findings cross-validated / stale dropped / context-blind downgrades / suppressed count>
 
 ### Verdict
 Ready to commit: <yes / no / yes-after-flags-resolved>
@@ -194,13 +199,14 @@ If no: one concrete next step the user can take in <2 minutes.
 - Running the skill-quality or comment-accuracy lens for spelling-only or formatting-only edits. Record them as not triggered instead.
 - Marking a diff ready while Important findings remain because validation commands passed.
 - Copying subagent findings into the report without re-opening current source lines.
+- Accepting a subagent finding because it sounds right without judging it against the main agent's context (intent, callers, prior decisions). Source-line existence ≠ defect reality.
 
 ## Never
 
 - Skip a gate silently. If a tool is unavailable, name it and say so.
 - Edit files in report-only mode or before explicit confirmation to fix.
 - Refuse to commit without offering a concrete <2-minute next step.
-- Report sub-pass or subagent output without checking it against current source lines.
+- Report sub-pass or subagent output without cross-validating it against current source lines AND the main agent's fuller context.
 - Treat tests that bless ambiguous behavior as a safe fix for an Important finding.
 - Treat "I'm tired" / "it's urgent" as permission to skip gates. The user must explicitly name the gate.
 - Mark `Ready to commit: yes` when unresolved Critical or Important findings remain.

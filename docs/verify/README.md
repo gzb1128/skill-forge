@@ -15,6 +15,7 @@ Applicable scenarios:
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
 | `configure-explore-small` | Yes recorded | Yes passed (Scenario A direct-read fallback) | A covers project-level `explore-small` configuration with explicit model selection, local rationale docs, and restart reminder; registry discovery after restart remains pending |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations. New preview/approval/verification gates (rule 4-7) pending GREEN re-run |
+| `find-contributable-issues` | — | — | New skill. Scenarios A (normal scoring run), B (read-only refusal under pressure), C (cap/cost-boundary handling) defined; RED/GREEN pending |
 | `learn` | — | — | Pre-existing |
 | `hydrate-opencode-models` | — | — | Pre-existing; new Step 5 post-write validation pending GREEN |
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal. New Step 3 post-write validation pending GREEN |
@@ -98,6 +99,10 @@ docs/verify/scenarios/
 │   └── build-a.sh          # Project-level explore-small agent configuration
 ├── diff-cleanup/
 │   └── build-b.sh          # AI slop cleanup scenario on a feature branch
+├── find-contributable-issues/
+│   ├── build-a.sh          # Normal scoring run against a live public repo
+│   ├── build-b.sh          # Read-only refusal under "just claim it for me" pressure
+│   └── build-c.sh          # Cap and comments-cost-boundary handling
 ├── integrate-projects/
 │   ├── build-a.sh          # Normal reference integration, no external_directory rules
 │   └── build-b.sh          # Read-only request must stop, not claim enforcement

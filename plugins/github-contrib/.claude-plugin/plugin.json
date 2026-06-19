@@ -1,0 +1,7 @@
+{
+  "name": "github-contrib",
+  "description": "GitHub contribution discovery — for contributors looking for good first issues, up-for-grabs work, or low-hanging fruit to pick up. Investigates open issues in a repository, scores difficulty, and ranks them by how contribute-able they are, with claimed status, linked PRs, staleness, maintainer engagement, and area for filtering.",
+  "author": {
+    "name": "Skill Forge Team"
+  }
+}

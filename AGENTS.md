@@ -15,7 +15,7 @@
 |---|---|---|
 | `agent-docs` | Agent-First documentation scaffolding and knowledge management | `bootstrap-agent-docs`, `learn`, `remember` |
 | `code-quality` | Code review, commit gates, diff cleanup, and autonomous fix loops | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
-| `opencode-customize` | OpenCode configuration customization, including model metadata hydration, external project references, and small-model exploration agents | `hydrate-opencode-models`, `integrate-projects`, `configure-explore-small` |
+| `opencode-customize` | OpenCode configuration customization, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
 
 ## What's here
 
@@ -25,7 +25,7 @@
 | `plugins/agent-docs/` | Documentation plugin: `bootstrap-agent-docs`, `learn`, `remember` |
 | `plugins/agent-docs/templates/` | Template payload rsynced by `bootstrap-agent-docs` |
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
-| `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects`, `configure-explore-small` |
+| `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects` |
 | `docs/design/`, `docs/plans/` | Design docs and implementation plans for this repo |
 | `docs/verify/` | RED→GREEN→REFACTOR skill test process and scenario build scripts |
 | `Makefile` | `validate` + `test-skills-link/unlink/status` verification entry points |

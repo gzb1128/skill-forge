@@ -5,7 +5,18 @@ This directory documents how to run RED → GREEN → REFACTOR test cycles for e
 Applicable scenarios:
 - Baseline measurement before adding a new skill
 - Regression verification when modifying an existing skill
-- Compliance verification when migrating skills like `quality-reviewer` / `diff-cleanup` into this repo
+- Compliance verification when adapting or strengthening an existing skill workflow in this repo, such as `quality-reviewer` / `diff-cleanup`
+
+This repo does **not** directly migrate official skills just because an upstream
+skill exists. Treat official skills as reference material unless there is an
+explicitly planned change. Local `skill-forge` skills should generally be
+deliberate enhancements of the upstream idea: stricter boundaries, clearer
+verification, better failure-mode handling, or repo-specific workflow discipline.
+
+When the `skill-creator` skill is available in the current agent runtime, load
+and follow it before creating a new skill, changing a skill's behavioral
+contract, or designing new RED/GREEN scenarios. If it is not available, continue
+with this verification process and record the gap in the scenario notes.
 
 ## Current Status
 

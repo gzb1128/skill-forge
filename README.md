@@ -17,14 +17,18 @@ claude plugin marketplace add gzb1128/skill-forge
 # 2. Install the plugins you need
 claude plugin install agent-docs@skill-forge
 claude plugin install code-quality@skill-forge
+claude plugin install skill-creator@skill-forge
 claude plugin install opencode-customize@skill-forge
+claude plugin install github-contrib@skill-forge
 
 # 3. In your target repo, ask Claude:
 #    "bootstrap agent docs"       -> scaffold Agent-First docs
 #    "review my changes"          -> quality review on local diff
 #    "commit this"                -> gated commit with impact message
 #    "loopfix"                    -> autonomous review-fix loop
+#    "migrate this skill"         -> adapt/create skills with eval discipline
 #    "hydrate model config"       -> fill OpenCode custom model parameters
+#    "find issues I can pick up"  -> rank contribution-ready GitHub issues
 ```
 
 Plugin versions are resolved to git commit SHA. Every push produces a new installable version — no manual semver maintenance. Run `claude plugin update <plugin>@skill-forge` (or wait for auto-update) to pull the latest.
@@ -35,7 +39,9 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 |---|---|---|
 | `agent-docs` | Scaffold Agent-First documentation and maintain non-derivable team knowledge | `bootstrap-agent-docs`, `learn`, `remember` |
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
+| `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
 | `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
+| `github-contrib` | Find contribution-ready GitHub issues with claimed status, PR linkage, difficulty, staleness, maintainer engagement, and area signals | `find-contributable-issues` |
 
 ## Skill Catalog
 
@@ -58,12 +64,24 @@ The template payload used by `bootstrap-agent-docs` lives at `plugins/agent-docs
 | `diff-cleanup` | model-invoked | Remove AI-generated bloat (slop comments, dead code, defensive noise, redundant logic) from a feature branch diff |
 | `loopfix` | model-invoked | Autonomous review-fix loop: reviewer subagent finds issues, main agent triages and fixes, repeat until clean |
 
+### `skill-creator`
+
+| Skill | Type | Purpose |
+|---|---|---|
+| `skill-creator` | model-invoked | Adapt upstream skills, create Skill Forge plugin skills, design RED/GREEN scenarios, run eval benchmarks, and tune trigger descriptions |
+
 ### `opencode-customize`
 
 | Skill | Type | Purpose |
 |---|---|---|
 | `hydrate-opencode-models` | model-invoked | Look up model metadata from the Models.dev catalog and map it to OpenCode custom provider model config |
 | `integrate-projects` | model-invoked | Add external codebases to project-level OpenCode `references` so agents can discover and inspect them when relevant |
+
+### `github-contrib`
+
+| Skill | Type | Purpose |
+|---|---|---|
+| `find-contributable-issues` | model-invoked | Investigate open GitHub issues and rank which ones are worth picking up as a contributor |
 
 ## What `agent-docs` Scaffolds
 

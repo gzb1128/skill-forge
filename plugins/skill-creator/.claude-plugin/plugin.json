@@ -1,0 +1,7 @@
+{
+  "name": "skill-creator",
+  "description": "Skill creation tools adapted for Skill Forge — migrate upstream skills, create plugin skills, design RED/GREEN verification, run skill evals, and tune trigger descriptions",
+  "author": {
+    "name": "Skill Forge Team"
+  }
+}

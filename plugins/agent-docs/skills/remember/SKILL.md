@@ -41,30 +41,39 @@ memory only.
 ## Step 2: Audit memory surfaces
 
 Audit every relevant `AGENTS.md` memory surface, not only `## Hidden Knowledge`.
+Apply the quality rubric to `AGENTS.md` content only. Do not search for,
+score, or update `CLAUDE.md` files; this skill's scope is project agent memory.
 
 | Surface | Checks |
 |---------|--------|
-| `Quick Reference` | Commands exist, placeholders are removed, commands are current or explicitly marked as examples |
-| `Architecture` | Acts as an entry map, not a copied source-code encyclopedia |
-| `Key Patterns` | Project-specific, still true, not generic advice, not replaced by mechanical enforcement |
+| `Quick Reference` | Commands/workflows exist, placeholders are removed, commands are current or explicitly marked as examples |
+| `Architecture` | Gives agents a clear entry map, key directories, and module relationships without becoming a copied source-code encyclopedia |
+| `Key Patterns` | Captures project-specific, non-obvious patterns that are still true, not generic advice, not replaced by mechanical enforcement |
 | `Golden Rules` | Still hard rules, not duplicated from `docs/rules/`, not better represented as links |
-| `Hidden Knowledge` | Non-derivable, verified, not stale, not duplicated, correctly placed |
+| `Hidden Knowledge` | Non-derivable gotchas, quirks, critical ordering, or misleading failures; verified, not stale, not duplicated, correctly placed |
 | Sub-package `AGENTS.md` | Still justified by complexity, cross-module constraints, state machines, or special verification needs |
 
-## Step 3: Score issues by health dimension
+## Step 3: Classify issues by quality dimension
 
-Use these dimensions to explain every finding:
+Use these dimensions to explain every finding. Prefer concrete evidence over
+numeric grades; do not produce an overall score.
 
 | Dimension | Meaning |
 |-----------|---------|
+| `Commands/Workflows` | Essential build, test, lint, verify, install, or project workflows are present, current, and have enough context to run safely |
+| `Architecture Clarity` | `AGENTS.md` maps the codebase, entry points, and relationships well enough for a future agent to start in the right place |
+| `Non-Obvious Patterns` | Gotchas, quirks, critical ordering, and "why this is different" knowledge are captured without restating visible code |
+| `Conciseness` | Each line earns prompt space; remove filler, template residue, obvious advice, and long explanations better suited for docs |
+| `Currency` | Paths, commands, symbols, and described behavior are still true |
+| `Actionability` | A future agent can follow the instruction directly with concrete commands, paths, or decision rules |
 | `Signal` | The content is worth prompt space and helps future agents act better |
 | `Placement` | The content lives at the right `AGENTS.md` level and section |
-| `Currency` | Paths, commands, symbols, and described behavior are still true |
 | `Non-Derivability` | Hidden knowledge cannot now be inferred from code, git, or existing docs |
 | `Duplication` | The same guidance is not repeated across layers or docs |
-| `Actionability` | A future agent can follow the instruction directly |
 
-Do not produce an overall numeric score. Prefer concrete findings with evidence.
+If a `CLAUDE.md` quality criterion appears useful, map it to one of the
+dimensions above before reporting. Never switch the audit target from
+`AGENTS.md` to `CLAUDE.md`.
 
 ## Step 4: Verify findings
 

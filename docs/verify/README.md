@@ -13,10 +13,12 @@ explicitly planned change. Local `skill-forge` skills should generally be
 deliberate enhancements of the upstream idea: stricter boundaries, clearer
 verification, better failure-mode handling, or repo-specific workflow discipline.
 
-When the `skill-creator` skill is available in the current agent runtime, load
-and follow it before creating a new skill, changing a skill's behavioral
-contract, or designing new RED/GREEN scenarios. If it is not available, continue
-with this verification process and record the gap in the scenario notes.
+This repo now provides a Skill Forge-adapted `skill-creator` plugin. Load and
+follow it before creating a new skill, changing a skill's behavioral contract,
+migrating an upstream skill, or designing new RED/GREEN scenarios. If the skill
+is not installed in the current runtime, read
+`plugins/skill-creator/skills/skill-creator/SKILL.md` directly and record that
+fallback in the scenario notes.
 
 ## Current Status
 
@@ -31,7 +33,8 @@ with this verification process and record the gap in the scenario notes.
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal. New Step 3 post-write validation pending GREEN |
 | `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, runtime-neutral stopping. New quality-reviewer integration + 5-iteration budget pending GREEN |
 | `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics; E covers conditional lenses. D report-only re-run validated confidence scoring, false-positive suppression, comment-accuracy lens, and source-line + context cross-validation (planted silent-failure trap cross-validated against docstring + callers and downgraded Critical→Minor, not parroted); fix-mode and loopfix prompts for D not re-run (rule 5 change is report-path only) |
-| `remember` | — | — | Pre-existing |
+| `remember` | — | — | Pre-existing; AGENTS.md quality-dimension rubric added, RED/GREEN scenario pending |
+| `skill-creator` | Upstream behavior inspected | Basic schema, plugin validation, and package smoke passed | Adapted from official `skill-creator` with Skill Forge plugin layout, `make validate`, RED/GREEN scenario discipline, and Claude plugin frontmatter support. Dedicated behavioral scenario pending |
 
 > GREEN tests use a fallback mode (subagent directly reads `~/.agents/skills/<name>/SKILL.md`
 > instead of using the `skill` tool). Reason: see "Critical Timing Constraint" below.

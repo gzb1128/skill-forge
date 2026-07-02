@@ -15,7 +15,9 @@
 |---|---|---|
 | `agent-docs` | Agent-First documentation scaffolding and knowledge management | `bootstrap-agent-docs`, `learn`, `remember` |
 | `code-quality` | Code review, commit gates, diff cleanup, and autonomous fix loops | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
+| `skill-creator` | Skill creation, upstream skill migration, behavioral evals, and trigger tuning | `skill-creator` |
 | `opencode-customize` | OpenCode configuration customization, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
+| `github-contrib` | GitHub contribution discovery and issue ranking | `find-contributable-issues` |
 
 ## What's here
 
@@ -25,7 +27,9 @@
 | `plugins/agent-docs/` | Documentation plugin: `bootstrap-agent-docs`, `learn`, `remember` |
 | `plugins/agent-docs/templates/` | Template payload rsynced by `bootstrap-agent-docs` |
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
+| `plugins/skill-creator/` | Skill creation plugin: `skill-creator` |
 | `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects` |
+| `plugins/github-contrib/` | GitHub contribution plugin: `find-contributable-issues` |
 | `docs/design/`, `docs/plans/` | Design docs and implementation plans for this repo |
 | `docs/verify/` | RED→GREEN→REFACTOR skill test process and scenario build scripts |
 | `Makefile` | `validate` + `test-skills-link/unlink/status` verification entry points |
@@ -45,7 +49,7 @@
 
 ## Plugin Marketplace
 
-This repo IS the marketplace. `.claude-plugin/marketplace.json` lists three plugins: `agent-docs`, `code-quality`, and `opencode-customize`.
+This repo IS the marketplace. `.claude-plugin/marketplace.json` lists five plugins: `agent-docs`, `code-quality`, `skill-creator`, `opencode-customize`, and `github-contrib`.
 
 ### Versioning: git commit SHA, not semver
 
@@ -70,7 +74,9 @@ done
 claude plugin marketplace add "$(pwd)"
 claude plugin install agent-docs@skill-forge
 claude plugin install code-quality@skill-forge
+claude plugin install skill-creator@skill-forge
 claude plugin install opencode-customize@skill-forge
+claude plugin install github-contrib@skill-forge
 claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
 ```
 

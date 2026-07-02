@@ -36,6 +36,20 @@
       "homepage": "https://github.com/gzb1128/skill-forge"
     },
     {
+      "name": "skill-creator",
+      "description": "Skill creation tools — migrate upstream skills, create and improve plugin skills, design RED/GREEN verification, run skill evals, and tune trigger descriptions",
+      "author": {
+        "name": "Skill Forge Team"
+      },
+      "category": "productivity",
+      "source": {
+        "source": "git-subdir",
+        "url": "gzb1128/skill-forge",
+        "path": "plugins/skill-creator"
+      },
+      "homepage": "https://github.com/gzb1128/skill-forge"
+    },
+    {
       "name": "opencode-customize",
       "description": "OpenCode customization tools — hydrate custom provider model metadata and integrate external project directories with references",
       "author": {

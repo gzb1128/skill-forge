@@ -154,21 +154,44 @@ Decision: initialize the render engine lazily to avoid cold-start latency on
 the first request. Alternative considered was eager init via init(); rejected
 because it moved cost to process startup.
 EOF
+# Valid INDEX (keeps design/ off the INDEX-Health flag list).
+cat > docs/design/INDEX.md <<'EOF'
+# Design Docs Index
+
+| Date | Document | Topic | When to Read |
+|------|----------|-------|--------------|
+| 2026-06-01 | [engine-lazy-init-design.md](2026-06-01-engine-lazy-init-design.md) | Lazy vs eager engine init | When touching engine startup |
+EOF
 
 # ── docs/plans/ ─────────────────────────────────────────────────────────────
-# PLANTED: missing YYYY-MM-DD- prefix (Naming violation).
+# PLANTED: missing YYYY-MM-DD- prefix (Naming violation). The category itself
+# has a valid INDEX, so only the filename is the defect — not INDEX Health.
 cat > docs/plans/feature-x.md <<'EOF'
 # Feature X Plan
 
 Steps to deliver feature X.
 EOF
+cat > docs/plans/INDEX.md <<'EOF'
+# Plans Index
+
+| Date | Document | Feature | When to Use |
+|------|----------|---------|-------------|
+| _undated_ | [feature-x.md](feature-x.md) | Feature X | Reference only (naming needs fixing) |
+EOF
 
 # ── docs/rules/ ─────────────────────────────────────────────────────────────
-# Valid rule doc. No-Action.
+# Valid rule doc + valid INDEX. No-Action.
 cat > docs/rules/non-derivability.md <<'EOF'
 # Non-Derivability Principle
 
 Only write down what cannot be derived from code, git history, or existing docs.
+EOF
+cat > docs/rules/INDEX.md <<'EOF'
+# Rules Index
+
+| Document | Description | When to Use |
+|----------|-------------|-------------|
+| [non-derivability.md](non-derivability.md) | Non-derivability filter for all docs | Before writing any documentation |
 EOF
 
 # ── docs/runbooks/ ──────────────────────────────────────────────────────────

@@ -37,7 +37,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 
 | Plugin | Purpose | Skills |
 |---|---|---|
-| `agent-docs` | Scaffold Agent-First documentation and maintain non-derivable team knowledge | `bootstrap-agent-docs`, `learn`, `remember` |
+| `agent-docs` | Scaffold Agent-First documentation and maintain non-derivable team knowledge | `bootstrap-agent-docs`, `learn`, `remember`, `curate` |
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
 | `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
@@ -52,6 +52,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 | `bootstrap-agent-docs` | model-invoked | Generate `AGENTS.md`, `docs/_templates/`, `docs/rules/`, and per-category `INDEX.md` in a target repo |
 | `learn` | manual skill (`/agent-docs:learn`) | Persist non-obvious session insights to the right `AGENTS.md` — verified and approval-gated |
 | `remember` | manual skill (`/agent-docs:remember`) | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
+| `curate` | manual skill (`/agent-docs:curate`) | Audit the `docs/` knowledge base for stale links, encyclopedia bloat, naming drift, and missing indexes — the docs counterpart to `/agent-docs:remember` |
 
 The template payload used by `bootstrap-agent-docs` lives at `plugins/agent-docs/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone needed.
 

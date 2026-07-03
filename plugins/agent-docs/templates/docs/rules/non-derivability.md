@@ -23,6 +23,32 @@ If yes → skip. If no → write it.
 | "Library X v3.2 has a bug where `Close()` panics on nil — wrap with `defer recover()`" | The workaround is undocumented upstream |
 | "Migration SQL must be deployed before the code that uses the new column" | The ordering requirement is operational, not visible in either artifact alone |
 
+### Implicit relationships: derivable vs. coupled-by-convention
+
+A common ambiguity: "two files mirror each other / must change together" — can't
+a capable agent *diff* them and derive that? Sometimes yes. The filter question
+"can it be derived from the code" is **capability-dependent** and therefore the
+wrong test for this category. Use this objective criterion instead:
+
+> An insight is **implicit-relationship knowledge** (worth recording) when acting
+> on it requires reading **two or more artifacts PLUS a convention that is not
+> written in any single file** — a coupling the compiler/linter/git does not
+> enforce, a name mapping that only humans maintain, or an ordering that no one
+> artifact states.
+
+Three sub-types belong here:
+
+| Sub-type | Example | Why single-artifact reading is insufficient |
+|----------|---------|---------------------------------------------|
+| **Coupling convention** | "`module-a/types.go` and `module-b/types.go` mirror each other; change both" | A diff shows they *currently* match, not that they *must* stay matched — the "must" is convention |
+| **Misleading mapping** | "Error 'cannot find provider' points at config but the fix is in `wire.go`" | The error names the wrong artifact; the real cause is in a different file the error never mentions |
+| **Cross-artifact ordering** | "Migration SQL must land before the code reading the new column" | Neither the SQL nor the code states the ordering; it lives in the deployment procedure |
+
+By contrast, a single `grep`, a single `git log -p`, or reading one file end-to-end
+yields the answer → that stays **derivable** and is still skipped. The bar is
+"requires ≥2 artifacts + an unwritten convention," which is objective and does
+not weaken as models get smarter.
+
 ### ❌ Skip recording (derivable)
 
 | "Insight" | Why it's derivable |

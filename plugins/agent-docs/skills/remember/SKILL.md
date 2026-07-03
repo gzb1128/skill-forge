@@ -87,9 +87,20 @@ Before proposing a cleanup, verify it:
 | Contradicted behavior | Inspect source or run the smallest relevant check |
 | Duplicate content | Cite both locations |
 | Now-derivable hidden knowledge | Cite the code, docs, git history, or AGENTS.md main-body section that now covers it |
+| Memory assertion backed by a linked doc | Open that one linked doc and confirm it still supports the assertion |
 
 If a finding cannot be verified, label it `Needs user input` instead of treating
 it as fact.
+
+**Scope guard — linked docs are a verification method, not an audit target.**
+Open only the specific doc a memory assertion links to, confirm it still supports
+that assertion, and stop. Do **not** enumerate `docs/`, score doc quality, or
+traverse cross-links; doc-level quality (including redundancy) is owned by a
+separate audit, not `/agent-docs:remember`. The economics differ — `AGENTS.md`
+is prompt-resident and judged by Signal / Conciseness / Non-Derivability, while
+`docs/` is pull-based and may legitimately be longer or more detailed — but
+both stay subject to the repo's non-derivability rule. The only question here is
+whether the linked doc still backs the memory claim that cites it.
 
 ## Step 5: Classify actions
 
@@ -101,6 +112,14 @@ it as fact.
 | `Duplicates` | Exact or overlapping guidance appears in multiple places |
 | `Conflicts` | Two files or sections contradict each other and need user judgment |
 | `No Action Needed` | Content is valid, placed correctly, and useful |
+
+**Rewrite heuristic — prefer stable references over line numbers.** When memory
+points at source, prefer stable references (symbol name, package path, heading
+anchor, or file) over line numbers. Line numbers drift on every unrelated edit,
+so a stale `file.go:42` is a recurring false signal. If a cited line number no
+longer points at the named symbol, propose a `Rewrite` to the symbol/package form
+(e.g. `the Run method in deploy_v3.go`) rather than just bumping the number —
+bumping only fixes it until the next edit.
 
 Do not auto-delete, auto-merge conflicts, or apply cleanups without approval.
 

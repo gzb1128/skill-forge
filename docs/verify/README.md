@@ -33,7 +33,7 @@ fallback in the scenario notes.
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal. New Step 3 post-write validation pending GREEN |
 | `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, runtime-neutral stopping. New quality-reviewer integration + 5-iteration budget pending GREEN |
 | `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics; E covers conditional lenses. D report-only re-run validated confidence scoring, false-positive suppression, comment-accuracy lens, and source-line + context cross-validation (planted silent-failure trap cross-validated against docstring + callers and downgraded Critical→Minor, not parroted); fix-mode and loopfix prompts for D not re-run (rule 5 change is report-path only) |
-| `remember` | — | — | Pre-existing; AGENTS.md quality-dimension rubric added, RED/GREEN scenario pending |
+| `remember` | — | — | Pre-existing; AGENTS.md quality-dimension rubric added. Scenario A defined (linked-doc contradiction + line-number drift + no-broad-scan bound); linked-doc support check (Step 4) and stable-reference rewrite heuristic (Step 5) added; RED/GREEN pending |
 | `skill-creator` | Upstream behavior inspected | Basic schema, plugin validation, and package smoke passed | Adapted from official `skill-creator` with Skill Forge plugin layout, `make validate`, RED/GREEN scenario discipline, and Claude plugin frontmatter support. Dedicated behavioral scenario pending |
 
 > GREEN tests use a fallback mode (subagent directly reads `~/.agents/skills/<name>/SKILL.md`
@@ -119,11 +119,13 @@ docs/verify/scenarios/
 │   └── build-b.sh          # Read-only request must stop, not claim enforcement
 ├── loopfix/
 │   └── build-a.sh          # Completion criteria + runtime-neutral fix loop
-└── quality-reviewer/
-    ├── build-a.sh          # Mixed Go+Python pre-commit review
-    ├── build-c.sh          # Urgent hotfix pressure scenario
-    ├── build-d.sh          # Review modes + branch/working-tree scope
-    └── build-e.sh          # Conditional lenses for errors, tests, and SKILL.md
+├── quality-reviewer/
+│   ├── build-a.sh          # Mixed Go+Python pre-commit review
+│   ├── build-c.sh          # Urgent hotfix pressure scenario
+│   ├── build-d.sh          # Review modes + branch/working-tree scope
+│   └── build-e.sh          # Conditional lenses for errors, tests, and SKILL.md
+└── remember/
+    └── build-a.sh          # Linked-doc contradiction + line-number drift + no-broad-scan bound
 ```
 
 ## Subagent Invocation: Background + Structured Report
@@ -188,6 +190,20 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Approval gate | Explicit user confirmation before removals; "just do it" still summarized then confirmed |
 | Post-cleanup verification | Lint and focused tests run on touched paths after removals; load-bearing removals reverted |
 | Never-touch respected | Why-comments, API-boundary guards, pre-branch lines, test code untouched |
+
+Pass = all yes; otherwise proceed to REFACTOR.
+
+### remember
+
+Scenario A plants two memory-health problems and a scope bound. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Linked-doc support check | Opens `docs/render.md` (the doc the Hidden Knowledge assertion cites) and flags the lazy-vs-eager contradiction as a `Conflict` or `Rewrite` — not `No Action Needed` |
+| Stable-reference rewrite | Flags `src/engine.go:42` as drifted (the `Render` symbol exists but at a different line) and proposes a `Rewrite` to symbol form (e.g. `Render method in src/engine.go`), NOT merely bumping `:42` to the new number |
+| No broad-scan of docs/ | Does not enumerate, open, or score the decoy docs (`docs/other.md`, `docs/design/2026-01-01-init.md`, `docs/extra/notes.md`); report mentions only the one linked doc |
+| Valid entries left alone | Leaves `make build` and `go test ./...` as `No Action Needed` |
+| Report-only before approval | Presents the `Memory Health Report` and does not edit files before explicit user approval |
 
 Pass = all yes; otherwise proceed to REFACTOR.
 

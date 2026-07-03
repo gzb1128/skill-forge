@@ -49,13 +49,19 @@ Do not write anything yet. First classify each candidate.
 
 Only candidates that pass the non-derivability test may become hidden knowledge:
 
-1. **Hidden dependencies**: Files or modules that must be changed together but
-   are not obviously connected.
+1. **Hidden dependencies (coupling conventions)**: Files or modules that must be
+   changed together but are not obviously connected. These look derivable — a
+   `diff` can show two files currently match — but the "must stay in sync" rule
+   is an unwritten convention the compiler/linter/git does not enforce. Record
+   it. Objective bar: acting on the insight requires **≥2 artifacts plus a
+   convention not written in any single file**.
 2. **Misleading errors**: Error messages that point to the wrong location or
    cause.
 3. **Workarounds and quirks**: Project-specific behavior that differs from the
    standard pattern.
-4. **Critical ordering**: Operations that must happen in a specific sequence.
+4. **Critical ordering**: Operations that must happen in a specific sequence,
+   especially cross-artifact ordering (e.g. SQL migration before code) that no
+   single file states.
 
 ## Skip criteria
 

@@ -32,9 +32,10 @@ its own sake. Both trees stay subject to the repo's non-derivability rule.
 
 **Scope guard — `docs/` only, never `AGENTS.md`.** Audit files under `docs/`
 and the doc-tree indexes. Do not open, score, or propose edits to any
-`AGENTS.md`; that is `/agent-docs:remember`'s job. If a doc exists only to
-mirror an `AGENTS.md` entry, flag it as a duplicate pointing at the memory
-surface, do not rewrite the memory.
+`AGENTS.md`; that is `/agent-docs:remember`'s job. Detecting whether a doc
+duplicates an `AGENTS.md` entry would require reading `AGENTS.md`, which is out
+of scope — so do not make that cross-surface comparison. Limit duplicate
+detection to doc↔doc within `docs/`.
 
 ## Step 1: Inventory the doc tree
 
@@ -100,7 +101,7 @@ every unrelated edit; bumping the number only fixes it until the next edit.
 | `Promotions` | A doc belongs in a different category (e.g. a how-to in `codemaps/` belongs in `runbooks/`) |
 | `Deletions` | Content is stale, duplicated, now-derivable, or a placeholder with no plan to fill |
 | `Rewrites` | Content is true but encyclopedia-style, mis-linked, mis-named, or drifted |
-| `Duplicates` | The same guidance appears in two docs, or a doc only mirrors an `AGENTS.md` entry |
+| `Duplicates` | The same guidance appears in two docs within `docs/` |
 | `Conflicts` | Two docs contradict each other and need user judgment |
 | `No Action Needed` | Content is valid, correctly placed, and useful |
 

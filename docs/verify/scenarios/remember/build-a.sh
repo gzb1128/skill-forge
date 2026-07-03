@@ -57,7 +57,7 @@ EOF
 # Real source. Render() lives around line 17 — NOT line 42. The symbol exists;
 # only the line number cited in AGENTS.md is wrong.
 cat > src/engine.go <<'EOF'
-package main
+package engine
 
 import "fmt"
 
@@ -78,16 +78,6 @@ func (e *Engine) Render(t string) (string, error) {
 		return "", fmt.Errorf("empty template")
 	}
 	return t, nil
-}
-
-func main() {
-	e := New()
-	out, err := e.Render("hello")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(out)
 }
 EOF
 

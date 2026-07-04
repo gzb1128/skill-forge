@@ -236,6 +236,34 @@ When writing new rules, follow the `writing-skills` CSO rules:
 - Technical details go in the SKILL.md body; keep single files under 500 lines
 - Large supplementary material goes into a `references/` subdirectory, linked from the top level of SKILL.md
 
+## Multi-Pass Review Convergence (learned from #23, #24)
+
+A single review pass — even a confident, high-quality one — systematically misses
+defects that a *different angle* on a later pass catches. This is not reviewer
+incompetence; it is the nature of single-angle review. Two PRs in this repo
+confirmed the pattern empirically:
+
+| PR | Pass 1 missed | Pass 2+ caught | The angle that was missing |
+|---|---|---|---|
+| #23 `remember` | Scenario's `make build` target was broken (`package main` under `src/` collided with the directory on `go build ./...`) | Reviewer actually *ran* the build target instead of only `bash -n` | Execute the fixture's commands, don't just syntax-check the script |
+| #24 `curate` | INDEX Health rule was categorical ("every category needs an INDEX") but the scenario planted content in 5 categories with only 1 INDEX, so a compliant agent would over-flag — GREEN was unsatisfiable | Reviewer cross-checked the SKILL rule's *wording* against the scenario's *planted state* for mutual consistency | Compare rule semantics to fixture state, not just "does the fixture build" |
+
+**Operational rule for scenario/skill PRs:** run at least two review passes with
+*deliberately different* emphasis:
+
+1. **Build-and-execute pass** — actually run every command the scenario/script
+   declares valid (`make build`, `go test ./...`, `go vet`). `bash -n` only
+   checks syntax; it does not catch "the Makefile target is structurally broken."
+2. **Contract-vs-fixture pass** — read each SKILL rule's wording, then check the
+   fixture plants a state that rule would act on *and only that state*. A rule
+   phrased categorically must have exactly one categorical violation planted;
+   a rule with N sub-conditions needs N corresponding signals. Mismatch =
+   unsatisfiable GREEN.
+
+A pass that only does one angle will miss the other family of defects. The cost
+of a second pass is minutes; the cost of merging an unsatisfiable GREEN is a
+scenario that silently never validates the skill.
+
 ## Complete Workflow Example
 
 Using the `diff-cleanup` skill as an example:

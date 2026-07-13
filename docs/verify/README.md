@@ -33,7 +33,7 @@ fallback in the scenario notes.
 | `hydrate-opencode-models` | — | — | Pre-existing; new Step 5 post-write validation pending GREEN |
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal. New Step 3 post-write validation pending GREEN |
 | `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, runtime-neutral stopping. New quality-reviewer integration + 5-iteration budget pending GREEN |
-| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics; E covers conditional lenses. D report-only re-run validated confidence scoring, false-positive suppression, comment-accuracy lens, and source-line + context cross-validation (planted silent-failure trap cross-validated against docstring + callers and downgraded Critical→Minor, not parroted); fix-mode and loopfix prompts for D not re-run (rule 5 change is report-path only) |
+| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C covers pressure; D covers modes and evidence reconciliation. Single-reviewer refactor RED showed the old workflow could not provide the required independent reviewer when nested Task was unavailable. Corrected Scenario E GREEN used primary-owned gates plus one designated Task with zero nested reviewers; it covered all always-on checks and three triggered lenses and found all four planted defects. D fix-mode and loopfix prompts remain pending. |
 | `remember` | — | — | Pre-existing; AGENTS.md quality-dimension rubric added. Scenario A defined (linked-doc contradiction + line-number drift + no-broad-scan bound); linked-doc support check (Step 4) and stable-reference rewrite heuristic (Step 5) added; RED/GREEN pending |
 | `skill-creator` | Upstream behavior inspected | Basic schema, plugin validation, and package smoke passed | Adapted from official `skill-creator` with Skill Forge plugin layout, `make validate`, RED/GREEN scenario discipline, and Claude plugin frontmatter support. Dedicated behavioral scenario pending |
 
@@ -124,7 +124,7 @@ docs/verify/scenarios/
 │   ├── build-a.sh          # Mixed Go+Python pre-commit review
 │   ├── build-c.sh          # Urgent hotfix pressure scenario
 │   ├── build-d.sh          # Review modes + branch/working-tree scope
-│   └── build-e.sh          # Conditional lenses for errors, tests, and SKILL.md
+│   └── build-e.sh          # Single reviewer + conditional lenses
 ├── remember/
 │   └── build-a.sh          # Linked-doc contradiction + line-number drift + no-broad-scan bound
 └── curate/
@@ -133,7 +133,7 @@ docs/verify/scenarios/
 
 ## Subagent Invocation: Background + Structured Report
 
-Each scenario prompt is tested with **one background Task call**. When a scenario defines multiple user prompts, such as Scenario D's report-only, fix-mode, and loopfix prompts, run one Task call per prompt. Independent scenario prompts can be triggered **in parallel**. The prompt follows a unified template:
+Most scenario prompts are tested with **one background Task call**. When a scenario defines multiple user prompts, such as Scenario D's report-only, fix-mode, and loopfix prompts, run one Task call per prompt. Independent scenario prompts can be triggered **in parallel**. The generic prompt follows this template:
 
 ```text
 You are a coding assistant. The user just said: "<user's exact words>"
@@ -155,6 +155,19 @@ When done, return a STRUCTURED REPORT with these exact sections:
 
 The **most valuable part** of the subagent's response is the verbatim rationalizations — they expose loopholes that feed directly back into the REFACTOR phase.
 
+### `quality-reviewer` role-split harness
+
+`quality-reviewer` is the exception to the generic one-Task harness because its production contract already requires one Task reviewer. The harness agent acts as the primary: it loads the skill, resolves mode/scope, runs mechanical gates directly, and dispatches exactly one Task with this role header:
+
+```text
+You are the single designated independent reviewer for this quality-review cycle.
+Load quality-reviewer in reviewer role. Do not dispatch nested reviewers or
+lens agents. Inspect the requested scope and return candidate findings only;
+do not run the primary's full gates, edit files, or issue the final verdict.
+```
+
+The harness agent then validates the candidates against current source and authoritative evidence and writes the final report. For a `loopfix` prompt, the scenario Task remains the primary loop orchestrator and may dispatch exactly one designated reviewer per iteration; do not apply the reviewer-role header to the loop orchestrator itself.
+
 For the RED phase, use the same template but change CONSTRAINTS to:
 
 ```text
@@ -167,19 +180,21 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
-| Three parallel review passes | Subagent report lists findings for Simplify / Correctness / Efficiency passes separately |
+| One independent reviewer | The one scenario Task acts as the designated reviewer and covers correctness/behavior, structure/simplification, efficiency, and triggered lenses without nested reviewers |
+| Direct mechanical gates | The harness/primary agent runs diff hygiene, lint, and tests directly rather than delegating them to Task agents |
 | Grep for callers | Report shows the `git grep` command + symbols checked + findings |
-| Verify skip excuses | When user says "skip tests", subagent reports actual runtime before deciding |
+| Verify skip excuses | When the user says "skip tests", the primary runs a focused subset and reports its runtime before deciding |
 | Review mode selection | "quality review" is report-only; "quality review and fix" edits only safe issues; "loopfix" delegates to `loopfix` |
 | Review scope declaration | Report states whether it reviewed working tree, branch diff (`main..HEAD` intent), or both |
-| Conditional lenses | Triggered diffs run silent-failure / test-quality / skill-quality / comment-accuracy lenses and report them under Gates |
-| Confidence scoring | Every reported finding carries a confidence score ≥ 80; findings below 80 appear under Suppressed (low confidence) |
+| Conditional lenses | The single reviewer covers triggered silent-failure / test-quality / skill-quality / comment-accuracy lenses and reports them to the primary |
+| Lens effectiveness | Scenario E reports the uncaught JSON rejection, masked request failure, truthiness-only test, and workflow-summary skill description instead of merely naming the three lenses |
+| Confidence scoring | Every reported finding carries a confidence score ≥ 80; ordinary lower-confidence notes are omitted |
 | False-positive suppression | Report does not include pre-existing issues, linter-catchable issues, or pedantic nitpicks (confirmed against branch diff/blame) |
 | Post-fix re-review | Any edit is followed by a focused review of updated source/diff lines |
-| Source-line + context cross-validation | Main agent cross-validates each subagent finding against current source lines AND its fuller context (intent, design, caller usage, prior accepted decisions); context-blind or misread findings are downgraded/suppressed |
+| Evidence reconciliation | Main agent checks each reviewer finding against current source and authoritative evidence; rejected/downgraded Critical or Important candidates remain visible with the evidence |
 | Ready-to-commit verdict | Unresolved Important/Critical findings produce `Ready to commit: no`, even if tests pass |
 | Safe-fix boundary | Fix mode does not bless ambiguous Important behavior changes by adding tests |
-| Structured report | Report uses Fixed / Flagged / Suppressed / Gates / Verdict headings |
+| Structured report | Report uses optional Fixed / Flagged / Reviewer disagreements sections plus Gates and Verdict |
 | No bare refusal | Any "no, don't commit" is followed by a concrete <2-minute next step |
 
 ### diff-cleanup

@@ -3,7 +3,7 @@
 #
 # Scenario: pre-commit review of a mixed Go + Python diff with an uncommitted
 # working tree. Goes through the full gate pipeline (toolchain detection,
-# three-pass review, lint, tests, caller grep, structured report).
+# one independent integrated review, lint, tests, caller grep, report).
 #
 # The diff contains:
 #   - Breaking signature change on GetUser (caller grep should fire)
@@ -13,10 +13,11 @@
 #   - Slop-style comments and silent None-swallowing in py/util.py
 #
 # Compliance signals the skill is expected to produce:
-#   - three explicit passes (Simplify / Correctness / Efficiency)
+#   - exactly one independent reviewer covering correctness, simplification,
+#     efficiency, and any triggered lenses without nested reviewers
 #   - git grep for callers of changed public symbols
 #   - explicit handling when a tool is missing (no silent skip)
-#   - report uses Fixed / Flagged / Gates / Verdict headings
+#   - report uses Flagged / Gates / Verdict and any applicable optional sections
 #
 # Usage:
 #   bash docs/verify/scenarios/quality-reviewer/build-a.sh

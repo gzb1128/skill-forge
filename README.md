@@ -60,7 +60,7 @@ The template payload used by `bootstrap-agent-docs` lives at `plugins/agent-docs
 
 | Skill | Type | Purpose |
 |---|---|---|
-| `quality-reviewer` | model-invoked | Structured quality pass on local changes: three-pass review, diff hygiene, lint, tests, caller check |
+| `quality-reviewer` | model-invoked | Structured local review with one independent reviewer, integrated risk checks, and direct quality gates |
 | `clean-commit` | model-invoked | Run quality gates (via `quality-reviewer`) before committing, with messages that explain WHY |
 | `diff-cleanup` | model-invoked | Remove AI-generated bloat (slop comments, dead code, defensive noise, redundant logic) from a feature branch diff |
 | `loopfix` | model-invoked | Autonomous review-fix loop: reviewer subagent finds issues, main agent triages and fixes, repeat until clean |

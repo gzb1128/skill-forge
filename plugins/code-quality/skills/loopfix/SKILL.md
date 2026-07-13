@@ -61,7 +61,7 @@ digraph loopfix {
 
 1. Re-read the approved design, plan, or current user goal. Define the scope boundary and fill all five Completion Criteria fields before fixing.
 2. Implement or repair the next in-scope slice yourself.
-3. Dispatch at least one reviewer subagent scoped to the goal, diff, tests, and risk areas. **The reviewer subagent must follow the `quality-reviewer` discipline**: three independent passes (Simplify, Correctness, Efficiency), any triggered conditional lenses, mechanical gates, caller grep for changed public symbols, and the three-filter finding validation (source-line and context cross-validation, confidence ≥ 80, false-positive suppression). Do not accept freeform review — load `quality-reviewer` in the subagent prompt and require its report format. This is how loopfix and quality-reviewer stay consistent: the same review bar applies inside and outside the loop.
+3. Dispatch exactly one reviewer subagent per iteration, scoped to the goal, diff, tests, and risk areas. Explicitly identify it as the designated reviewer and require it to load `quality-reviewer`, use the integrated rubric and triggered lenses, validate findings with evidence and confidence ≥ 80, and return concise candidates without spawning nested reviewers. The main agent owns direct mechanical gates and the final report. This keeps the same review bar inside and outside the loop without multiplying identical context.
 4. Report the review result in the conversation: findings, accepted fixes, rejected findings, deferred audit items, and next action.
 5. Fix accepted current-goal issues. Verify with the smallest meaningful command first, then broader checks when risk warrants it.
 6. Repeat review after meaningful code, test, behavior, schema, API, UX, or config changes.
@@ -116,7 +116,7 @@ Final response must include:
 | Excuse | Reality |
 |---|---|
 | "Bounded review-and-fix pass, not an open-ended loop" | Loopfix is bounded by current-goal cleanliness, not by one pass. |
-| "Use one reviewer/subagent" | Use at least one per iteration. Meaningful changes require another review. |
+| "One reviewer is enough forever" | Use exactly one per iteration. Meaningful changes require a fresh iteration, not parallel fan-out. |
 | "Reviewer noise wastes time" | Triage noise; do not remove the review loop. |
 | "Asking the user is safer" | Main agent owns normal triage. Defer broad items and keep moving. |
 | "Fixing all comments is thorough" | Overfixing broad or unrelated items violates scope control. |
@@ -125,7 +125,7 @@ Final response must include:
 ## Common Mistakes
 
 - Letting the subagent decide scope. The main agent must inspect findings and own the decision.
-- Dispatching a freeform reviewer subagent instead of one that follows `quality-reviewer`'s three-pass + lenses discipline. The same review bar applies inside the loop.
+- Dispatching a freeform reviewer instead of the single designated subagent that follows `quality-reviewer`'s integrated rubric and evidence rules.
 - Looping past 5 iterations on a recurring disagreement instead of stopping to surface the conflict.
 - Running review before reconstructing the current goal. Review without scope creates noisy refactors.
 - Treating deferred audit items as hidden work. Report them when found and summarize them at the end.

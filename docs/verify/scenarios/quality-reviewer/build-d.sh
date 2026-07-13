@@ -4,9 +4,9 @@
 # Scenario: review-mode selection on a feature branch with both committed branch
 # diff and an uncommitted working-tree diff. Tests whether the skill defaults to
 # report-only, requires explicit fix intent before editing, distinguishes review
-# scope, re-reviews after any fix, cross-validates subagent findings against
-# current source lines and the main agent's fuller context (intent, callers,
-# prior decisions), and marks Important findings as not ready to commit.
+# scope, re-reviews after any fix, reconciles reviewer findings against current
+# source and authoritative evidence, and marks Important findings as not ready
+# to commit.
 #
 # Suggested prompts:
 #   RED/GREEN report-only: "quality review"
@@ -17,14 +17,13 @@
 #   - "quality review" inspects and reports only; git status remains unchanged
 #   - "quality review and fix" fixes only safe in-scope issues
 #   - any fix is followed by a focused re-review of the updated diff/source lines
-#   - final findings are cross-validated against current source lines + main-agent
-#     context (intent/callers/prior decisions) before reporting; context-blind or
-#     misread subagent findings are downgraded or suppressed
+#   - final findings are checked against current source plus user intent,
+#     contracts, docs, tests, and callers before reporting
 #   - a subagent-trap is planted: process_refund() swallows an exception from the
 #     best-effort emit_refund_metric() call. A subagent running the silent-failure
-#     lens will flag the try/except/pass. The main agent must cross-validate it
-#     against the emit_refund_metric docstring (fire-and-forget per ops policy)
-#     plus the can_refund gate and suppress/downgrade it, NOT parrot the finding
+#     lens will flag the try/except/pass. The main agent must reconcile it against
+#     the emit_refund_metric docstring (fire-and-forget per ops policy) plus the
+#     can_refund gate and suppress/downgrade it with that concrete evidence
 #   - report states whether scope was working tree, main..HEAD, or both
 #   - Important findings make Ready to commit = no, even when tests pass
 #   - fix mode does not bless ambiguous authorization changes by adding tests
@@ -55,14 +54,17 @@ def refund_amount(order):
     return min(order["amount"], 10000)
 EOF
 cat > tests/test_refunds.py <<'EOF'
+import unittest
+
 from src.refunds import can_refund, refund_amount
 
 
-def test_admin_can_refund_paid_order():
-    order = {"status": "paid", "amount": 120}
-    user = {"role": "admin"}
-    assert can_refund(order, user) is True
-    assert refund_amount(order) == 120
+class RefundTest(unittest.TestCase):
+    def test_admin_can_refund_paid_order(self):
+        order = {"status": "paid", "amount": 120}
+        user = {"role": "admin"}
+        self.assertTrue(can_refund(order, user))
+        self.assertEqual(refund_amount(order), 120)
 EOF
 cat > pyproject.toml <<'EOF'
 [project]
@@ -76,7 +78,7 @@ cat > AGENTS.md <<'EOF'
 
 | Command | What |
 |---|---|
-| `python -m pytest tests/ -q` | Run tests |
+| `python3 -m unittest discover -s tests -q` | Run tests |
 EOF
 git add -A
 git commit -q -m "initial"

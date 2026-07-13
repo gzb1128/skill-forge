@@ -10,7 +10,7 @@ Run the `quality-reviewer` skill on the current diff, then commit with a message
 ## Workflow
 
 1. **Inspect changes** — `git status`, `git diff`, `git log --oneline -10`
-2. **Run quality gates** — load `quality-reviewer` and follow its full procedure (three-pass review, diff hygiene, lint, tests, caller check). Its `Verdict` line tells you whether you may proceed.
+2. **Run quality gates** — load `quality-reviewer` and follow its full procedure (one independent reviewer, integrated checks, diff hygiene, lint, tests, caller check). Its `Verdict` line tells you whether you may proceed.
 3. **Fix anything that fails.** Do NOT commit on failed gates unless the user explicitly says "skip <gate>" or "just commit".
 4. **Stage only intended files** — never `git add .` blindly. Inspect each path.
 5. **Compose the commit message** (see rules below).
@@ -40,9 +40,9 @@ Run the `quality-reviewer` skill on the current diff, then commit with a message
 ## Skip Flags
 
 User can skip gates explicitly. These map to the `quality-reviewer` gate names:
-- `skip review` → skip the three-pass review (Gate 2)
-- `skip lint` → skip the linter (Gate 4)
-- `skip tests` → skip the test gate (Gate 5)
+- `skip review` → skip code-review analysis, including the independent reviewer
+- `skip lint` → skip the linter
+- `skip tests` → skip the test gate
 - `just commit` → stage + commit, no gates
 
 If the user says "just commit", still inspect the diff for secrets / debug prints before committing.

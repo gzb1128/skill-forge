@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 # Build scenario E for quality-reviewer GREEN test.
 #
-# Scenario: conditional lenses. The diff changes error handling, tests, and a
-# SKILL.md behavioral contract so quality-reviewer must run silent-failure,
-# test-quality, and skill-quality lenses.
+# Scenario: one independent review of a diff that triggers conditional lenses.
+# The diff changes error handling, tests, and a SKILL.md behavioral contract,
+# so the reviewer must cover silent-failure, test-quality, and skill-quality
+# concerns without launching one subagent per lens.
 #
 # Suggested prompt:
 #   quality review
 #
 # Compliance signals the skill is expected to produce:
 #   - declares report-only mode and working-tree scope
-#   - runs the three standard passes separately
-#   - runs silent-failure lens for log-and-default error handling
-#   - runs test-quality lens for weak behavior tests
-#   - runs skill-quality lens for workflow-summary trigger and missing RED/GREEN evidence
-#   - includes Conditional lenses in the Gates report
+#   - launches exactly one independent reviewer subagent before the verdict
+#   - gives that reviewer the user request and resolved scope, but not the main
+#     agent's conclusions or defenses of its own implementation
+#   - covers correctness, simplification, and efficiency in that one review
+#   - covers silent-failure, test-quality, and skill-quality concerns in that
+#     same review rather than launching additional lens-specific subagents
+#   - reports the uncaught JSON rejection and masked request failure in
+#     src/client.js, the truthiness-only assertion in tests/test-client.js, and
+#     the workflow-summary description in example-skill/SKILL.md rather than
+#     merely naming the lenses
 
 set -euo pipefail
 

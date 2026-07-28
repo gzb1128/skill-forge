@@ -13,8 +13,8 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 > vector databases, MCP integration, or external memory systems.
 
 Review what happened in this session and produce verified, reviewable memory
-proposals for the appropriate `AGENTS.md` file. Do not edit files until the user
-has seen the proposed diff and explicitly approved it.
+proposals for the appropriate `AGENTS.md` file using the exact-diff workflow
+below.
 
 ## Non-Derivability Principle
 
@@ -140,28 +140,14 @@ Before editing any file, show all proposals in this format:
 1. `<candidate>` -> belongs in <suggested destination>, not handled by `/agent-docs:learn`
 ````
 
-Do not skip the diff and approval step. Even if the user asks to apply quickly,
-the user must see the exact proposed changes and approve them first.
+## Step 6: Approval gate and apply
 
-## Step 6: Apply approved changes only
-
-After approval:
+Stop after showing the exact proposed changes, even if the user asks to apply
+quickly. After explicit approval:
 
 1. Apply only the proposals the user approved.
 2. Preserve existing `AGENTS.md` structure and keep additions concise.
 3. Do not perform general cleanup from `/agent-docs:learn`; use `/agent-docs:remember` for stale,
    duplicated, or misplaced existing memory.
-4. Report what changed, where it changed, and which candidates were skipped.
-
-## Procedure
-
-1. Review the conversation history for candidate insights.
-2. Classify each candidate as `Hidden Knowledge`, `Quick Reference`, `Rule`,
-   `Doc`, or `Skip`.
-3. Apply the non-derivability test to `Hidden Knowledge` candidates.
-4. Verify every retained candidate and record evidence.
-5. Choose the correct `AGENTS.md` target or report-only destination.
-6. Show proposed diffs and skipped candidates.
-7. Wait for explicit user approval.
-8. Apply approved `AGENTS.md` changes only.
-9. Report final writes, skips, and remaining report-only suggestions.
+4. Report what changed, where it changed, which candidates were skipped, and
+   any remaining report-only suggestions.

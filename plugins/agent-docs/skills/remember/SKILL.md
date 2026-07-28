@@ -13,8 +13,7 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 > vector databases, MCP integration, or external memory systems.
 
 Review all `AGENTS.md` files across the project and produce a structured
-`Memory Health Report`. Default behavior is report-only. Do not edit files until
-the user has reviewed the proposals and explicitly approved the changes.
+`Memory Health Report` using the workflow below.
 
 ## What this does
 
@@ -34,15 +33,13 @@ internal/<package>/AGENTS.md
 <other-package>/AGENTS.md
 ```
 
-Do not read or modify personal preference files such as `~/.claude/CLAUDE.md` or
-`~/.config/opencode/AGENTS.md` from this command. This command audits project
-memory only.
+Audit project `AGENTS.md` files only. Exclude personal preference files such as
+`~/.claude/CLAUDE.md` or `~/.config/opencode/AGENTS.md`, every `CLAUDE.md`, and
+any non-project `AGENTS.md`.
 
 ## Step 2: Audit memory surfaces
 
 Audit every relevant `AGENTS.md` memory surface, not only `## Hidden Knowledge`.
-Apply the quality rubric to `AGENTS.md` content only. Do not search for,
-score, or update `CLAUDE.md` files; this skill's scope is project agent memory.
 
 | Surface | Checks |
 |---------|--------|
@@ -71,9 +68,8 @@ numeric grades; do not produce an overall score.
 | `Non-Derivability` | Hidden knowledge cannot now be inferred from code, git, or existing docs |
 | `Duplication` | The same guidance is not repeated across layers or docs |
 
-If a `CLAUDE.md` quality criterion appears useful, map it to one of the
-dimensions above before reporting. Never switch the audit target from
-`AGENTS.md` to `CLAUDE.md`.
+Map any additional memory-quality criterion to a dimension above before
+reporting rather than changing the audit target.
 
 ## Step 4: Verify findings
 
@@ -121,8 +117,6 @@ longer points at the named symbol, propose a `Rewrite` to the symbol/package for
 (e.g. `the Run method in deploy_v3.go`) rather than just bumping the number —
 bumping only fixes it until the next edit.
 
-Do not auto-delete, auto-merge conflicts, or apply cleanups without approval.
-
 ## Step 6: Present the report
 
 Output a structured report:
@@ -168,23 +162,9 @@ knowledge.
 
 ## Step 7: User approval
 
-- Present all proposals before making any changes.
-- Do not modify files without explicit user approval.
-- The user may approve all, approve some, reject all, or ask for revisions.
-- For conflicts, ask which version is correct before editing.
-- Apply only approved changes.
-
-## Procedure
-
-1. Find and read all project `AGENTS.md` files.
-2. Audit `Quick Reference`, `Architecture`, `Key Patterns`, `Golden Rules`,
-   `Hidden Knowledge`, and sub-package `AGENTS.md` justification.
-3. Verify each finding with paths, search, command output, source inspection, or
-   an explicit `Needs user input` label.
-4. Classify findings as `Promotions`, `Deletions`, `Rewrites`, `Duplicates`,
-   `Conflicts`, or `No Action Needed`.
-5. Present the full `Memory Health Report`.
-6. Wait for explicit user approval.
-7. Apply approved changes only.
-8. Report applied changes, rejected proposals, unresolved conflicts, and residual
-   risks.
+- Stop after presenting the report. Modify only proposals the user explicitly
+  approves; they may approve any subset, reject all, or request revisions.
+- Never auto-delete or auto-merge conflicts. Ask which version is correct before
+  editing.
+- After applying approved changes, report applied changes, rejected proposals,
+  unresolved conflicts, and residual risks.

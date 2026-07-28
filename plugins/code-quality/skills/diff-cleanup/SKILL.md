@@ -7,8 +7,6 @@ description: Use when the user asks to remove AI slop, clean up AI-generated cod
 
 Remove AI-generated bloat from a feature branch's diff.
 
-You already have good instincts for what looks like slop (restating-the-code comments, dead type-system-redundant guards, manual loops that reflow a one-liner). The three rules below address what agents skip without guidance, and the procedure adds a preview-then-verify gate so nothing is removed blindly.
-
 ## Three required rules
 
 ### 1. Diff against the base branch, not the working tree

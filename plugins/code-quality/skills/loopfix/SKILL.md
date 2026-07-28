@@ -31,34 +31,6 @@ If the checklist cannot be satisfied without a human decision, report the blocke
 
 ## Workflow
 
-```dot
-digraph loopfix {
-    "Current goal defined?" [shape=diamond];
-    "Define completion criteria" [shape=box];
-    "Work locally" [shape=box];
-    "Dispatch reviewer subagent" [shape=box];
-    "Report findings and triage" [shape=box];
-    "Current-goal issues?" [shape=diamond];
-    "Fix in scope" [shape=box];
-    "Fresh verification" [shape=box];
-    "Deferred audit list only?" [shape=diamond];
-    "Final summary" [shape=box];
-
-    "Current goal defined?" -> "Define completion criteria" [label="yes"];
-    "Current goal defined?" -> "Final summary" [label="blocked"];
-    "Define completion criteria" -> "Work locally";
-    "Work locally" -> "Dispatch reviewer subagent";
-    "Dispatch reviewer subagent" -> "Report findings and triage";
-    "Report findings and triage" -> "Current-goal issues?";
-    "Current-goal issues?" -> "Fix in scope" [label="yes"];
-    "Fix in scope" -> "Fresh verification";
-    "Fresh verification" -> "Dispatch reviewer subagent";
-    "Current-goal issues?" -> "Deferred audit list only?" [label="no"];
-    "Deferred audit list only?" -> "Final summary" [label="yes"];
-    "Deferred audit list only?" -> "Report findings and triage" [label="no"];
-}
-```
-
 1. Re-read the approved design, plan, or current user goal. Define the scope boundary and fill all five Completion Criteria fields before fixing.
 2. Implement or repair the next in-scope slice yourself.
 3. Dispatch exactly one reviewer subagent per iteration, scoped to the goal, diff, tests, and risk areas. Explicitly identify it as the designated reviewer and require it to load `quality-reviewer`, use the integrated rubric and triggered lenses, validate findings with evidence and confidence ≥ 80, and return concise candidates without spawning nested reviewers. The main agent owns direct mechanical gates and the final report. This keeps the same review bar inside and outside the loop without multiplying identical context.

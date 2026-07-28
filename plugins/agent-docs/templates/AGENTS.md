@@ -1,6 +1,6 @@
 # {{PROJECT_NAME}}
 
-> **Agent-First Engineering**: This repository follows [OpenAI Harness Engineering](docs/rules/openai-harness-engineering.md) — 
+> **Agent-First Engineering**: This repository follows [OpenAI Harness Engineering](docs/rules/openai-harness-engineering.md) —
 > "Human at the helm. Agents execute." The knowledge base is structured for agent readability with progressive disclosure.
 
 This file is the entry point for any AI coding agent working in this repository.
@@ -42,7 +42,7 @@ For deeper context, follow the links — don't try to absorb everything upfront.
 | Look up a coding standard | [rules/INDEX.md](docs/rules/INDEX.md) |
 | Find an architecture map | [codemaps/INDEX.md](docs/codemaps/INDEX.md) |
 
-**More**: [Code map index](docs/codemaps/INDEX.md) | [Coding rules](docs/rules/INDEX.md) | [Troubleshoot](docs/troubleshoot/INDEX.md) | [Runbooks](docs/runbooks/INDEX.md) | [Library refs](docs/lib/INDEX.md) | [Design docs](docs/design/INDEX.md) | [Plans](docs/plans/INDEX.md) | [Verify index](docs/verify/INDEX.md) | [Doc templates](docs/_templates/)
+**Other docs**: [Designs](docs/design/INDEX.md) | [Plans](docs/plans/INDEX.md) | [Templates](docs/_templates/)
 
 ## Key Patterns
 
@@ -55,26 +55,15 @@ For deeper context, follow the links — don't try to absorb everything upfront.
 
 ## Golden Rules
 
-<!-- TODO: 3-7 hard rules that must NOT be broken. These are the rules that agents
-     are most likely to violate without explicit reminders. -->
-1. Never hand-edit generated code — regenerate
-2. Tests live next to source
-3. Follow existing patterns before inventing new ones
-4. Update the relevant codemap/INDEX when you add new modules
+<!-- TODO: Add only 3-7 repo-specific hard rules that agents are likely to
+     violate without an explicit reminder. Delete this comment when complete. -->
 
 ## Document Creation Rules
 
-> ⚠️ **CRITICAL**: Before creating ANY documentation, read [docs/rules/non-derivability.md](docs/rules/non-derivability.md), [docs/rules/document-conventions.md](docs/rules/document-conventions.md), and [docs/rules/openai-harness-engineering.md](docs/rules/openai-harness-engineering.md).
-
-**Anti-Patterns (RED):**
-- Copying code/config into documentation
-- Writing detailed procedures in INDEX files (INDEX = table of links, not tutorial)
-
-**Correct Pattern (GREEN):**
-- Use tables to map concepts → file paths
-- Link to source files instead of copying content
-- Record only what cannot be derived from code, git history, or existing docs
-- INDEX files: ~30 lines of tables + quick navigation
+Before creating documentation, apply the [non-derivability filter](docs/rules/non-derivability.md)
+and [document conventions](docs/rules/document-conventions.md). Consult
+[OpenAI Harness Engineering](docs/rules/openai-harness-engineering.md) when
+changing codemaps, `AGENTS.md`, skills, or tool descriptions.
 
 ## Development Workflow
 

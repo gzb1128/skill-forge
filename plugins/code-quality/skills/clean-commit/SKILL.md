@@ -1,6 +1,6 @@
 ---
 name: clean-commit
-description: Use when about to commit code changes, when the user says "commit", "commit this", or after finishing a feature/bugfix and changes are ready to land. Ensures quality gates pass before producing a scoped commit message that explains WHY (business impact), not WHAT (code changes)
+description: Use when the user asks to commit local code changes, or after a feature or bugfix is ready to land.
 ---
 
 # Clean Commit

@@ -12,9 +12,8 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 > docs/ tree. Do not add hooks, background tasks, auto-trigger behavior, runtime
 > storage, vector databases, MCP integration, or external memory systems.
 
-Review the `docs/` knowledge base and produce a structured `Docs Health Report`.
-Default behavior is report-only. Do not edit files until the user has reviewed
-the proposals and explicitly approved the changes.
+Review the `docs/` knowledge base and produce a structured `Docs Health Report`
+using the workflow below.
 
 ## What this does
 
@@ -64,7 +63,7 @@ an existing repo rule — cite the rule when raising a finding.
 
 | Dimension | Checks | Source rule |
 |-----------|--------|-------------|
-| `INDEX Health` | Every `docs/<category>/` has an `INDEX.md`; it is ~30-60 lines; it has a table with a "When to Use" column; no tutorial prose | [document-conventions.md](../../templates/docs/rules/document-conventions.md) §INDEX, [openai-harness-engineering.md](../../templates/docs/rules/openai-harness-engineering.md) L176 |
+| `INDEX Health` | Every `docs/<category>/` has an `INDEX.md`; it is ~30-60 lines; it has a table with a "When to Use" column; no tutorial prose | [document-conventions.md](../../templates/docs/rules/document-conventions.md) §INDEX, [openai-harness-engineering.md](../../templates/docs/rules/openai-harness-engineering.md) §Anti-Patterns to Avoid |
 | `Maps-not-Encyclopedias` | Codemaps map concept → file path; no copied function bodies, no config dumps, no code blocks > ~20 lines; link to source instead | [openai-harness-engineering.md](../../templates/docs/rules/openai-harness-engineering.md) §2, [codemaps/INDEX.md](../../templates/docs/codemaps/INDEX.md) §Anti-Patterns |
 | `Link Integrity` | Internal doc→doc and doc→source links resolve; no dangling `](./missing.md)`; source links point at paths that still exist | progressive disclosure (implicit) |
 | `Naming` | Designs/plans use `YYYY-MM-DD-` prefix; files are lowercase-hyphen; no `-v2` suffix (supersede by editing, not versioning) | [document-conventions.md](../../templates/docs/rules/document-conventions.md) §Naming |
@@ -104,8 +103,6 @@ every unrelated edit; bumping the number only fixes it until the next edit.
 | `Duplicates` | The same guidance appears in two docs within `docs/` |
 | `Conflicts` | Two docs contradict each other and need user judgment |
 | `No Action Needed` | Content is valid, correctly placed, and useful |
-
-Do not auto-delete, auto-merge conflicts, or apply cleanups without approval.
 
 ## Step 5: Present the report
 
@@ -153,23 +150,9 @@ knowledge to record.
 
 ## Step 6: User approval
 
-- Present all proposals before making any changes.
-- Do not modify files without explicit user approval.
-- The user may approve all, approve some, reject all, or ask for revisions.
-- For conflicts, ask which version is correct before editing.
-- Apply only approved changes.
-
-## Procedure
-
-1. Inventory the `docs/` tree: categories, INDEX presence, file counts.
-2. Audit each category against the seven docs-specific dimensions, citing the
-   source rule for every finding.
-3. Verify each finding with path checks, source inspection, or an explicit
-   `Needs user input` label.
-4. Classify findings as `Promotions`, `Deletions`, `Rewrites`, `Duplicates`,
-   `Conflicts`, or `No Action Needed`.
-5. Present the full `Docs Health Report`.
-6. Wait for explicit user approval.
-7. Apply approved changes only.
-8. Report applied changes, rejected proposals, unresolved conflicts, and residual
-   risks.
+- Stop after presenting the report. Modify only proposals the user explicitly
+  approves; they may approve any subset, reject all, or request revisions.
+- Never auto-delete or auto-merge conflicts. Ask which version is correct before
+  editing.
+- After applying approved changes, report applied changes, rejected proposals,
+  unresolved conflicts, and residual risks.

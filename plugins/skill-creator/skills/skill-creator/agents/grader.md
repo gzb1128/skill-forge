@@ -40,6 +40,9 @@ For each expectation:
    - **FAIL**: No evidence, or evidence contradicts the expectation, or the evidence is superficial (e.g., correct filename but empty/wrong content)
 3. **Cite the evidence**: Quote the specific text or describe what you found
 
+Use binary verdicts only. When uncertain, mark the expectation FAIL; the burden
+of proof to pass is on the expectation.
+
 ### Step 4: Extract and Verify Claims
 
 Beyond the predefined expectations, extract implicit claims from the outputs and verify them:
@@ -81,22 +84,6 @@ Keep the bar high. The goal is to flag things the eval author would say "good ca
 ### Step 7: Write Grading Results
 
 Save results to `{outputs_dir}/../grading.json` (sibling to outputs_dir).
-
-## Grading Criteria
-
-**PASS when**:
-- The transcript or outputs clearly demonstrate the expectation is true
-- Specific evidence can be cited
-- The evidence reflects genuine substance, not just surface compliance (e.g., a file exists AND contains correct content, not just the right filename)
-
-**FAIL when**:
-- No evidence found for the expectation
-- Evidence contradicts the expectation
-- The expectation cannot be verified from available information
-- The evidence is superficial — the assertion is technically satisfied but the underlying task outcome is wrong or incomplete
-- The output appears to meet the assertion by coincidence rather than by actually doing the work
-
-**When uncertain**: The burden of proof to pass is on the expectation.
 
 ### Step 8: Read Executor Metrics and Timing
 
@@ -182,42 +169,3 @@ Write a JSON file with this structure:
   }
 }
 ```
-
-## Field Descriptions
-
-- **expectations**: Array of graded expectations
-  - **text**: The original expectation text
-  - **passed**: Boolean - true if expectation passes
-  - **evidence**: Specific quote or description supporting the verdict
-- **summary**: Aggregate statistics
-  - **passed**: Count of passed expectations
-  - **failed**: Count of failed expectations
-  - **total**: Total expectations evaluated
-  - **pass_rate**: Fraction passed (0.0 to 1.0)
-- **execution_metrics**: Copied from executor's metrics.json (if available)
-  - **output_chars**: Total character count of output files (proxy for tokens)
-  - **transcript_chars**: Character count of transcript
-- **timing**: Wall clock timing from timing.json (if available)
-  - **executor_duration_seconds**: Time spent in executor subagent
-  - **total_duration_seconds**: Total elapsed time for the run
-- **claims**: Extracted and verified claims from the output
-  - **claim**: The statement being verified
-  - **type**: "factual", "process", or "quality"
-  - **verified**: Boolean - whether the claim holds
-  - **evidence**: Supporting or contradicting evidence
-- **user_notes_summary**: Issues flagged by the executor
-  - **uncertainties**: Things the executor wasn't sure about
-  - **needs_review**: Items requiring human attention
-  - **workarounds**: Places where the skill didn't work as expected
-- **eval_feedback**: Improvement suggestions for the evals (only when warranted)
-  - **suggestions**: List of concrete suggestions, each with a `reason` and optionally an `assertion` it relates to
-  - **overall**: Brief assessment — can be "No suggestions, evals look solid" if nothing to flag
-
-## Guidelines
-
-- **Be objective**: Base verdicts on evidence, not assumptions
-- **Be specific**: Quote the exact text that supports your verdict
-- **Be thorough**: Check both transcript and output files
-- **Be consistent**: Apply the same standard to each expectation
-- **Explain failures**: Make it clear why evidence was insufficient
-- **No partial credit**: Each expectation is pass or fail, not partial

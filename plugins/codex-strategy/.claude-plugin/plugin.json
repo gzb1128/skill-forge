@@ -1,0 +1,7 @@
+{
+  "name": "codex-strategy",
+  "description": "Codex subagent strategy — route implementation workers by design clarity and coupling while leaving other tasks native",
+  "author": {
+    "name": "Skill Forge Team"
+  }
+}

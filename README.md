@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`skill-forge` is a Claude Code plugin marketplace for forging agent runtime environments. It distills reusable skills into plugins covering repository knowledge, code quality, commit discipline, autonomous fix loops, and OpenCode configuration.
+`skill-forge` is a Claude Code plugin marketplace for forging agent runtime environments. It distills reusable skills into plugins covering repository knowledge, code quality, commit discipline, autonomous fix loops, OpenCode configuration, and Codex subagent routing.
 
 **Core idea:** Human at the helm. Agents execute. The repo is the agent's runtime — knowledge, rules, and workflows must be shaped into forms agents can reliably read, judge, and execute.
 
@@ -19,15 +19,17 @@ claude plugin install agent-docs@skill-forge
 claude plugin install code-quality@skill-forge
 claude plugin install skill-creator@skill-forge
 claude plugin install opencode-customize@skill-forge
+claude plugin install codex-strategy@skill-forge
 claude plugin install github-contrib@skill-forge
 
-# 3. In your target repo, ask Claude:
+# 3. In your target repo, ask your agent:
 #    "bootstrap agent docs"       -> create a minimal AGENTS.md entry point
 #    "review my changes"          -> quality review on local diff
 #    "commit this"                -> gated commit with impact message
 #    "loopfix"                    -> autonomous review-fix loop
 #    "migrate this skill"         -> adapt/create skills with eval discipline
 #    "hydrate model config"       -> fill OpenCode custom model parameters
+#    "delegate this to subagents" -> route Codex implementation workers
 #    "find issues I can pick up"  -> rank contribution-ready GitHub issues
 ```
 
@@ -41,6 +43,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
 | `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
+| `codex-strategy` | Route explicitly requested Codex implementation workers by design clarity and coupling while leaving other roles native | `codex-subagent-strategy` |
 | `github-contrib` | Find contribution-ready GitHub issues with claimed status, PR linkage, difficulty, staleness, maintainer engagement, and area signals | `find-contributable-issues` |
 
 ## Skill Catalog
@@ -77,6 +80,15 @@ The minimal `AGENTS.md` template used by `bootstrap-agent-docs` lives at `plugin
 |---|---|---|
 | `hydrate-opencode-models` | model-invoked | Look up model metadata from the Models.dev catalog and map it to OpenCode custom provider model config |
 | `integrate-projects` | model-invoked | Add external codebases to project-level OpenCode `references` so agents can discover and inspect them when relevant |
+
+### `codex-strategy`
+
+| Skill | Type | Purpose |
+|---|---|---|
+| `codex-subagent-strategy` | model-invoked | Before an explicitly requested Codex spawn, route high-coupling pre-design work to Sol/medium, bounded pre-design work to Luna/xhigh, and general coding to Terra/high |
+
+Skill Forge keeps marketplace source in plugin layout. Compatible agent skill
+installers expose installed skills through `~/.agents/skills/<skill>`.
 
 ### `github-contrib`
 

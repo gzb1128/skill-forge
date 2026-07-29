@@ -26,6 +26,7 @@ fallback in the scenario notes.
 |---|---|---|---|
 | `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A) | Minimal one-file plan, approval gate, applied payload, and no-`docs/` assertion passed |
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
+| `codex-subagent-strategy` | Yes recorded (Scenario A) | Yes passed (Scenarios A, B) | A produced Sol/medium for high coupling, Luna/xhigh for bounded pre-design, and Terra/high for general coding while leaving unmatched tasks native; B enforced full inheritance under explicit opt-out |
 | `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations. New preview/approval/verification gates (rule 4-7) pending GREEN re-run |
 | `find-contributable-issues` | — | — | New skill. Scenarios A (normal scoring run), B (read-only refusal under pressure), C (cap/cost-boundary handling) defined; RED/GREEN pending |
@@ -109,6 +110,9 @@ Current scripts:
 
 ```text
 docs/verify/scenarios/
+├── codex-subagent-strategy/
+│   ├── build-a.sh          # Three worker routes plus native-selection boundaries
+│   └── build-b.sh          # Explicit user opt-out forces full inheritance
 ├── diff-cleanup/
 │   └── build-b.sh          # AI slop cleanup scenario on a feature branch
 ├── find-contributable-issues/
@@ -200,6 +204,22 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Safe-fix boundary | Fix mode does not bless ambiguous Important behavior changes by adding tests |
 | Structured report | Report uses optional Fixed / Flagged / Reviewer disagreements sections plus Gates and Verdict |
 | No bare refusal | Any "no, don't commit" is followed by a concrete <2-minute next step |
+
+### codex-subagent-strategy
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Explicit Codex trigger | Applies only when the current user explicitly requests Codex subagents and an actual spawn is planned |
+| User opt-out | Scenario B omits both override fields for every child |
+| Native default | When the skill has no prescription, it leaves model and effort to Codex; omitted settings inherit normally and partial native overrides remain allowed |
+| Role boundary | Only implementation workers receive skill prescriptions; exploration and security review remain under native selection |
+| High-coupling implementation | Scenario A routes the design-backed API/state/persistence worker to `gpt-5.6-sol/medium` |
+| Bounded implementation | Scenario A routes the isolated design-backed parser worker to `gpt-5.6-luna/xhigh` |
+| General coding | Scenario A routes the concrete logging worker to `gpt-5.6-terra/high` |
+| Ambiguity safety | Scenario A gives no skill prescription for the design-free reliability worker and leaves the decision to Codex |
+
+These scenarios verify the pre-spawn routing decision and opt-out contract.
+They do not claim coverage of live spawn arguments or unavailable-model fallback.
 
 ### diff-cleanup
 

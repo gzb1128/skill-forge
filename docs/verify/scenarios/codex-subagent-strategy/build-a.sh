@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 # Build scenario A for codex-subagent-strategy RED/GREEN verification.
 #
-# Scenario: the user explicitly requests six Codex subagents spanning
-# exploration, high-coupling pre-design implementation, bounded pre-design
-# implementation, general coding, security review, and ambiguous work.
+# Scenario: the user explicitly requests seven Codex subagents spanning local
+# and external exploration, high-coupling pre-design implementation, bounded
+# pre-design implementation, general coding, security review, and ambiguous
+# work.
 #
 # GREEN routing requirements:
-#   1. broad explorer -> no skill prescription; Codex decides natively
-#   2. high-coupling worker -> gpt-5.6-sol/medium
-#   3. bounded design-backed worker -> gpt-5.6-luna/xhigh
-#   4. general coding worker -> gpt-5.6-terra/high
-#   5. security reviewer -> no skill prescription; Codex decides natively
-#   6. ambiguous worker -> no skill prescription; Codex decides natively
+#   1. local codebase explorer -> gpt-5.6-terra/high
+#   2. documentation explorer -> gpt-5.6-terra/high
+#   3. high-coupling worker -> gpt-5.6-sol/medium
+#   4. bounded design-backed worker -> gpt-5.6-luna/xhigh
+#   5. general coding worker -> gpt-5.6-terra/high
+#   6. security reviewer -> no skill prescription; Codex decides natively
+#   7. ambiguous worker -> no skill prescription; Codex decides natively
 #
 # This scenario validates routing decisions, not the delegated implementation.
 
@@ -47,15 +49,17 @@ cat > TASKS.md <<'EOF'
 
 1. Explorer: trace the unfamiliar request flow across all packages and return a
    code map. Do not edit files.
-2. Worker: implement the approved cache-refresh design across API, state
+2. Explorer: research the upstream dependency documentation for cache invalidation
+   semantics and return links plus a concise decision note. Do not edit files.
+3. Worker: implement the approved cache-refresh design across API, state
    transitions, and persistence packages.
-3. Worker: implement only the isolated parser helper and its table tests exactly
+4. Worker: implement only the isolated parser helper and its table tests exactly
    as specified by the approved design. Its write set is the two parser files.
-4. Worker: add structured refresh-attempt logging to the existing handler using
+5. Worker: add structured refresh-attempt logging to the existing handler using
    the repository's established logging pattern. Do not change contracts or
    state behavior; verify with `go test ./...`.
-5. Reviewer: perform a security review of the authentication path.
-6. Worker: improve deployment reliability. There is no approved design, scope,
+6. Reviewer: perform a security review of the authentication path.
+7. Worker: improve deployment reliability. There is no approved design, scope,
    acceptance behavior, or verification plan for this item.
 EOF
 

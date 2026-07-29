@@ -1,6 +1,6 @@
 ---
 name: codex-subagent-strategy
-description: Use in Codex when the user explicitly asks to spawn subagents, delegate work, or run parallel agents and the parent is about to dispatch them; read this strategy before the first spawn and route implementation workers by task shape. Also use it when the user requests parent-model inheritance for every child so the opt-out is enforced.
+description: Use in Codex when the user explicitly asks to spawn subagents, delegate work, or run parallel agents and the parent is about to dispatch them; read this strategy before the first spawn and route explorers and implementation workers by task shape. Also use it when the user requests parent-model inheritance for every child so the opt-out is enforced.
 ---
 
 # Codex Subagent Strategy
@@ -22,10 +22,11 @@ tasks where the user did not explicitly request delegation.
 
 ## Routes
 
-Only implementation workers receive a route from this skill.
+Explorers and implementation workers receive routes from this skill.
 
-| Worker task shape | Model | Effort |
+| Child task shape | Model | Effort |
 |---|---|---|
+| Explorer: any read-only discovery or research, including codebase tracing, documentation lookup, dependency investigation, or symbol mapping | `gpt-5.6-terra` | `high` |
 | Approved pre-design plus high-coupling integration | `gpt-5.6-sol` | `medium` |
 | Approved pre-design plus a narrow, fully decided boundary | `gpt-5.6-luna` | `xhigh` |
 | General coding with a concrete implementation outcome | `gpt-5.6-terra` | `high` |
@@ -47,10 +48,11 @@ General coding means normal code or test implementation with a concrete
 outcome that does not match either pre-design route and does not require the
 child to make design or product decisions.
 
-Exploration, review, security analysis, test execution, docs, research,
-planning, design, ambiguous work, and mixed-purpose work stay native. Native
-means Codex decides: omitted settings inherit normally, and Codex may still
-override one or both settings when useful.
+Every read-only exploration task uses Terra/high, regardless of breadth or
+source. Review, security analysis, test execution, planning, design, ambiguous
+work, and mixed-purpose work stay native. Native means Codex decides: omitted
+settings inherit normally, and Codex may still override one or both settings
+when useful.
 
 ## Spawn Rules
 
@@ -60,7 +62,8 @@ override one or both settings when useful.
   was used.
 - A custom agent file that pins model settings keeps its normal precedence.
 - Worker prompts include the outcome, design path when applicable, write scope,
-  verification, and a stop condition for unresolved decisions.
+  verification, and a stop condition for unresolved decisions. Explorer prompts
+  state the read-only question and required discovery output.
 - Do not spawn an extra child just to classify another spawn.
 
 The Luna/Terra bias is consistent with the official [Codex Subagents

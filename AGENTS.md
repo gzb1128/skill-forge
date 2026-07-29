@@ -14,7 +14,7 @@
 | `code-quality` | Code review, commit gates, diff cleanup, and autonomous fix loops | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Skill creation, upstream skill migration, behavioral evals, and trigger tuning | `skill-creator` |
 | `opencode-customize` | OpenCode configuration customization, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
-| `codex-strategy` | Codex implementation-worker routing by design clarity and coupling | `codex-subagent-strategy` |
+| `codex-strategy` | Codex explorer and implementation-worker routing by task shape | `codex-subagent-strategy` |
 | `github-contrib` | GitHub contribution discovery and issue ranking | `find-contributable-issues` |
 
 ## What's here

@@ -1,6 +1,6 @@
 ---
 name: learn
-description: Use when the user says "learn", "save this insight", or wants to persist non-obvious knowledge from the current session to AGENTS.md
+description: Use when the user says "learn", "save this insight", or wants to persist valuable knowledge from the current session to AGENTS.md or docs/
 disable-model-invocation: true
 argument-hint: [optional-context]
 allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
@@ -12,20 +12,30 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 > Do not add hooks, background tasks, auto-trigger behavior, runtime storage,
 > vector databases, MCP integration, or external memory systems.
 
-Review what happened in this session and produce verified, reviewable memory
-proposals for the appropriate `AGENTS.md` file using the exact-diff workflow
-below.
+Review what happened in this session and produce verified, reviewable knowledge
+proposals for the appropriate `AGENTS.md` or `docs/` surface using the exact-diff
+workflow below.
 
-## Non-Derivability Principle
+Before classifying candidates, read and apply the shared
+[Knowledge Admission Policy](../../references/knowledge-admission.md). This
+skill produces new knowledge proposals; the policy is shared with `remember`
+and `curate` rather than owned by this workflow.
 
-**Only record information that CANNOT be derived from the codebase itself.**
-Before proposing any `Hidden Knowledge` entry, ask:
+When a candidate belongs under `docs/`, also read the
+[Documentation Structure Reference](../../references/doc-structure.md).
 
-> Can the next agent or human discover this by reading the code, running
-> `git log`, or checking existing docs?
+## Admission Model
 
-If yes, do NOT record it as hidden knowledge. The bar is high. Most knowledge
-belongs in source, commit messages, or existing docs, not in `AGENTS.md`.
+Non-derivability is sufficient, not necessary:
+
+- Verified, durable, non-duplicative knowledge that cannot be derived from the
+  repository is admitted automatically and routed to the right surface.
+- Derivable knowledge may still be admitted when its value score justifies the
+  target's maintenance or prompt cost.
+
+`Hidden Knowledge` remains the strict destination for non-derivable gotchas.
+High-value derivable commands, maps, rules, and workflows belong in their
+purpose-specific surfaces instead of being mislabeled as hidden knowledge.
 
 ## Step 1: Extract candidate insights
 
@@ -39,15 +49,16 @@ Do not write anything yet. First classify each candidate.
 
 | Classification | Destination | Rule |
 |----------------|-------------|------|
-| `Hidden Knowledge` | Nearest relevant `AGENTS.md` under `## Hidden Knowledge` | Only for non-derivable hidden dependencies, misleading errors, workarounds, quirks, or critical ordering |
-| `Quick Reference` | Root `AGENTS.md` Quick Reference table | Build, test, lint, run, codegen, clean, or other common commands |
-| `Rule` | Report suggested destination only | Team convention or hard boundary; do not create or modify `docs/rules/` from `/agent-docs:learn` |
-| `Doc` | Report suggested destination only | Longer design, troubleshoot, runbook, or library note; do not create or modify docs from `/agent-docs:learn` |
-| `Skip` | No write | Derivable, one-off, duplicated, stale, generic, or unverifiable |
+| `Hidden Knowledge` | Nearest relevant `AGENTS.md` under `## Hidden Knowledge` | Automatically admitted non-derivable gotcha that is concise and important enough to change recurring agent behavior |
+| `Quick Reference` | Root `AGENTS.md` Quick Reference table | High-value common build, test, lint, run, codegen, clean, or verification commands |
+| `Rule` | Nearest `AGENTS.md` `Golden Rules`/`Key Patterns`, or `docs/rules/` plus its index | Put concise, recurring, usually 9+ prompt-value rules in `AGENTS.md`; put narrower or longer rules in pull-based docs |
+| `Doc` | Appropriate `docs/` category plus its index | High-value design, troubleshoot, runbook, codemap, verification, or library knowledge, including non-derivable knowledge that does not justify prompt space |
+| `Skip` | No write | Fails a hard gate, falls below the destination threshold, is one-off/generic, or is better enforced mechanically without documentation value |
 
-## Hidden Knowledge candidates
+## Non-derivable candidates
 
-Only candidates that pass the non-derivability test may become hidden knowledge:
+The following verified candidates are automatically admitted as repository
+knowledge without a numeric threshold:
 
 1. **Hidden dependencies (coupling conventions)**: Files or modules that must be
    changed together but are not obviously connected. These look derivable — a
@@ -63,21 +74,42 @@ Only candidates that pass the non-derivability test may become hidden knowledge:
    especially cross-artifact ordering (e.g. SQL migration before code) that no
    single file states.
 
+Route them after admission. A concise cross-cutting trap may belong in
+`AGENTS.md` Hidden Knowledge, while a niche library quirk or longer operational
+constraint belongs in the relevant docs category. Automatic admission does not
+mean automatic prompt residency.
+
+## High-value derivable candidates
+
+Do not discard a candidate merely because source inspection could reconstruct
+it. Score and route candidates such as:
+
+- commands and expected results used across many tasks;
+- architecture entry maps that prevent repeated broad searches;
+- deterministic runbooks and rollback sequences;
+- verification contracts whose reconstruction is slow or error-prone;
+- project-specific rules that prevent costly mistakes.
+
+Use the shared policy's normal guidance: usually 9+ for concise `AGENTS.md`
+content and 7+ for pull-based docs.
+
 ## Skip criteria
 
 Skip candidates that are:
 
-- Code patterns, architecture, or file structure visible by reading source.
-- Git history or recent changes that `git log` or `git blame` already records.
+- Low-value restatements of code patterns, architecture, or file structure.
+- Recent-change narration already captured by git with no durable workflow,
+  decision, navigation, or safety value.
 - Debugging solutions where the fix is now in code and the commit message should
-  carry the context.
+  carry the context, unless the resulting diagnosis remains recurrent and scores
+  high enough for troubleshoot documentation.
 - Already present in `AGENTS.md`, `docs/rules/`, or README.
 - Standard language or framework behavior.
 - Non-obvious commands that belong in Quick Reference, not Hidden Knowledge.
 - Ephemeral session details, including attempts that failed temporarily.
 - Unverified claims.
 
-## Step 3: Verify each retained candidate
+## Step 3: Verify and score each retained candidate
 
 Every retained candidate needs explicit evidence before it can be proposed:
 
@@ -87,10 +119,18 @@ Every retained candidate needs explicit evidence before it can be proposed:
 | Function, type, command, or symbol | Confirm it exists with search or a language-aware lookup |
 | Behavior or constraint | Run the smallest relevant command, inspect source, or explain why direct execution is unsafe |
 | Existing AGENTS.md content | Read the target section and check for stale or duplicate entries |
+| Existing repository knowledge | Search root guidance and the relevant docs category for an equivalent authoritative entry |
+| Non-derivability claim | Search source, git, and existing docs for the rule; authoritative maintainer context may establish that a convention is intentionally unwritten |
 
 If verification fails, classify the candidate as `Skip` and explain the failed
 check. If verification cannot be performed safely, report it as unverified and
 do not propose a write.
+
+After verification, record either:
+
+- `Automatic admission — non-derivable`, or
+- the six-dimension value score and destination threshold from the shared
+  policy.
 
 ## Step 4: Choose the target
 
@@ -107,9 +147,15 @@ the end of the target `AGENTS.md`. Keep each insight to 1-3 lines.
 
 For `Quick Reference`, propose a row update in the root `AGENTS.md` table.
 
-For `Rule` and `Doc`, report the suggested destination only. Do not create or
-modify rule docs, design docs, troubleshoot docs, runbooks, or library docs from
-this command.
+For `Rule`, use the nearest `AGENTS.md` `Golden Rules` or `Key Patterns` section
+when the rule is concise, recurring, and earns prompt space. Otherwise use
+`docs/rules/`. Create a missing AGENTS.md section only as part of the approved
+proposal.
+
+For a docs-bound `Rule` or `Doc`, choose the category from the Documentation
+Structure Reference. Create the category and `INDEX.md` only with the first
+admitted document; never scaffold empty categories. Prefer updating an
+existing authoritative document over creating a duplicate.
 
 ## Step 5: Show proposed changes first
 
@@ -124,6 +170,8 @@ Before editing any file, show all proposals in this format:
 
 **Verification:** <path/symbol/command/behavior evidence>
 
+**Admission:** <automatic — non-derivable | score N/12 with dimension summary>
+
 **Action:** <add/update/skip/report-only>
 
 ```diff
@@ -135,9 +183,9 @@ Before editing any file, show all proposals in this format:
 
 1. `<candidate>` -> skipped because <reason>
 
-### Report-Only Suggestions
-
-1. `<candidate>` -> belongs in <suggested destination>, not handled by `/agent-docs:learn`
+For a new document, include the document diff and the matching `INDEX.md` diff
+in the same proposal. Use `report-only` only when a destination conflict or
+missing authoritative context requires user judgment.
 ````
 
 ## Step 6: Approval gate and apply
@@ -146,8 +194,9 @@ Stop after showing the exact proposed changes, even if the user asks to apply
 quickly. After explicit approval:
 
 1. Apply only the proposals the user approved.
-2. Preserve existing `AGENTS.md` structure and keep additions concise.
-3. Do not perform general cleanup from `/agent-docs:learn`; use `/agent-docs:remember` for stale,
-   duplicated, or misplaced existing memory.
-4. Report what changed, where it changed, which candidates were skipped, and
+2. Preserve unrelated content and keep `AGENTS.md` additions concise.
+3. Do not perform general cleanup from `/agent-docs:learn`; use
+   `/agent-docs:remember` for `AGENTS.md` and `/agent-docs:curate` for `docs/`.
+4. Re-open every edited file and verify the final text and index links.
+5. Report what changed, where it changed, which candidates were skipped, and
    any remaining report-only suggestions.

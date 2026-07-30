@@ -1,5 +1,8 @@
 # Memory Commands Improvement Implementation Plan
 
+**Status:** Completed; behavior subsequently superseded by
+[Repository Knowledge Lifecycle](../design/2026-08-03-repository-knowledge-lifecycle-design.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Improve `plugins/agent-docs/skills/learn/SKILL.md` and `plugins/agent-docs/skills/remember/SKILL.md` according to `docs/design/2026-05-28-memory-commands-design.md`.

@@ -22,7 +22,7 @@ claude plugin install opencode-customize@skill-forge
 claude plugin install github-contrib@skill-forge
 
 # 3. In your target repo, ask Claude:
-#    "bootstrap agent docs"       -> scaffold Agent-First docs
+#    "bootstrap agent docs"       -> create a minimal AGENTS.md entry point
 #    "review my changes"          -> quality review on local diff
 #    "commit this"                -> gated commit with impact message
 #    "loopfix"                    -> autonomous review-fix loop
@@ -37,7 +37,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 
 | Plugin | Purpose | Skills |
 |---|---|---|
-| `agent-docs` | Scaffold Agent-First documentation and maintain non-derivable team knowledge | `bootstrap-agent-docs`, `learn`, `remember`, `curate` |
+| `agent-docs` | Bootstrap and maintain valuable repository knowledge with focused capture and audit workflows | `bootstrap-agent-docs`, `learn`, `remember`, `curate` |
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
 | `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
@@ -49,12 +49,12 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 
 | Skill | Type | Purpose |
 |---|---|---|
-| `bootstrap-agent-docs` | model-invoked | Generate `AGENTS.md`, `docs/_templates/`, `docs/rules/`, and per-category `INDEX.md` in a target repo |
-| `learn` | manual skill (`/agent-docs:learn`) | Persist non-obvious session insights to the right `AGENTS.md` — verified and approval-gated |
+| `bootstrap-agent-docs` | model-invoked | Create a minimal root `AGENTS.md` with verified commands and architecture routing |
+| `learn` | manual skill (`/agent-docs:learn`) | Score, route, and propose valuable session knowledge for `AGENTS.md` or `docs/` — verified and approval-gated |
 | `remember` | manual skill (`/agent-docs:remember`) | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
 | `curate` | manual skill (`/agent-docs:curate`) | Audit the `docs/` knowledge base for stale links, encyclopedia bloat, naming drift, and missing indexes — the docs counterpart to `/agent-docs:remember` |
 
-The template payload used by `bootstrap-agent-docs` lives at `plugins/agent-docs/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone needed.
+The minimal `AGENTS.md` template used by `bootstrap-agent-docs` lives at `plugins/agent-docs/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone is needed.
 
 ### `code-quality`
 
@@ -86,30 +86,17 @@ The template payload used by `bootstrap-agent-docs` lives at `plugins/agent-docs
 
 ## What `agent-docs` Scaffolds
 
-When you ask Claude to "bootstrap agent docs" in a target repo, the plugin creates:
+When you ask Claude to "bootstrap agent docs" in a target repo, the plugin
+creates one project entry point after showing the plan and receiving approval:
 
 ```text
 your-repo/
-├── AGENTS.md                          # root entry for agents (~100-line navigation)
-└── docs/
-    ├── codemaps/INDEX.md              # architecture maps: concept -> file path
-    ├── design/INDEX.md                # design specs: YYYY-MM-DD-<topic>-design.md
-    ├── plans/INDEX.md                 # implementation plans: YYYY-MM-DD-<feature>.md
-    ├── rules/                         # engineering standards
-    │   ├── INDEX.md
-    │   ├── non-derivability.md        # non-derivability principle
-    │   ├── document-conventions.md
-    │   └── openai-harness-engineering.md
-    ├── troubleshoot/INDEX.md          # symptom-indexed troubleshooting
-    ├── runbooks/INDEX.md              # deterministic operational procedures
-    ├── lib/INDEX.md                   # third-party library usage notes
-    ├── verify/INDEX.md                # dry-run verification flows
-    └── _templates/                    # templates for new docs (copy & customize)
-        ├── codemap.md
-        ├── design.md
-        ├── plan.md
-        └── subpackage-AGENTS.md
+└── AGENTS.md                          # concise commands, architecture, routing, and project rules
 ```
+
+It does not pre-create `docs/` categories or copy plugin policy into the target
+repository. `/agent-docs:learn` creates a category and its `INDEX.md` on demand
+when the first admitted document needs that surface.
 
 ## Practices
 
@@ -118,12 +105,12 @@ your-repo/
 | **Repo as record system** | Knowledge agents can't see doesn't exist. Critical constraints must not live only in chat logs or external docs. |
 | **Progressive disclosure** | `AGENTS.md` provides the entry navigation, `docs/codemaps/*.md` points to components, source code carries the details. |
 | **Lean prompt surfaces** | State prompt-resident rules once, expose only task-relevant tools, and keep examples only when they encode a requirement or fix a measured gap. Validate removals against the same representative tasks. |
-| **INDEX per category** | Every `docs/*/` directory has an `INDEX.md` with a "When to Use" column so agents can triage at a glance. |
-| **Non-derivability filter** | Record only what cannot be derived from source code, git history, or existing docs. |
+| **INDEX with the first doc** | A category containing useful documents normally has an `INDEX.md` with routing context; absent categories need no placeholders. |
+| **Value-based admission** | Non-derivable knowledge is automatically admitted; derivable knowledge is also recorded when impact, recurrence, discovery cost, actionability, durability, and scope justify the surface cost. |
 | **Maps, not encyclopedias** | Codemaps maintain concept-to-path tables only — they link to source, never copy code. |
 | **Date-prefixed designs/plans** | `YYYY-MM-DD-<topic>-design.md` keeps designs and plans browsable in chronological order. |
 
-Full rationale: [`openai-harness-engineering.md`](plugins/agent-docs/templates/docs/rules/openai-harness-engineering.md).
+Full rationale: [Repository Knowledge Lifecycle](docs/design/2026-08-03-repository-knowledge-lifecycle-design.md).
 
 ## Development
 

@@ -18,7 +18,8 @@
 #   - flags the `src/engine.go:42 (Render method)` citation as drifted and
 #     proposes a Rewrite to symbol form (e.g. `Render method in src/engine.go`),
 #     NOT merely bumping `:42` to the new line number
-#   - leaves `make build` and `go test ./...` as No Action Needed (they are valid)
+#   - leaves `make build` and `go test ./...` as No Action Needed: they are
+#     derivable from Makefile/source but high-value recurring entry points
 #   - does NOT enumerate, open, or score the decoy docs (docs/other.md,
 #     docs/design/2026-01-01-init.md, docs/extra/notes.md) — linked-doc check is
 #     a verification method, not a docs/ audit license

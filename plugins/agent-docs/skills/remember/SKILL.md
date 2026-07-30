@@ -19,9 +19,15 @@ Review all `AGENTS.md` files across the project and produce a structured
 
 This is the complement to `/agent-docs:learn`:
 
-- `/agent-docs:learn` proposes verified memory additions from the current session.
+- `/agent-docs:learn` proposes verified knowledge additions to `AGENTS.md` or
+  `docs/` from the current session.
 - `/agent-docs:remember` audits existing `AGENTS.md` memory surfaces for staleness,
   duplication, misplacement, and low-signal content.
+
+Read and apply the shared
+[Knowledge Admission Policy](../../references/knowledge-admission.md). Do not
+invoke `learn`; both workflows independently apply the same policy in opposite
+directions.
 
 ## Step 1: Gather memory layers
 
@@ -45,15 +51,16 @@ Audit every relevant `AGENTS.md` memory surface, not only `## Hidden Knowledge`.
 |---------|--------|
 | `Quick Reference` | Commands/workflows exist, placeholders are removed, commands are current or explicitly marked as examples |
 | `Architecture` | Gives agents a clear entry map, key directories, and module relationships without becoming a copied source-code encyclopedia |
-| `Key Patterns` | Captures project-specific, non-obvious patterns that are still true, not generic advice, not replaced by mechanical enforcement |
+| `Key Patterns` | Captures project-specific patterns that are still true and valuable enough for prompt space, whether non-derivable or expensive to rediscover |
 | `Golden Rules` | Still hard rules, not duplicated from `docs/rules/`, not better represented as links |
 | `Hidden Knowledge` | Non-derivable gotchas, quirks, critical ordering, or misleading failures; verified, not stale, not duplicated, correctly placed |
 | Sub-package `AGENTS.md` | Still justified by complexity, cross-module constraints, state machines, or special verification needs |
 
 ## Step 3: Classify issues by quality dimension
 
-Use these dimensions to explain every finding. Prefer concrete evidence over
-numeric grades; do not produce an overall score.
+Use these dimensions to explain every finding. Do not produce an overall score
+for an `AGENTS.md` file. Use the shared candidate value score only when deciding
+whether a specific entry earns prompt space.
 
 | Dimension | Meaning |
 |-----------|---------|
@@ -65,7 +72,8 @@ numeric grades; do not produce an overall score.
 | `Actionability` | A future agent can follow the instruction directly with concrete commands, paths, or decision rules |
 | `Signal` | The content is worth prompt space and helps future agents act better |
 | `Placement` | The content lives at the right `AGENTS.md` level and section |
-| `Non-Derivability` | Hidden knowledge cannot now be inferred from code, git, or existing docs |
+| `Non-Derivability` | Hidden knowledge cannot now be inferred from code, git, or existing docs; this is an automatic-admission signal, not a universal requirement for every surface |
+| `Knowledge Value` | Derivable content still earns prompt space when impact, recurrence, discovery cost, actionability, durability, and scope justify it |
 | `Duplication` | The same guidance is not repeated across layers or docs |
 
 Map any additional memory-quality criterion to a dimension above before
@@ -82,7 +90,8 @@ Before proposing a cleanup, verify it:
 | Stale command | Run the safest relevant command, or explain why execution is unsafe |
 | Contradicted behavior | Inspect source or run the smallest relevant check |
 | Duplicate content | Cite both locations |
-| Now-derivable hidden knowledge | Cite the code, docs, git history, or AGENTS.md main-body section that now covers it |
+| Now-derivable hidden knowledge | Cite the code, docs, git history, or AGENTS.md main-body section that now covers it, then assess whether it remains valuable in another surface |
+| Potentially low-value derivable entry | Show the shared-policy score and the lower-cost source or document that would replace it |
 | Memory assertion backed by a linked doc | Open that one linked doc and confirm it still supports the assertion |
 
 If a finding cannot be verified, label it `Needs user input` instead of treating
@@ -93,17 +102,16 @@ Open only the specific doc a memory assertion links to, confirm it still support
 that assertion, and stop. Do **not** enumerate `docs/`, score doc quality, or
 traverse cross-links; doc-level quality (including redundancy) is owned by a
 separate audit, not `/agent-docs:remember`. The economics differ — `AGENTS.md`
-is prompt-resident and judged by Signal / Conciseness / Non-Derivability, while
-`docs/` is pull-based and may legitimately be longer or more detailed — but
-both stay subject to the repo's non-derivability rule. The only question here is
-whether the linked doc still backs the memory claim that cites it.
+is prompt-resident and uses the highest value threshold, while `docs/` is
+pull-based and may legitimately be longer or more detailed. The only question
+here is whether the linked doc still backs the memory claim that cites it.
 
 ## Step 5: Classify actions
 
 | Action | Use when |
 |--------|----------|
 | `Promotions` | Lower-level guidance affects multiple packages or belongs in a higher-level `AGENTS.md` surface |
-| `Deletions` | Content is stale, duplicated, generic, now derivable, or no longer useful |
+| `Deletions` | Content fails a hard gate, or derivable content scores too low for prompt-resident memory; derivability alone is insufficient, and valid non-derivable content must be retained or rerouted |
 | `Rewrites` | Content is true but unclear, too verbose, misplaced within the same file, or missing verification context |
 | `Duplicates` | Exact or overlapping guidance appears in multiple places |
 | `Conflicts` | Two files or sections contradict each other and need user judgment |
@@ -157,8 +165,7 @@ Output a structured report:
 ```
 
 If no `AGENTS.md` memory surfaces exist beyond placeholders, say so and suggest
-running `/agent-docs:learn` at the end of a future session that discovers non-obvious
-knowledge.
+running `/agent-docs:learn` after a future session discovers valuable knowledge.
 
 ## Step 7: User approval
 

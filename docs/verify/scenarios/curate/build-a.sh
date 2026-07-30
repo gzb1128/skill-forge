@@ -10,20 +10,19 @@
 #
 # Compliance signals the skill is expected to produce:
 #   - Encyclopedia codemap: flags docs/codemaps/engine.md for a >20-line copied
-#     function body, proposes a Rewrite to a concept→file table (Maps-not-
-#     Encyclopedias, citing openai-harness-engineering §2)
+#     function body and proposes a Rewrite to a concept→file table
 #   - Broken internal link: flags the ](./missing.md) dangling link in
 #     docs/codemaps/engine.md (Link Integrity)
 #   - Naming violation: flags docs/plans/feature-x.md for missing YYYY-MM-DD-
-#     prefix (Naming, citing document-conventions §Naming)
+#     prefix
 #   - Doc↔source drift: flags docs/codemaps/engine.md citing src/engine.go:42
 #     for Render; the symbol exists but at a different line; proposes a Rewrite
 #     to symbol form, NOT just bumping the number
 #   - Missing INDEX: flags docs/runbooks/ for having no INDEX.md (INDEX Health)
 #   - Scope guard: does NOT open, score, or propose edits to AGENTS.md even
 #     though it has a stale line-number ref; reports AGENTS.md as out of scope
-#   - No Action Needed: leaves docs/rules/non-derivability.md and the valid
-#     design doc alone
+#   - Knowledge value: retains the derivable but high-value deploy runbook while
+#     flagging only its missing INDEX, and leaves the valid design doc alone
 #
 # Usage:
 #   bash docs/verify/scenarios/curate/build-a.sh
@@ -34,7 +33,7 @@ set -euo pipefail
 
 SCEN="${TMPDIR:-/tmp}/opencode/skill-tests/curate-a"
 rm -rf "$SCEN"
-mkdir -p "$SCEN/src" "$SCEN/docs/codemaps" "$SCEN/docs/design" "$SCEN/docs/plans" "$SCEN/docs/rules" "$SCEN/docs/runbooks"
+mkdir -p "$SCEN/src" "$SCEN/scripts" "$SCEN/docs/codemaps" "$SCEN/docs/design" "$SCEN/docs/plans" "$SCEN/docs/runbooks"
 cd "$SCEN"
 
 git init -q
@@ -82,6 +81,30 @@ func (e *Engine) Render(ctx context.Context, name string) (string, error) {
 	return body, nil
 }
 EOF
+
+# The deploy runbook below is intentionally derivable from this script. It is
+# still valuable: it gives operators the stable entry point, safety check, and
+# rollback decision without making them reconstruct the workflow.
+cat > scripts/release.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "${1:-}" in
+  staging)
+    go test ./...
+    go build ./...
+    echo "staging release verified"
+    ;;
+  rollback)
+    echo "rollback requested"
+    ;;
+  *)
+    echo "usage: $0 <staging|rollback>" >&2
+    exit 2
+    ;;
+esac
+EOF
+chmod +x scripts/release.sh
 
 # ── docs/codemaps/ ──────────────────────────────────────────────────────────
 # INDEX is healthy (valid No-Action candidate for INDEX Health).
@@ -169,6 +192,9 @@ EOF
 cat > docs/plans/feature-x.md <<'EOF'
 # Feature X Plan
 
+Approved on 2026-06-15. Release managers browse these rollout plans
+chronologically to distinguish the active plan from earlier and later rollouts.
+
 Steps to deliver feature X.
 EOF
 cat > docs/plans/INDEX.md <<'EOF'
@@ -179,27 +205,22 @@ cat > docs/plans/INDEX.md <<'EOF'
 | _undated_ | [feature-x.md](feature-x.md) | Feature X | Reference only (naming needs fixing) |
 EOF
 
-# ── docs/rules/ ─────────────────────────────────────────────────────────────
-# Valid rule doc + valid INDEX. No-Action.
-cat > docs/rules/non-derivability.md <<'EOF'
-# Non-Derivability Principle
-
-Only write down what cannot be derived from code, git history, or existing docs.
-EOF
-cat > docs/rules/INDEX.md <<'EOF'
-# Rules Index
-
-| Document | Description | When to Use |
-|----------|-------------|-------------|
-| [non-derivability.md](non-derivability.md) | Non-derivability filter for all docs | Before writing any documentation |
-EOF
-
 # ── docs/runbooks/ ──────────────────────────────────────────────────────────
-# PLANTED: category with content but NO INDEX.md (INDEX Health violation).
+# The content is derivable from scripts/release.sh but scores highly for impact,
+# recurrence, actionability, durability, and scope. A compliant audit retains
+# the runbook. PLANTED: category has content but NO INDEX.md.
 cat > docs/runbooks/deploy.md <<'EOF'
 # Deploy Runbook
 
-Steps to deploy the service.
+Use this for every staging release and for rollback after a failed verification.
+
+1. Run `./scripts/release.sh staging`.
+2. Continue only after it prints `staging release verified`.
+3. If verification or the subsequent release fails, run
+   `./scripts/release.sh rollback` before retrying.
+
+The script is authoritative for implementation; this runbook is the operator
+entry point and decision sequence.
 EOF
 # NOTE: intentionally no docs/runbooks/INDEX.md
 

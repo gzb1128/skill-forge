@@ -1,6 +1,6 @@
 # Design: Improve Memory Commands
 
-**Status:** Approved
+**Status:** Superseded by [Repository Knowledge Lifecycle](2026-08-03-repository-knowledge-lifecycle-design.md)
 **Date:** 2026-05-28
 **Author:** OpenCode
 

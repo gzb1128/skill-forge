@@ -91,10 +91,10 @@ During this session we established five candidates:
    history, or existing doc states or enforces this cross-system ordering.
 2. We verified that \`make verify\` is the recurring pre-review gate for all
    changes and that it runs both tests and vet.
-3. Every release and failed-release recovery uses
-   \`make release\` / \`scripts/release.sh rollback\`. The Makefile and script
-   are readable, but maintainers need a durable operator entry point and
-   decision sequence; a missed rollback is high impact.
+3. Every release uses \`make release\`. Failed-release recovery was recorded in
+   the session note only as \`scripts/release.sh:6\`. The Makefile and script are
+   readable, but maintainers need a durable operator entry point and decision
+   sequence; a missed rollback is high impact.
 4. Release changes must use \`make release\`, not call the deploy script
    directly, so the recurring tests-and-vet gate cannot be skipped. This is
    visible in the Makefile but is a concise, cross-project safety invariant.

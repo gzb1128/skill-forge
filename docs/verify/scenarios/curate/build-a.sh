@@ -13,8 +13,8 @@
 #     function body and proposes a Rewrite to a concept→file table
 #   - Broken internal link: flags the ](./missing.md) dangling link in
 #     docs/codemaps/engine.md (Link Integrity)
-#   - Naming violation: flags docs/plans/feature-x.md for missing YYYY-MM-DD-
-#     prefix
+#   - Naming violation: flags docs/design/engine-fast-path-design.md for missing
+#     YYYY-MM-DD- prefix
 #   - Doc↔source drift: flags docs/codemaps/engine.md citing src/engine.go:42
 #     for Render; the symbol exists but at a different line; proposes a Rewrite
 #     to symbol form, NOT just bumping the number
@@ -177,6 +177,14 @@ Decision: initialize the render engine lazily to avoid cold-start latency on
 the first request. Alternative considered was eager init via init(); rejected
 because it moved cost to process startup.
 EOF
+# PLANTED: undated design even though the architecture board browses decisions
+# chronologically (Naming violation).
+cat > docs/design/engine-fast-path-design.md <<'EOF'
+# Engine Fast Path Design
+
+Approved on 2026-06-15. The architecture board browses these decisions
+chronologically to distinguish superseded and current contracts.
+EOF
 # Valid INDEX (keeps design/ off the INDEX-Health flag list).
 cat > docs/design/INDEX.md <<'EOF'
 # Design Docs Index
@@ -184,25 +192,26 @@ cat > docs/design/INDEX.md <<'EOF'
 | Date | Document | Topic | When to Read |
 |------|----------|-------|--------------|
 | 2026-06-01 | [engine-lazy-init-design.md](2026-06-01-engine-lazy-init-design.md) | Lazy vs eager engine init | When touching engine startup |
+| _undated_ | [engine-fast-path-design.md](engine-fast-path-design.md) | Fast-path contract | Naming needs correction |
 EOF
 
 # ── docs/plans/ ─────────────────────────────────────────────────────────────
-# PLANTED: missing YYYY-MM-DD- prefix (Naming violation). The category itself
-# has a valid INDEX, so only the filename is the defect — not INDEX Health.
-cat > docs/plans/feature-x.md <<'EOF'
-# Feature X Plan
+# Existing, correctly named historical plan. Its category is not a defect by
+# itself and the user did not request plan migration or deletion. No-Action.
+cat > docs/plans/2026-06-15-feature-x.md <<'EOF'
+# Historical Feature X Rollout Plan
 
-Approved on 2026-06-15. Release managers browse these rollout plans
-chronologically to distinguish the active plan from earlier and later rollouts.
-
-Steps to deliver feature X.
+This completed cross-system rollout had a durable externally coordinated
+ordering constraint: publish the schema artifact before the application
+artifact, and keep the previous artifact available through the rollback
+window. The ordering is not encoded by repository automation.
 EOF
 cat > docs/plans/INDEX.md <<'EOF'
 # Plans Index
 
 | Date | Document | Feature | When to Use |
 |------|----------|---------|-------------|
-| _undated_ | [feature-x.md](feature-x.md) | Feature X | Reference only (naming needs fixing) |
+| 2026-06-15 | [2026-06-15-feature-x.md](2026-06-15-feature-x.md) | Feature X | Trace the historical cross-system rollout contract |
 EOF
 
 # ── docs/runbooks/ ──────────────────────────────────────────────────────────

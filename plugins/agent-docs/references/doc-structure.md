@@ -15,17 +15,33 @@ Common categories include:
 
 | Category | Purpose |
 |---|---|
-| `docs/codemaps/` | Architecture navigation and concept-to-source maps |
-| `docs/design/` | Decisions, alternatives, constraints, and rationale |
-| `docs/plans/` | Sequencing, verification, rollback, and handoff |
 | `docs/rules/` | Project-specific conventions and hard boundaries |
-| `docs/troubleshoot/` | Symptom-to-cause diagnosis |
+| `docs/design/` | Durable decisions, alternatives, constraints, sequencing dependencies, verification boundaries, rollback, and rationale |
 | `docs/runbooks/` | Deterministic operational procedures |
-| `docs/lib/` | Project-relevant third-party behavior and usage |
 | `docs/verify/` | Repeatable verification flows and expected results |
+| `docs/troubleshoot/` | Symptom-to-cause diagnosis |
+| `docs/codemaps/` | Architecture navigation and concept-to-source maps |
+| `docs/lib/` | Project-relevant third-party behavior and usage |
 
 An absent category is not a defect. A category containing documents should
 normally have an `INDEX.md`.
+
+## Do Not Create Agent Execution Plan Docs
+
+Do not create `docs/plans/` for step-by-step agent task decomposition, session
+checklists, or implementation narration. Keep those transient details in the
+task session. Reclassify any durable knowledge through the normal admission
+model: concise recurring gotchas may belong in the nearest `AGENTS.md`, while
+docs-bound decisions, alternatives, multi-step sequencing contracts,
+verification gates, handoff contracts, and rollback boundaries belong in
+`docs/design/`.
+
+An existing `docs/plans/` category is not a defect by itself. Do not propose
+category-wide deletion or migration unless the user explicitly requests it;
+audit individual files under the same ordinary value and drift rules as other
+docs. If the user does request removal, merge any still-valid durable knowledge
+into the relevant design and delete execution-only artifacts. Do not copy a
+plan wholesale into a design.
 
 ## INDEX Standards
 
@@ -38,8 +54,7 @@ normally have an `INDEX.md`.
 ## Naming
 
 - Use lowercase words separated by hyphens.
-- Prefix designs and plans with `YYYY-MM-DD-` when chronological browsing adds
-  value.
+- Prefix designs with `YYYY-MM-DD-` when chronological browsing adds value.
 - Avoid `-v2` and similar suffixes; supersede or archive explicitly.
 
 ## Maps, Not Encyclopedias

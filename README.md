@@ -108,7 +108,7 @@ when the first admitted document needs that surface.
 | **INDEX with the first doc** | A category containing useful documents normally has an `INDEX.md` with routing context; absent categories need no placeholders. |
 | **Value-based admission** | Non-derivable knowledge is automatically admitted; derivable knowledge is also recorded when impact, recurrence, discovery cost, actionability, durability, and scope justify the surface cost. |
 | **Maps, not encyclopedias** | Codemaps maintain concept-to-path tables only — they link to source, never copy code. |
-| **Date-prefixed designs/plans** | `YYYY-MM-DD-<topic>-design.md` keeps designs and plans browsable in chronological order. |
+| **Durable designs, transient task plans** | `YYYY-MM-DD-<topic>-design.md` records lasting decisions and delivery boundaries; step-by-step agent plans stay in the task session. |
 
 Full rationale: [Repository Knowledge Lifecycle](docs/design/2026-08-03-repository-knowledge-lifecycle-design.md).
 

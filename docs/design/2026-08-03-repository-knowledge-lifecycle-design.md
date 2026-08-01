@@ -63,6 +63,16 @@ Documentation categories are created on demand. The first admitted document in
 a category creates or updates that category's `INDEX.md`; an absent category is
 not a defect.
 
+Step-by-step agent execution plans are session state, not new repository
+knowledge, so the lifecycle does not create a `docs/plans/` category. Durable
+content is reclassified through the normal admission model: concise recurring
+gotchas may belong in `AGENTS.md`, while docs-bound decisions, alternatives,
+sequencing contracts, verification gates, handoff contracts, and rollback
+boundaries belong in `docs/design/`. Existing plan docs remain untouched unless
+the user explicitly requests migration or deletion; then durable docs-bound
+knowledge is merged into designs rather than copying execution checklists
+wholesale.
+
 Plugin policy remains under `plugins/agent-docs/references/` so an installed
 skill always reads the version shipped with that plugin. Target repositories
 record only project-specific knowledge.
@@ -80,11 +90,14 @@ record only project-specific knowledge.
 ## Verification
 
 - A learn scenario must retain both automatically admitted non-derivable
-  knowledge and high-scoring derivable knowledge while skipping a low-value
-  derivable restatement.
+  knowledge and high-scoring derivable knowledge, skip a low-value derivable
+  restatement, and extract a durable design decision from a transient checklist
+  without creating `docs/plans/`.
 - A remember scenario must retain useful derivable build/test commands.
 - A curate scenario must retain a useful derivable runbook while still finding
-  structural and drift defects.
+  structural and drift defects, rank categories by risk, and leave an existing
+  `docs/plans/` category alone absent explicit user direction or an ordinary
+  file-level defect.
 - A bootstrap scenario must propose exactly one new file, `AGENTS.md`, wait for
   approval, then prove the applied payload created no `docs/` path.
 - Plugin schema validation, shell syntax checks, scenario builds, markdown diff

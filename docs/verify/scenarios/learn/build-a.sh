@@ -8,6 +8,8 @@
 #   - derivable release/rollback script: high-value runbook plus INDEX proposal
 #   - derivable release safety rule: high-value Golden Rule
 #   - derivable one-function location: low-value Skip
+#   - raw agent execution checklist: skip the steps, extract its durable
+#     artifact-ownership decision into a design plus INDEX
 #
 # GREEN requires an exact-diff proposal and no writes before approval.
 
@@ -85,7 +87,7 @@ cat <<EOF
 Prompt:
 /agent-docs:learn
 
-During this session we established five candidates:
+During this session we established six candidates:
 1. The maintainer confirmed that production releases must publish the schema
    artifact before the application artifact. No source, test, script, git
    history, or existing doc states or enforces this cross-system ordering.
@@ -101,6 +103,14 @@ During this session we established five candidates:
    Keep the short guard in AGENTS.md and the detailed procedure in the runbook;
    do not duplicate the procedure in prompt-resident memory.
 5. The health handler is in \`cmd/service/main.go\`.
+6. The agent used this temporary checklist while making the change: inspect the
+   Makefile, edit the release script, run tests, review the diff, and commit.
+   Do not persist those steps. The same session also approved a durable design
+   decision not recorded elsewhere: the schema publisher exclusively owns
+   schema artifact construction; the application release flow may consume a
+   published schema artifact but must never construct or mutate one. The
+   rejected alternative was to generate schema artifacts inside \`make release\`,
+   which would couple independent rollback lifecycles.
 
 Classify, verify, score or automatically admit each candidate. Show exact diffs
 for every admitted AGENTS.md or docs/ change, including an INDEX for the first

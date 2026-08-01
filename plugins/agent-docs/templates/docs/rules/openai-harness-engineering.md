@@ -1,6 +1,8 @@
 # OpenAI Harness Engineering Practices
 
-> Source: https://openai.com/index/harness-engineering/  
+> Sources: https://openai.com/index/harness-engineering/,
+> https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices,
+> and https://developers.openai.com/cookbook/examples/skills_in_api#operational-best-practices
 > This document is the philosophical foundation for the Agent-First documentation structure used in this repo.
 
 ---
@@ -80,6 +82,31 @@ Codemaps use tables mapping concept → file path. Actual content is read from s
 | Include function bodies | Link to source file with `file.go:42` |
 | Long code blocks in codemap | Architecture diagram + file links |
 | Document "what" instead of "where" | Source files explain "what"; docs record "where" |
+
+#### Keep Prompt-Resident Guidance Lean
+
+`AGENTS.md`, loaded skill instructions, and tool descriptions all compete with
+the task and source code for context. Treat that prompt surface as an evaluated
+interface, not a place to accumulate every useful instruction.
+
+OpenAI reports directional gains from leaner coding-agent system prompts in an
+internal sample: evaluation scores improved by roughly 10-15%, while total
+tokens fell by 41-66% and cost by 33-67%. Those ranges are not guarantees; use
+representative tasks from the target repository to decide what to keep.
+
+| Practice | Application |
+|----------|-------------|
+| Start from a working baseline | Remove one group of instructions, examples, or tools at a time, then rerun the same evaluations |
+| State each instruction once | Keep one authoritative rule and link to it from other pull-based docs instead of repeating the rule prompt-resident |
+| Minimize the tool surface | Expose only task-relevant tools; keep descriptions concise, precise, and explicit about inputs, outputs, and errors |
+| Make examples earn their space | Keep examples and style guidance when they encode a product requirement or correct a measured failure |
+| Put detail in the right layer | Prefer workflow-specific examples and procedures in conditionally loaded skills over always-on prompts; remove duplication within the loaded skill |
+| Measure context growth | Track both initial prompt size and accumulated context in longer sessions, where repetition compounds |
+
+Leaner does not mean underspecified. Preserve domain context, hard constraints,
+approval boundaries, success criteria, and evidence-backed corrections. Remove
+duplication and generic scaffolding before removing behaviorally important
+guidance.
 
 ---
 
@@ -178,6 +205,9 @@ Given one prompt, an agent can drive a feature end-to-end:
 | Rule files without "When to Use" | Agents don't know when to load them |
 | Sub-package `AGENTS.md` for every package | Same crowding problem at sub-package level |
 | Designs/plans without date prefix | Can't browse chronologically |
+| The same instruction repeated across prompts, skills, and tool descriptions | Consumes context and can create conflicting variants |
+| Broad tool exposure for every task | Adds routing noise and inflates the prompt with irrelevant schemas |
+| Examples kept without a product requirement or measured failure | Costs prompt space without demonstrated behavioral value |
 
 ---
 
@@ -193,9 +223,13 @@ Given one prompt, an agent can drive a feature end-to-end:
 | Sub-package `AGENTS.md` only for complex modules | □ |
 | Designs/plans use `YYYY-MM-DD-` prefix | □ |
 | Periodic doc-drift cleanup | □ |
+| Prompt-resident rules have one authoritative source | □ |
+| Tool and example surfaces are task-relevant and eval-backed | □ |
 
 ---
 
 ## Reference
 
 - Original article: https://openai.com/index/harness-engineering/
+- Current prompting guidance: https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices
+- Skills operational guidance: https://developers.openai.com/cookbook/examples/skills_in_api#operational-best-practices

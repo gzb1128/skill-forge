@@ -5,14 +5,6 @@ description: Use when adding models to a custom opencode provider and needing to
 
 # Hydrate OpenCode Model Parameters
 
-Auto-fill model metadata (limit, modalities, reasoning, etc.) for custom providers from the Models.dev catalog.
-
-## When to Use
-
-- Adding models to a custom provider in opencode.json/opencode.jsonc
-- User asks to "configure model specs", "fill model params", or "hydrate models"
-- Provider uses `@ai-sdk/openai-compatible` or any custom npm package
-
 ## Security Gate (MANDATORY — do this first)
 
 opencode config files contain API keys and auth tokens. **You MUST NOT read any opencode config file until the user explicitly consents.**
@@ -87,7 +79,7 @@ Transform the Models.dev fields into opencode model config:
 | `tool_call` | `tool_call` | boolean |
 | `temperature` | `temperature` | boolean |
 | `attachment` | `attachment` | boolean |
-| `interleaved` | `interleaved` | `true` or `{ "field": "reasoning_content" }` |
+| `interleaved` | `interleaved` | `true` or `{ "field": "reasoning_content" }`; preserve exactly because GLM and Kimi may lose reasoning output if the mapping is omitted |
 | `cost.input` | `cost.input` | Per 1M tokens (USD) |
 | `cost.output` | `cost.output` | Per 1M tokens |
 | `cost.cache_read` | `cost.cache_read` | Optional |
@@ -143,12 +135,3 @@ cat /tmp/models-dev.json | jq '.zai.models["glm-5.1"]'
 cat /tmp/models-dev.json | jq '.moonshotai.models["kimi-k2.6"]'
 cat /tmp/models-dev.json | jq '.minimax.models["MiniMax-M2.7"]'
 ```
-
-## Common Mistakes
-
-- **Wrong provider**: Always use the canonical provider (model creator), not a reseller like `openrouter` or `novita-ai`, as they may have different model IDs or stale specs.
-- **Case sensitivity**: Models.dev keys are **not** always lowercase — e.g. `glm-5.1`, `kimi-k2.6` are lowercase, but `MiniMax-M2.7` is mixed case. The Step 1 fuzzy lookup uses `ascii_downcase` to find the key, but Step 2 requires the **exact key** from Step 1's `model_key` field. Never guess the casing — always copy it from the lookup result.
-- **Missing `limit`**: This causes a crash (`maxOutputTokens must be >= 1`). Always include `limit.context` and `limit.output`.
-- **Forgetting `interleaved`**: GLM and Kimi models use `{ "field": "reasoning_content" }` for interleaved thinking. Without this, reasoning output may be lost.
-- **Skipping the security gate**: Never read opencode config without explicit user consent. API keys and tokens in config files are secrets.
-- **Leaving config broken after edit**: Always run Step 5 validation. A half-written config crashes opencode on startup.

@@ -34,7 +34,6 @@ Ask the user for each external project they want to integrate:
 | **Path** | Yes | `/Users/name/code/my-lib`, `~/code/api-server` |
 | **Description** | Yes, or auto-infer | "Shared types and utilities consumed by this service" |
 | **Alias** | No | Short name for `@` autocomplete. Defaults to directory basename. |
-| **Read-only intent** | No | If requested, stop and ask whether read+write is acceptable. |
 
 Accept input in any natural form. If a path exists, read its `AGENTS.md`, `README.md`, or `package.json` (first found) to auto-generate a richer description.
 
@@ -63,9 +62,6 @@ Accept input in any natural form. If a path exists, read its `AGENTS.md`, `READM
 - Alias key defaults to the directory basename.
 - Prefer absolute paths or `~/` for external repos. Relative paths are supported by opencode, but they resolve from the config file's directory, not the cwd; use them only when the user explicitly wants config-relative references.
 - `description` starts with "Use for..." — this surfaces in the agent's system context to guide when it consults the reference.
-- Do NOT add `permission.external_directory` rules for these paths — they are auto-allowed.
-
-Do NOT add `"*": "ask"` catch-alls in `permission.external_directory`. The default is already `ask` for unmatched external paths, and an explicit catch-all overrides the built-in reference allowlist.
 
 Deep-merge all changes: preserve all existing fields the user didn't ask to change.
 
@@ -92,14 +88,5 @@ Remind the user: **Restart opencode for changes to take effect.**
 
 - **Path does not exist**: Warn. Still write config (mark as `[missing]` in summary). The directory may be created later.
 - **Path is inside current project**: Skip — already accessible. Tell the user.
-- **Duplicate alias**: Ask whether to update the existing entry or use a different alias.
-- **No opencode.json**: Create `.opencode/opencode.json` with `$schema` + new fields only.
-- **Read-only requested**: Stop and explain that this skill does not configure read-only references because current opencode permission behavior may fail open. Ask whether to add the reference with read+write access instead.
-
-## Common Mistakes
-
-- **Adding `"*": "ask"` in any config file**: opencode uses `findLast` — the LAST matching rule wins. Any `"*": "ask"` in any config file is merged after the built-in reference allowlist, overrides it, and causes permission prompts. Never add it to `permission.external_directory`.
-- **Modifying `AGENTS.md`**: Do not add integration context to the project's `AGENTS.md`. That file belongs to the project's own knowledge. The `description` field in `references` is the right place — opencode injects it into the agent's system prompt directly.
-- **Promising read-only references**: Do not add `permission.edit` deny rules and report read-only access as enforced. Current opencode behavior can fail open for edits under externally allowed reference paths.
-- **Forgetting to restart opencode**: Config changes have no effect until restart.
-- **Leaving config broken after edit**: Always run Step 3 validation. A malformed `references` block or a stray `"*": "ask"` breaks either the references or the permission flow.
+- **Alias already exists**: Ask whether to update the existing reference or use
+  a different alias.

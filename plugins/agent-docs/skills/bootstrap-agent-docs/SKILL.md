@@ -7,7 +7,7 @@ description: Use when bootstrapping a repository to follow Agent-First documenta
 
 ## Overview
 
-Scaffold a repository's documentation structure to follow **Agent-First Engineering** practices — "Human at the helm. Agents execute." The knowledge base is structured for agent readability with progressive disclosure: a small stable entry point (`AGENTS.md` ~100 lines) that points to deeper docs.
+Scaffold a repository's documentation structure to follow **Agent-First Engineering** practices — "Human at the helm. Agents execute." The knowledge base is structured for agent readability with progressive disclosure: a small stable entry point (`AGENTS.md`) that points to deeper docs.
 
 **Core principle:** Scaffold the structure, do NOT auto-generate content that will rot. Agents and humans fill in content iteratively as the project evolves.
 
@@ -35,31 +35,6 @@ TEMPLATE_DIR="${CLAUDE_PLUGIN_ROOT}/templates"
 
 ## Process
 
-```dot
-digraph bootstrap {
-    "Verify target repo" [shape=box];
-    "Scan repo characteristics" [shape=box];
-    "Confirm scaffolding plan" [shape=diamond];
-    "Copy template tree" [shape=box];
-    "Adapt root AGENTS.md" [shape=box];
-    "Identify complex sub-packages" [shape=box];
-    "Add sub-package AGENTS.md?" [shape=diamond];
-    "Scaffold sub-package AGENTS.md" [shape=box];
-    "Print next-steps checklist" [shape=doublecircle];
-
-    "Verify target repo" -> "Scan repo characteristics";
-    "Scan repo characteristics" -> "Confirm scaffolding plan";
-    "Confirm scaffolding plan" -> "Copy template tree" [label="approved"];
-    "Confirm scaffolding plan" -> "Print next-steps checklist" [label="rejected"];
-    "Copy template tree" -> "Adapt root AGENTS.md";
-    "Adapt root AGENTS.md" -> "Identify complex sub-packages";
-    "Identify complex sub-packages" -> "Add sub-package AGENTS.md?";
-    "Add sub-package AGENTS.md?" -> "Scaffold sub-package AGENTS.md" [label="yes"];
-    "Scaffold sub-package AGENTS.md" -> "Print next-steps checklist";
-    "Add sub-package AGENTS.md?" -> "Print next-steps checklist" [label="no"];
-}
-```
-
 ### Step 1: Verify Target Repo
 
 - Confirm the user's target directory (do NOT assume current working directory).
@@ -85,7 +60,7 @@ Before writing any files, summarize what will be created:
 
 ```
 Will create in <target>:
-- AGENTS.md (root, ~100 lines, table of contents)
+- AGENTS.md (root table of contents)
 - docs/codemaps/INDEX.md
 - docs/rules/{INDEX,non-derivability,document-conventions,openai-harness-engineering}.md
 - docs/{troubleshoot,runbooks,lib,verify,design,plans}/INDEX.md
@@ -93,6 +68,8 @@ Will create in <target>:
 ```
 
 Get user approval before creating files.
+If the user declines, do not write files; report the remaining next steps and
+stop.
 
 ### Step 4: Copy Template Tree
 
@@ -129,7 +106,8 @@ grep -rn 'TODO:' <target>/AGENTS.md <target>/docs/
 
 For values you cannot detect from the repo scan, leave the `{{...}}` placeholder untouched — the user will fill it in.
 
-**Critical:** Keep root `AGENTS.md` under ~150 lines. If you find yourself adding more, link to a doc in `docs/` instead.
+**Critical:** Target root `AGENTS.md` at ~100 lines. Move additional detail into
+`docs/` instead of growing it into an encyclopedia.
 
 ### Step 6: Identify Complex Sub-Packages
 
@@ -168,19 +146,9 @@ Bootstrap complete. Next steps for you/the agent:
 6. Commit the baseline: `git add . && git commit -m "docs: bootstrap agent-first documentation baseline"`
 ```
 
-## Quick Reference
-
-| Action | Where |
-|--------|-------|
-| Template source | `${CLAUDE_PLUGIN_ROOT}/templates/` (set automatically when plugin is enabled) |
-| Root AGENTS.md placeholder list | `$TEMPLATE_DIR/AGENTS.md` (grep for `{{`) |
-| Sub-package AGENTS.md template | `$TEMPLATE_DIR/docs/_templates/subpackage-AGENTS.md` |
-| OpenAI Harness reference | `$TEMPLATE_DIR/docs/rules/openai-harness-engineering.md` |
-| Document conventions | `$TEMPLATE_DIR/docs/rules/document-conventions.md` |
-
 ## Golden Rules (enforce while scaffolding)
 
-1. **Root `AGENTS.md` is a table of contents, not an encyclopedia.** Target ~100 lines.
+1. **Root `AGENTS.md` is a table of contents, not an encyclopedia.**
 2. **Progressive disclosure.** Each level points to the next, never duplicates content.
 3. **INDEX.md per category.** Every `docs/*/` subdir has an INDEX.md mapping topic → file.
 4. **Code maps are maps.** Tables of concept → file path, never copy code into docs.
@@ -188,16 +156,6 @@ Bootstrap complete. Next steps for you/the agent:
    - Design: `docs/design/YYYY-MM-DD-<topic>-design.md`
    - Plan: `docs/plans/YYYY-MM-DD-<feature>.md`
 6. **Sub-package AGENTS.md only when justified.** Do not over-scaffold.
-
-## Common Mistakes
-
-| Mistake | Fix |
-|---------|-----|
-| Copying the template AGENTS.md verbatim with placeholders unfilled | Always replace `{{...}}` or add `TODO:` markers explicitly |
-| Auto-generating code maps from `tree`/AST scans | Don't. They rot in days. Let humans/agents write them when actually needed |
-| Creating sub-package AGENTS.md for every package | Only for state machines, complex modules, cross-cutting constraints |
-| Skipping the user approval step (Step 3) | Always confirm scope before mass-creating files |
-| Forgetting to merge instead of overwrite on existing repos | Default to merge; only overwrite with explicit user consent |
 
 ## Anti-Patterns (do NOT do)
 
@@ -210,5 +168,4 @@ Bootstrap complete. Next steps for you/the agent:
 
 - About to create > 20 files without user approval → STOP, ask
 - About to generate a code map by reading source → STOP, that's the human/agent's job after bootstrap
-- AGENTS.md drifting past 200 lines → STOP, move detail into `docs/`
 - Sub-package AGENTS.md being created for a leaf package → STOP, not justified

@@ -37,8 +37,15 @@ resolves installed versions to git commit SHAs.
 - Treat local skills as enhanced variants of upstream ideas. Preserve useful
   upstream mechanics, but replace assumptions that conflict with this repo.
 - Preserve licenses for copied upstream files and make derivative edits obvious.
-- Keep `SKILL.md` under 500 lines when practical. Move schemas, long rubrics,
-  scripts, templates, and examples into bundled resources.
+- Optimize loaded context, not line count. State each instruction once.
+- Keep explicit routing, concrete workflow, required outputs, gotchas, and
+  examples that encode a product requirement or correct a measured gap.
+- Move optional schemas, long rubrics, scripts, templates, and examples into
+  bundled resources so they are loaded only when needed.
+- Start from a working prompt and tool set. Remove one instruction, example, or
+  tool group at a time; expose only tools the workflow needs; then rerun the
+  same representative evals and compare quality, context growth, tokens, and
+  cost.
 - Prefer concrete workflow instructions over broad principles.
 - Use `python3` in commands. Do not assume a `python` shim exists.
 - Do not treat this skill's `quick_validate.py` as the final schema authority

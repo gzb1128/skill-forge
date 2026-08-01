@@ -117,6 +117,7 @@ your-repo/
 |----------|---------|
 | **Repo as record system** | Knowledge agents can't see doesn't exist. Critical constraints must not live only in chat logs or external docs. |
 | **Progressive disclosure** | `AGENTS.md` provides the entry navigation, `docs/codemaps/*.md` points to components, source code carries the details. |
+| **Lean prompt surfaces** | State prompt-resident rules once, expose only task-relevant tools, and keep examples only when they encode a requirement or fix a measured gap. Validate removals against the same representative tasks. |
 | **INDEX per category** | Every `docs/*/` directory has an `INDEX.md` with a "When to Use" column so agents can triage at a glance. |
 | **Non-derivability filter** | Record only what cannot be derived from source code, git history, or existing docs. |
 | **Maps, not encyclopedias** | Codemaps maintain concept-to-path tables only — they link to source, never copy code. |

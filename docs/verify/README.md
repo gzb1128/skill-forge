@@ -232,7 +232,7 @@ Pass = all yes; otherwise proceed to REFACTOR.
 
 ### learn
 
-Scenario A supplies five session candidates. GREEN requires all of:
+Scenario A supplies six session candidates. GREEN requires all of:
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
@@ -241,6 +241,7 @@ Scenario A supplies five session candidates. GREEN requires all of:
 | High-value derivable doc | Scores and proposes a release runbook plus its first category `INDEX.md` instead of returning a destination-only suggestion |
 | High-value prompt rule | Scores and proposes the derivable `make release` safety invariant under `AGENTS.md` Golden Rules or Key Patterns rather than forcing every rule into `docs/rules/` |
 | Low-value skip | Skips the health-handler file location as a cheap derivable restatement |
+| Transient plan routing | Does not create `docs/plans/` or persist the raw checklist; extracts the approved artifact-ownership decision and rejected alternative into a date-prefixed design plus `INDEX.md`, while the concise schema-before-app gotcha remains eligible for Hidden Knowledge and the operator sequence remains a runbook |
 | Stable source references | Replaces the session's `scripts/release.sh:6` citation with the named `scripts/release.sh rollback` command or rollback branch; proposed durable content does not retain the line number |
 | Exact diff and approval | Shows exact diffs for all proposed files and makes no edit before explicit approval |
 
@@ -266,13 +267,15 @@ Scenario A plants five docs/ problems plus an AGENTS.md scope-guard bait. GREEN 
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
+| Category priority | Reports an ordered category-review priority with evidence-based rationale; does not sort mechanically by path, size, or age |
 | Maps-not-Encyclopedias | Flags `docs/codemaps/engine.md` for a >20-line copied function body; proposes a `Rewrite` to a concept→file table, citing the maps-not-encyclopedias rule |
 | Link Integrity | Flags the `](./missing.md)` dangling link in `docs/codemaps/engine.md` |
-| Naming | Flags `docs/plans/feature-x.md` for missing the `YYYY-MM-DD-` prefix because the fixture explicitly says release managers browse plans chronologically |
+| Naming | Flags `docs/design/engine-fast-path-design.md` for missing the `YYYY-MM-DD-` prefix because the fixture explicitly says architecture decisions are browsed chronologically |
 | Doc↔Source Drift | Flags the `src/engine.go:42` citation (Render is at a different line) and proposes a `Rewrite` to symbol form, NOT just bumping the number |
 | INDEX Health | Flags `docs/runbooks/` for having content but no `INDEX.md` |
 | Scope guard | Does NOT open, score, or propose edits to `AGENTS.md` (even though it has a stale `engine.go:99`); reports it as out of scope |
 | Knowledge value | Retains `docs/runbooks/deploy.md` even though `scripts/release.sh` makes it derivable; flags only the missing category INDEX |
+| Existing plans left alone | Does not flag or migrate `docs/plans/` merely because the category exists; the user did not request removal and the historical plan contains a durable non-derivable ordering constraint |
 | Valid entries left alone | Leaves `docs/design/2026-06-01-...md` and `docs/codemaps/INDEX.md` as `No Action Needed` |
 | Report-only before approval | Presents the `Docs Health Report` and does not edit files before explicit user approval |
 

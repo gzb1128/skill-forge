@@ -44,23 +44,40 @@ detection to doc↔doc within `docs/`.
 
 ## Step 1: Inventory the doc tree
 
-List every `docs/` category and its files. Typical layout:
+List every `docs/` category and its files. Then assign a review priority before
+deep-reading files. Use this default order for common categories, from highest
+to lowest risk and recurring value:
 
 ```text
 docs/
-├── codemaps/   (architecture maps, concept → file)
-├── design/     (YYYY-MM-DD-<topic>-design.md)
-├── plans/      (YYYY-MM-DD-<feature>.md)
-├── rules/      (coding standards)
-├── troubleshoot/  (symptom-indexed)
-├── runbooks/   (deterministic operations)
-├── lib/        (third-party library notes)
-└── verify/     (dry-run verification flows)
+├── rules/          (hard constraints that affect recurring changes)
+├── design/         (durable decisions and delivery boundaries)
+├── runbooks/       (live operational procedures)
+├── verify/         (repeatable completion evidence)
+├── troubleshoot/  (symptom-indexed diagnosis)
+├── codemaps/       (architecture maps, concept → file)
+└── lib/            (third-party behavior and usage)
 ```
+
+Promote a category above this default when the user scoped it explicitly, it
+contains live operational or release authority, many entry points depend on
+it, or inventory checks already show likely source drift or broken routing.
+Audit archives last unless current docs still depend on them. File count,
+line count, and age are investigation signals, not sufficient priority by
+themselves. Put repository-specific categories into the same order using
+impact, actionability, and routing reach, and record the resulting order and
+one-line rationale in the report.
 
 Record which categories exist, which have an `INDEX.md`, and which are empty or
 absent. An absent category is not a defect unless the team needs it; an empty
 category with only a placeholder INDEX is a stale-signal candidate.
+
+Do not recommend creating a new `docs/plans/` category. If one already exists,
+its existence alone is not a defect: audit its files normally, and do not
+propose category-wide deletion or migration unless the user explicitly asks.
+When removal is explicitly in scope, identify durable decisions, constraints,
+ordering dependencies, verification gates, or rollback boundaries to merge
+into `docs/design/`; never move the category wholesale.
 
 ## Step 2: Audit by docs-specific dimensions
 
@@ -72,7 +89,7 @@ an existing repo rule — cite the rule when raising a finding.
 | `INDEX Health` | Categories containing documents normally have an `INDEX.md` with a routing table and no tutorial prose; absent/empty categories do not need placeholders | [Documentation Structure Reference](../../references/doc-structure.md) §INDEX Standards |
 | `Maps-not-Encyclopedias` | Codemaps map concepts and workflows to source; no copied function bodies or config dumps; link to authoritative source instead | [Documentation Structure Reference](../../references/doc-structure.md) §Maps, Not Encyclopedias |
 | `Link Integrity` | Internal doc→doc and doc→source links resolve; no dangling `](./missing.md)`; source links point at paths that still exist | progressive disclosure (implicit) |
-| `Naming` | Files use lowercase-hyphen naming; designs/plans use a date prefix when chronology matters; no ambiguous `-v2` suffix | [Documentation Structure Reference](../../references/doc-structure.md) §Naming |
+| `Naming` | Files use lowercase-hyphen naming; designs use a date prefix when chronology matters; no ambiguous `-v2` suffix | [Documentation Structure Reference](../../references/doc-structure.md) §Naming |
 | `Depth ∝ Surface` | Detail matches workflow/interface complexity and retrieval value rather than a uniform line target | [Documentation Structure Reference](../../references/doc-structure.md) §Maps, Not Encyclopedias |
 | `Knowledge Value` | Non-derivable knowledge is admitted automatically; derivable docs remain when impact, recurrence, discovery cost, actionability, durability, and scope justify maintenance | [Knowledge Admission Policy](../../references/knowledge-admission.md) §Admission Rule and §Value Score |
 | `Doc↔Source Drift` | Claims about source still match current symbols, paths, and behavior; prefer stable symbol/package references over line numbers | [Documentation Structure Reference](../../references/doc-structure.md) §Stable References |
@@ -120,6 +137,7 @@ Output a structured report:
 ### Summary
 
 - Categories reviewed: <list>
+- Category priority: <ordered categories with one-line rationale>
 - Files reviewed: <count>
 - INDEX status: <which categories have one>
 - Changes proposed: <count>

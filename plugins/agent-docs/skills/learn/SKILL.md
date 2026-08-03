@@ -107,6 +107,10 @@ Skip candidates that are:
 - Standard language or framework behavior.
 - Non-obvious commands that belong in Quick Reference, not Hidden Knowledge.
 - Ephemeral session details, including attempts that failed temporarily.
+- Raw step-by-step agent execution plans, task breakdowns, or session
+  checklists. Reclassify durable content normally: a concise recurring gotcha
+  may belong in `AGENTS.md`, while longer decisions, alternatives, sequencing
+  contracts, verification gates, or rollback boundaries belong in a design.
 - Unverified claims.
 
 ## Step 3: Verify and score each retained candidate

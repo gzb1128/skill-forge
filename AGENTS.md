@@ -28,7 +28,7 @@
 | `plugins/skill-creator/` | Skill creation plugin: `skill-creator` |
 | `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects` |
 | `plugins/github-contrib/` | GitHub contribution plugin: `find-contributable-issues` |
-| `docs/design/`, `docs/plans/` | Design docs and implementation plans for this repo |
+| `docs/design/` | Durable decisions, constraints, verification boundaries, and rollback rationale for this repo |
 | `docs/verify/` | RED→GREEN→REFACTOR skill test process and scenario build scripts |
 | `Makefile` | `validate` + `test-skills-link/unlink/status` verification entry points |
 | `README.md` | User-facing install and usage guide |

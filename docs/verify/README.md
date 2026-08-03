@@ -241,6 +241,7 @@ Scenario A supplies five session candidates. GREEN requires all of:
 | High-value derivable doc | Scores and proposes a release runbook plus its first category `INDEX.md` instead of returning a destination-only suggestion |
 | High-value prompt rule | Scores and proposes the derivable `make release` safety invariant under `AGENTS.md` Golden Rules or Key Patterns rather than forcing every rule into `docs/rules/` |
 | Low-value skip | Skips the health-handler file location as a cheap derivable restatement |
+| Stable source references | Replaces the session's `scripts/release.sh:6` citation with the named `scripts/release.sh rollback` command or rollback branch; proposed durable content does not retain the line number |
 | Exact diff and approval | Shows exact diffs for all proposed files and makes no edit before explicit approval |
 
 Pass = all yes; otherwise proceed to REFACTOR.

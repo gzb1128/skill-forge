@@ -122,6 +122,12 @@ Every retained candidate needs explicit evidence before it can be proposed:
 | Existing repository knowledge | Search root guidance and the relevant docs category for an equivalent authoritative entry |
 | Non-derivability claim | Search source, git, and existing docs for the rule; authoritative maintainer context may establish that a convention is intentionally unwritten |
 
+**Stable-reference rule.** When proposed knowledge points to source, prefer
+package paths, files, symbols, headings, and named commands over line numbers.
+Do not carry a session's `file.go:42` citation into durable documentation when
+the referenced symbol or command can identify the same concept. Use line
+numbers only when a tool requires them.
+
 If verification fails, classify the candidate as `Skip` and explain the failed
 check. If verification cannot be performed safely, report it as unverified and
 do not propose a write.

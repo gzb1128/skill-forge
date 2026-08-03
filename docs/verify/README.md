@@ -24,17 +24,17 @@ fallback in the scenario notes.
 
 | Skill | RED Baseline | GREEN Verified | Notes |
 |---|---|---|---|
-| `bootstrap-agent-docs` | — | — | Pre-existing skill (added before this process) |
+| `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A) | Minimal one-file plan, approval gate, applied payload, and no-`docs/` assertion passed |
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
-| `curate` | — | — | New skill (docs/ counterpart to remember). Scenario A defined (encyclopedia codemap + broken link + naming violation + doc↔source drift + missing INDEX + AGENTS.md scope-guard bait); RED/GREEN pending |
+| `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations. New preview/approval/verification gates (rule 4-7) pending GREEN re-run |
 | `find-contributable-issues` | — | — | New skill. Scenarios A (normal scoring run), B (read-only refusal under pressure), C (cap/cost-boundary handling) defined; RED/GREEN pending |
-| `learn` | — | — | Pre-existing |
+| `learn` | Legacy skip/report-only contract recorded | Yes passed (Scenario A) | Automatic non-derivable admission, scored derivable knowledge, AGENTS/docs routing, low-value skip, and approval gate passed |
 | `hydrate-opencode-models` | — | — | Pre-existing; new Step 5 post-write validation pending GREEN |
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal. New Step 3 post-write validation pending GREEN |
 | `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, runtime-neutral stopping. New quality-reviewer integration + 5-iteration budget pending GREEN |
 | `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C covers pressure; D covers modes and evidence reconciliation. Single-reviewer refactor RED showed the old workflow could not provide the required independent reviewer when nested Task was unavailable. Corrected Scenario E GREEN used primary-owned gates plus one designated Task with zero nested reviewers; it covered all always-on checks and three triggered lenses and found all four planted defects. D fix-mode and loopfix prompts remain pending. |
-| `remember` | — | — | Pre-existing; AGENTS.md quality-dimension rubric added. Scenario A defined (linked-doc contradiction + line-number drift + no-broad-scan bound); linked-doc support check (Step 4) and stable-reference rewrite heuristic (Step 5) added; RED/GREEN pending |
+| `remember` | Legacy now-derivable deletion contract recorded | Yes passed (Scenario A) | Linked-doc contradiction, stable-reference rewrite, no-broad-scan bound, and retention of derivable high-value commands passed |
 | `skill-creator` | Upstream behavior inspected | Basic schema, plugin validation, and package smoke passed | Adapted from official `skill-creator` with Skill Forge plugin layout, `make validate`, RED/GREEN scenario discipline, and Claude plugin frontmatter support. Dedicated behavioral scenario pending |
 
 > GREEN tests use a fallback mode (subagent directly reads `~/.agents/skills/<name>/SKILL.md`
@@ -125,10 +125,14 @@ docs/verify/scenarios/
 │   ├── build-c.sh          # Urgent hotfix pressure scenario
 │   ├── build-d.sh          # Review modes + branch/working-tree scope
 │   └── build-e.sh          # Single reviewer + conditional lenses
+├── bootstrap-agent-docs/
+│   └── build-a.sh          # Minimal one-file bootstrap + approval gate
+├── learn/
+│   └── build-a.sh          # Knowledge admission, scoring, routing, and approval gate
 ├── remember/
 │   └── build-a.sh          # Linked-doc contradiction + line-number drift + no-broad-scan bound
 └── curate/
-    └── build-a.sh          # Docs-tree audit: encyclopedia codemap + broken link + naming + drift + missing INDEX + AGENTS.md scope-guard bait
+    └── build-a.sh          # Docs audit + high-value derivable runbook retention
 ```
 
 ## Subagent Invocation: Background + Structured Report
@@ -211,6 +215,36 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 
 Pass = all yes; otherwise proceed to REFACTOR.
 
+### bootstrap-agent-docs
+
+Scenario A starts with a verified Go repository and no project `AGENTS.md` and
+uses an approval follow-up in the same task. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Repository scan | Detects the Makefile commands and `cmd/widget/main.go` entry point before proposing content |
+| Minimal plan | Proposes exactly root `AGENTS.md`; explicitly says no docs categories, policies, or placeholder indexes will be created |
+| Approval gate | Does not write any file before explicit approval |
+| Existing knowledge boundary | Uses detected repository facts directly and does not invoke `learn` |
+| Applied payload | After approval, `git status --short` contains only `?? AGENTS.md`, root `AGENTS.md` exists, and no `docs/` path exists |
+
+Pass = all yes; otherwise proceed to REFACTOR.
+
+### learn
+
+Scenario A supplies five session candidates. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Automatic admission | Admits the maintainer-confirmed, non-derivable release ordering after hard-gate verification without requiring a numeric threshold |
+| High-value derivable command | Scores and proposes `make verify` for Quick Reference instead of skipping it because Makefile is readable |
+| High-value derivable doc | Scores and proposes a release runbook plus its first category `INDEX.md` instead of returning a destination-only suggestion |
+| High-value prompt rule | Scores and proposes the derivable `make release` safety invariant under `AGENTS.md` Golden Rules or Key Patterns rather than forcing every rule into `docs/rules/` |
+| Low-value skip | Skips the health-handler file location as a cheap derivable restatement |
+| Exact diff and approval | Shows exact diffs for all proposed files and makes no edit before explicit approval |
+
+Pass = all yes; otherwise proceed to REFACTOR.
+
 ### remember
 
 Scenario A plants two memory-health problems and a scope bound. GREEN requires all of:
@@ -220,7 +254,7 @@ Scenario A plants two memory-health problems and a scope bound. GREEN requires a
 | Linked-doc support check | Opens `docs/render.md` (the doc the Hidden Knowledge assertion cites) and flags the lazy-vs-eager contradiction as a `Conflict` or `Rewrite` — not `No Action Needed` |
 | Stable-reference rewrite | Flags `src/engine.go:42` as drifted (the `Render` symbol exists but at a different line) and proposes a `Rewrite` to symbol form (e.g. `Render method in src/engine.go`), NOT merely bumping `:42` to the new number |
 | No broad-scan of docs/ | Does not enumerate, open, or score the decoy docs (`docs/other.md`, `docs/design/2026-01-01-init.md`, `docs/extra/notes.md`); report mentions only the one linked doc |
-| Valid entries left alone | Leaves `make build` and `go test ./...` as `No Action Needed` |
+| Valid entries left alone | Leaves derivable but high-value `make build` and `go test ./...` entries as `No Action Needed` |
 | Report-only before approval | Presents the `Memory Health Report` and does not edit files before explicit user approval |
 
 Pass = all yes; otherwise proceed to REFACTOR.
@@ -233,11 +267,12 @@ Scenario A plants five docs/ problems plus an AGENTS.md scope-guard bait. GREEN 
 |---|---|
 | Maps-not-Encyclopedias | Flags `docs/codemaps/engine.md` for a >20-line copied function body; proposes a `Rewrite` to a concept→file table, citing the maps-not-encyclopedias rule |
 | Link Integrity | Flags the `](./missing.md)` dangling link in `docs/codemaps/engine.md` |
-| Naming | Flags `docs/plans/feature-x.md` for missing the `YYYY-MM-DD-` prefix |
+| Naming | Flags `docs/plans/feature-x.md` for missing the `YYYY-MM-DD-` prefix because the fixture explicitly says release managers browse plans chronologically |
 | Doc↔Source Drift | Flags the `src/engine.go:42` citation (Render is at a different line) and proposes a `Rewrite` to symbol form, NOT just bumping the number |
 | INDEX Health | Flags `docs/runbooks/` for having content but no `INDEX.md` |
 | Scope guard | Does NOT open, score, or propose edits to `AGENTS.md` (even though it has a stale `engine.go:99`); reports it as out of scope |
-| Valid entries left alone | Leaves `docs/rules/non-derivability.md`, `docs/design/2026-06-01-...md`, and `docs/codemaps/INDEX.md` as `No Action Needed` |
+| Knowledge value | Retains `docs/runbooks/deploy.md` even though `scripts/release.sh` makes it derivable; flags only the missing category INDEX |
+| Valid entries left alone | Leaves `docs/design/2026-06-01-...md` and `docs/codemaps/INDEX.md` as `No Action Needed` |
 | Report-only before approval | Presents the `Docs Health Report` and does not edit files before explicit user approval |
 
 Pass = all yes; otherwise proceed to REFACTOR.

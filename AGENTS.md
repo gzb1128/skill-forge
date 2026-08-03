@@ -1,8 +1,5 @@
 # skill-forge
 
-> **Agent-First Engineering**: This repository follows [OpenAI Harness Engineering](plugins/agent-docs/templates/docs/rules/openai-harness-engineering.md) —
-> "Human at the helm. Agents execute."
-
 `skill-forge` is a Claude Code plugin marketplace for forging agent runtime environments. The repo hosts the marketplace catalog, plugin source code, skill verification flows, and Agent-First documentation templates.
 
 ## Golden Rules
@@ -24,8 +21,9 @@
 | Path | Purpose |
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`skill-forge`) |
-| `plugins/agent-docs/` | Documentation plugin: `bootstrap-agent-docs`, `learn`, `remember` |
-| `plugins/agent-docs/templates/` | Template payload rsynced by `bootstrap-agent-docs` |
+| `plugins/agent-docs/` | Repository knowledge plugin: `bootstrap-agent-docs`, `learn`, `remember`, `curate` |
+| `plugins/agent-docs/references/` | Shared knowledge admission and documentation structure policy |
+| `plugins/agent-docs/templates/` | Minimal `AGENTS.md` payload copied by `bootstrap-agent-docs` |
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `plugins/skill-creator/` | Skill creation plugin: `skill-creator` |
 | `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects` |

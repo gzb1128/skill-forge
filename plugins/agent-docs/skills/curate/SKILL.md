@@ -19,15 +19,21 @@ using the workflow below.
 
 This is the complement to `/agent-docs:remember`:
 
-- `/agent-docs:learn` proposes verified memory additions to `AGENTS.md`.
+- `/agent-docs:learn` proposes verified knowledge additions to `AGENTS.md` or
+  `docs/`.
 - `/agent-docs:remember` audits `AGENTS.md` memory surfaces (prompt-resident).
 - `/agent-docs:curate` audits the `docs/` knowledge base (pull-based).
 
 The economics differ and so do the rubrics. `AGENTS.md` pays per prompt line, so
-`remember` judges Signal / Conciseness / Non-Derivability strictly. `docs/` is
+`remember` uses a high value threshold. `docs/` is
 read on demand and may legitimately be longer or more detailed, so `curate`
 judges **navigability, link integrity, structure, and drift** — not brevity for
-its own sake. Both trees stay subject to the repo's non-derivability rule.
+its own sake. Derivability alone never makes useful documentation invalid.
+
+Read and apply the shared
+[Knowledge Admission Policy](../../references/knowledge-admission.md) and
+[Documentation Structure Reference](../../references/doc-structure.md). Do not
+invoke `learn`; all knowledge workflows independently use the shared policy.
 
 **Scope guard — `docs/` only, never `AGENTS.md`.** Audit files under `docs/`
 and the doc-tree indexes. Do not open, score, or propose edits to any
@@ -63,13 +69,13 @@ an existing repo rule — cite the rule when raising a finding.
 
 | Dimension | Checks | Source rule |
 |-----------|--------|-------------|
-| `INDEX Health` | Every `docs/<category>/` has an `INDEX.md`; it is ~30-60 lines; it has a table with a "When to Use" column; no tutorial prose | [document-conventions.md](../../templates/docs/rules/document-conventions.md) §INDEX, [openai-harness-engineering.md](../../templates/docs/rules/openai-harness-engineering.md) §Anti-Patterns to Avoid |
-| `Maps-not-Encyclopedias` | Codemaps map concept → file path; no copied function bodies, no config dumps, no code blocks > ~20 lines; link to source instead | [openai-harness-engineering.md](../../templates/docs/rules/openai-harness-engineering.md) §2, [codemaps/INDEX.md](../../templates/docs/codemaps/INDEX.md) §Anti-Patterns |
+| `INDEX Health` | Categories containing documents normally have an `INDEX.md` with a routing table and no tutorial prose; absent/empty categories do not need placeholders | [Documentation Structure Reference](../../references/doc-structure.md) §INDEX Standards |
+| `Maps-not-Encyclopedias` | Codemaps map concepts and workflows to source; no copied function bodies or config dumps; link to authoritative source instead | [Documentation Structure Reference](../../references/doc-structure.md) §Maps, Not Encyclopedias |
 | `Link Integrity` | Internal doc→doc and doc→source links resolve; no dangling `](./missing.md)`; source links point at paths that still exist | progressive disclosure (implicit) |
-| `Naming` | Designs/plans use `YYYY-MM-DD-` prefix; files are lowercase-hyphen; no `-v2` suffix (supersede by editing, not versioning) | [document-conventions.md](../../templates/docs/rules/document-conventions.md) §Naming |
-| `Depth ∝ Surface` | Codemap length matches module role (core ~200-300, standard ~100, leaf ≤50); not a 300-line map for a leaf utility | [document-conventions.md](../../templates/docs/rules/document-conventions.md) §Depth |
-| `Non-Derivability (docs)` | The doc records something not inferrable from source + git + existing docs; not restating visible code; design docs capture the *decision*, not the implementation | [non-derivability.md](../../templates/docs/rules/non-derivability.md) |
-| `Doc↔Source Drift` | Claims a doc makes about source (symbols, paths, behavior, line-anchored refs) still match the source; flag stale `file.go:NN` where the symbol moved | [openai-harness-engineering.md](../../templates/docs/rules/openai-harness-engineering.md) §7 (entropy/GC) |
+| `Naming` | Files use lowercase-hyphen naming; designs/plans use a date prefix when chronology matters; no ambiguous `-v2` suffix | [Documentation Structure Reference](../../references/doc-structure.md) §Naming |
+| `Depth ∝ Surface` | Detail matches workflow/interface complexity and retrieval value rather than a uniform line target | [Documentation Structure Reference](../../references/doc-structure.md) §Maps, Not Encyclopedias |
+| `Knowledge Value` | Non-derivable knowledge is admitted automatically; derivable docs remain when impact, recurrence, discovery cost, actionability, durability, and scope justify maintenance | [Knowledge Admission Policy](../../references/knowledge-admission.md) §Admission Rule and §Value Score |
+| `Doc↔Source Drift` | Claims about source still match current symbols, paths, and behavior; prefer stable symbol/package references over line numbers | [Documentation Structure Reference](../../references/doc-structure.md) §Stable References |
 
 ## Step 3: Verify findings
 
@@ -82,7 +88,7 @@ Before proposing a cleanup, verify it:
 | Encyclopedia codemap | Count code-block lines or copied config size; cite the line range |
 | Missing INDEX | Confirm no `INDEX.md` in that category directory |
 | Naming violation | Show the actual filename vs. the required pattern |
-| Now-derivable doc | Cite the source/git/doc that now covers the same ground |
+| Derivable doc proposed for deletion | Cite the source/git/doc that covers the same ground, score its remaining value, and identify the cheaper replacement surface |
 | Duplicate across docs | Cite both doc locations |
 
 If a finding cannot be verified, label it `Needs user input` instead of treating
@@ -98,7 +104,7 @@ every unrelated edit; bumping the number only fixes it until the next edit.
 | Action | Use when |
 |--------|----------|
 | `Promotions` | A doc belongs in a different category (e.g. a how-to in `codemaps/` belongs in `runbooks/`) |
-| `Deletions` | Content is stale, duplicated, now-derivable, or a placeholder with no plan to fill |
+| `Deletions` | Content fails a hard gate, is a useless placeholder, or is derivable and scores too low for its maintenance cost; valid non-derivable content must be retained or rerouted |
 | `Rewrites` | Content is true but encyclopedia-style, mis-linked, mis-named, or drifted |
 | `Duplicates` | The same guidance appears in two docs within `docs/` |
 | `Conflicts` | Two docs contradict each other and need user judgment |
@@ -144,9 +150,9 @@ Output a structured report:
 <brief note on categories/files that are valid and well-placed>
 ```
 
-If the `docs/` tree is empty or only has placeholder INDEXes, say so and suggest
-running `bootstrap-agent-docs` or writing docs only when there is non-obvious
-knowledge to record.
+If the `docs/` tree is empty or only has placeholder INDEXes, say so. Suggest
+removing empty placeholders and using `/agent-docs:learn` when valuable
+knowledge is ready to record; bootstrap does not create docs categories.
 
 ## Step 6: User approval
 

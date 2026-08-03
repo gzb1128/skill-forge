@@ -1,15 +1,24 @@
 ---
 name: bootstrap-agent-docs
-description: Use when bootstrapping a repository to follow Agent-First documentation practices (OpenAI Harness Engineering), when the user says "bootstrap agent docs", "init agent docs", "apply our doc baseline", "scaffold AGENTS.md", or when an existing repo lacks a structured docs/ directory or root AGENTS.md table-of-contents
+description: Use when a repository has no project AGENTS.md and needs a minimal agent entry point with verified commands and architecture routing, or when the user says "bootstrap agent docs", "init agent docs", or "scaffold AGENTS.md"
 ---
 
 # Bootstrap Agent-First Documentation
 
 ## Overview
 
-Scaffold a repository's documentation structure to follow **Agent-First Engineering** practices — "Human at the helm. Agents execute." The knowledge base is structured for agent readability with progressive disclosure: a small stable entry point (`AGENTS.md`) that points to deeper docs.
+Create a minimal project `AGENTS.md` that helps agents build, test, and orient in
+the repository. Do not scaffold a generic `docs/` knowledge base: documentation
+categories should be created on demand after useful knowledge is identified.
 
-**Core principle:** Scaffold the structure, do NOT auto-generate content that will rot. Agents and humans fill in content iteratively as the project evolves.
+**Core principle:** Bootstrap structure, not generic knowledge. Ongoing knowledge
+capture and cleanup belong to `learn`, `remember`, and `curate`.
+
+Read the plugin-owned
+[Knowledge Admission Policy](../../references/knowledge-admission.md) and
+[Documentation Structure Reference](../../references/doc-structure.md). Use
+them to choose the small amount of high-value entry-point content, but do not
+copy either reference into the target repository or invoke `learn`.
 
 **Template source:** This skill ships its template tree alongside itself in the plugin. The templates live at `${CLAUDE_PLUGIN_ROOT}/templates/` once the plugin is installed. Bind it once at the start of the run:
 
@@ -23,15 +32,17 @@ TEMPLATE_DIR="${CLAUDE_PLUGIN_ROOT}/templates"
 ## When to Use
 
 **Use when:**
-- Initializing a new repo with Agent-First docs baseline
-- An existing repo has no `AGENTS.md` or has a bloated 1000+ line `AGENTS.md`
-- Documentation is scattered with no INDEX, no clear convention
+- Initializing a repo that has no project `AGENTS.md`
+- Creating a minimal agent entry point with verified project commands and
+  architecture
 - The user explicitly asks to "apply our doc practices" or "bootstrap agent docs"
 
 **Do NOT use when:**
-- The repo already has a working `AGENTS.md` table-of-contents + `docs/` tree (just improve it incrementally)
-- The user wants to write a single document (create that document directly)
-- The user wants to add ONE specific rule/codemap (just create that file directly)
+- The repo already has a working project `AGENTS.md` (use `remember` to audit it)
+- The user wants to capture session knowledge (use `learn`)
+- The user wants to audit or reorganize `docs/` (use `curate`)
+- The user wants to create a specific document (create only that admitted doc
+  and its category index if needed)
 
 ## Process
 
@@ -39,7 +50,8 @@ TEMPLATE_DIR="${CLAUDE_PLUGIN_ROOT}/templates"
 
 - Confirm the user's target directory (do NOT assume current working directory).
 - Check it is a git repo (`git rev-parse --show-toplevel`). If not, ask the user to confirm.
-- Check for existing `AGENTS.md` / `docs/`. If present, ask whether to **merge** (preserve existing) or **replace** (overwrite). Default to merge.
+- Check for an existing project `AGENTS.md`. If present, stop and recommend
+  `remember`; do not replace or merge it through bootstrap.
 
 ### Step 2: Scan Repo Characteristics
 
@@ -47,25 +59,23 @@ Run quick detection and report findings to the user:
 
 | Signal | Command | Used for |
 |--------|---------|----------|
-| Language | look at top extensions: `git ls-files \| sed 's/.*\.//' \| sort \| uniq -c \| sort -rn \| head -5` | Choose example rules to seed |
+| Language | look at top extensions: `git ls-files \| sed 's/.*\.//' \| sort \| uniq -c \| sort -rn \| head -5` | Architecture summary and command verification |
 | Build system | look for `Makefile`, `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml` | Quick Reference table commands |
 | Entry points | look for `cmd/*/main.go`, `src/index.*`, `main.py` | Architecture section in AGENTS.md |
-| Sub-packages with potential complexity | `find . -type d \( -name internal -o -name pkg -o -name src -o -name lib \) -maxdepth 3` | Candidates for sub-package AGENTS.md |
 
 Report what was detected. Do NOT proceed silently.
 
 ### Step 3: Confirm Scaffolding Plan
 
-Before writing any files, summarize what will be created:
+Before writing, summarize the one file that will be created:
 
 ```
 Will create in <target>:
 - AGENTS.md (root table of contents)
-- docs/codemaps/INDEX.md
-- docs/rules/{INDEX,non-derivability,document-conventions,openai-harness-engineering}.md
-- docs/{troubleshoot,runbooks,lib,verify,design,plans}/INDEX.md
-- docs/_templates/{codemap,design,plan,subpackage-AGENTS}.md
 ```
+
+Explicitly state that no `docs/` categories, policy documents, or placeholder
+indexes will be created.
 
 Get user approval before creating files.
 If the user declines, do not write files; report the remaining next steps and
@@ -77,19 +87,13 @@ Source: `$TEMPLATE_DIR` (resolved in Overview — `${CLAUDE_PLUGIN_ROOT}/templat
 
 Both strategies below use `--ignore-existing` so the target's `.gitignore`, `AGENTS.md`, or any pre-existing file is never overwritten.
 
-**Strategy A — fresh repo (no existing AGENTS.md/docs):**
+**Fresh repo (no project AGENTS.md):**
 ```bash
 rsync -av --ignore-existing "$TEMPLATE_DIR/" <target>/
 ```
 
-**Strategy B — existing repo (merge, never overwrite):**
-```bash
-rsync -av --ignore-existing "$TEMPLATE_DIR/" <target>/
-# Then list what's new and what was skipped:
-cd <target> && git status
-```
-
-After copy, run `cd <target> && git status` to see exactly what was created. If the user wants to overwrite a specific file, copy it explicitly after confirming.
+After copy, run `cd <target> && git status` and confirm that bootstrap created
+only `AGENTS.md`. If any `docs/` files appear, stop: the plugin payload is stale.
 
 ### Step 5: Adapt Root AGENTS.md
 
@@ -100,8 +104,8 @@ The copied `AGENTS.md` contains two kinds of placeholders:
 
 Search both with:
 ```bash
-grep -rn '{{' <target>/AGENTS.md <target>/docs/
-grep -rn 'TODO:' <target>/AGENTS.md <target>/docs/
+grep -n '{{' <target>/AGENTS.md
+grep -n 'TODO:' <target>/AGENTS.md
 ```
 
 For values you cannot detect from the repo scan, leave the `{{...}}` placeholder untouched — the user will fill it in.
@@ -109,21 +113,7 @@ For values you cannot detect from the repo scan, leave the `{{...}}` placeholder
 **Critical:** Target root `AGENTS.md` at ~100 lines. Move additional detail into
 `docs/` instead of growing it into an encyclopedia.
 
-### Step 6: Identify Complex Sub-Packages
-
-A sub-package warrants its own `AGENTS.md` when ANY of:
-
-| Condition | Threshold |
-|-----------|-----------|
-| State machine | Has explicit state transitions, phase flow |
-| High complexity | Single file > 800 LoC, or package total > 3000 LoC |
-| Cross-module constraints | Changes require updates in multiple docs/configs |
-| Special error handling | Retry, compensation, rollback logic |
-| High test complexity | > 5 test files or has integration tests |
-
-For each candidate, ASK the user before creating — do not auto-create. Sub-package `AGENTS.md` template is in `$TEMPLATE_DIR/docs/_templates/subpackage-AGENTS.md`.
-
-### Step 7: Next-Steps Checklist
+### Step 6: Next-Steps Checklist
 
 Print this for the user (the agent is done; the user/agent iterates from here):
 
@@ -131,41 +121,36 @@ Print this for the user (the agent is done; the user/agent iterates from here):
 Bootstrap complete. Next steps for you/the agent:
 
 1. Fill placeholders in AGENTS.md (search for "TODO:" markers)
-2. (Optional) Use the agent-docs manual skills for ongoing memory maintenance:
+2. Use the agent-docs manual skills for ongoing knowledge maintenance:
    /agent-docs:learn
    /agent-docs:remember
+   /agent-docs:curate
    If this repo was scaffolded without the plugin installed, install it first:
    claude plugin marketplace add gzb1128/skill-forge
    claude plugin install agent-docs@skill-forge
-3. If useful, write your first code map: docs/codemaps/<component>.md
-   - Apply the non-derivability principle (docs/rules/non-derivability.md)
-   - Use the "map, not encyclopedia" pattern (docs/rules/openai-harness-engineering.md)
-4. Add project-specific coding rules under docs/rules/, update docs/rules/INDEX.md
-5. Add the first design doc when you have a non-obvious decision to record:
-   docs/design/YYYY-MM-DD-<topic>-design.md
-6. Commit the baseline: `git add . && git commit -m "docs: bootstrap agent-first documentation baseline"`
+3. Create a docs category only when admitted knowledge needs it; add its
+   INDEX.md with the first document
+4. Commit the entry point: `git add AGENTS.md && git commit -m "docs: add agent entry point"`
 ```
 
 ## Golden Rules (enforce while scaffolding)
 
 1. **Root `AGENTS.md` is a table of contents, not an encyclopedia.**
-2. **Progressive disclosure.** Each level points to the next, never duplicates content.
-3. **INDEX.md per category.** Every `docs/*/` subdir has an INDEX.md mapping topic → file.
-4. **Code maps are maps.** Tables of concept → file path, never copy code into docs.
-5. **Naming conventions.**
-   - Design: `docs/design/YYYY-MM-DD-<topic>-design.md`
-   - Plan: `docs/plans/YYYY-MM-DD-<feature>.md`
-6. **Sub-package AGENTS.md only when justified.** Do not over-scaffold.
+2. **Verified project facts only.** Detect commands and entry points; keep
+   placeholders when evidence is unavailable.
+3. **No generic docs payload.** Knowledge policy stays in the plugin.
+4. **Create docs on demand.** Empty category indexes are not a baseline.
 
 ## Anti-Patterns (do NOT do)
 
 - **One giant `AGENTS.md`** — kills agent context, contains stale rules, can't be verified mechanically
-- **Nested `docs/x/y/z/`** — flat is better; use purpose-specific subdirs only
-- **`docs/codemaps/*.md` containing copy-pasted config or function bodies** — link to source files instead
-- **`docs/rules/INDEX.md` missing "When to Use" column** — agents need triggering signals, not just titles
+- **Copying plugin governance rules into the target repo** — they drift from the
+  installed skills
+- **Pre-creating empty docs categories or placeholder indexes** — structure
+  without admitted knowledge becomes noise
 
 ## Red Flags — Stop and Reconsider
 
-- About to create > 20 files without user approval → STOP, ask
-- About to generate a code map by reading source → STOP, that's the human/agent's job after bootstrap
-- Sub-package AGENTS.md being created for a leaf package → STOP, not justified
+- About to create anything other than root `AGENTS.md` → STOP; it is outside
+  bootstrap's boundary
+- An existing project `AGENTS.md` is present → STOP and use `remember`

@@ -1,6 +1,6 @@
 {
   "name": "agent-docs",
-  "description": "Agent-First documentation tools — bootstrap repository memory, maintain AGENTS.md knowledge, and apply OpenAI Harness Engineering practices",
+  "description": "Repository knowledge tools for minimal AGENTS.md bootstrap, value-based capture, and focused AGENTS.md and docs audits",
   "author": {
     "name": "Skill Forge Team"
   }

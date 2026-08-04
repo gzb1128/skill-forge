@@ -14,6 +14,7 @@
 | `code-quality` | Code review, commit gates, diff cleanup, and autonomous fix loops | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Skill creation, upstream skill migration, behavioral evals, and trigger tuning | `skill-creator` |
 | `opencode-customize` | OpenCode configuration customization, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
+| `codex-strategy` | Codex implementation-worker routing by design clarity and coupling | `codex-subagent-strategy` |
 | `github-contrib` | GitHub contribution discovery and issue ranking | `find-contributable-issues` |
 
 ## What's here
@@ -27,6 +28,7 @@
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `plugins/skill-creator/` | Skill creation plugin: `skill-creator` |
 | `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects` |
+| `plugins/codex-strategy/` | Codex orchestration plugin: `codex-subagent-strategy` |
 | `plugins/github-contrib/` | GitHub contribution plugin: `find-contributable-issues` |
 | `docs/design/` | Durable decisions, constraints, verification boundaries, and rollback rationale for this repo |
 | `docs/verify/` | RED→GREEN→REFACTOR skill test process and scenario build scripts |
@@ -47,7 +49,7 @@
 
 ## Plugin Marketplace
 
-This repo IS the marketplace. `.claude-plugin/marketplace.json` lists five plugins: `agent-docs`, `code-quality`, `skill-creator`, `opencode-customize`, and `github-contrib`.
+This repo IS the marketplace. `.claude-plugin/marketplace.json` lists six plugins: `agent-docs`, `code-quality`, `skill-creator`, `opencode-customize`, `codex-strategy`, and `github-contrib`.
 
 ### Versioning: git commit SHA, not semver
 
@@ -74,6 +76,7 @@ claude plugin install agent-docs@skill-forge
 claude plugin install code-quality@skill-forge
 claude plugin install skill-creator@skill-forge
 claude plugin install opencode-customize@skill-forge
+claude plugin install codex-strategy@skill-forge
 claude plugin install github-contrib@skill-forge
 claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
 ```
@@ -102,6 +105,11 @@ claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
 
 ## Hidden Knowledge
 
+- **Skill runtime boundary**: Skill Forge uses `.claude-plugin` for source and
+  marketplace packaging, while installed agent skills are exposed from plugin
+  caches through `~/.agents/skills/<skill>`. Evaluate runtime-specific behavior
+  at the `SKILL.md` surface; do not require the containing plugin to execute in
+  Claude Code.
 - **`bootstrap-agent-docs` resolves templates from `${CLAUDE_PLUGIN_ROOT}/templates/`**. This env var is set automatically by Claude Code when the plugin is enabled. Do NOT reference templates by repo-relative paths — the plugin is installed into `~/.claude/plugins/cache/...` and cannot see this repo's working tree.
 - **Plugin install only copies content inside the plugin directory.** Paths outside `plugins/<name>/` are invisible to installed plugins. Never write `../../something` in a skill; pack everything the skill needs into its plugin directory.
 - **Marketplace source uses the `git-subdir.url` field.** The current Claude Code schema requires `git-subdir` sources to use `url`, not the legacy `repo` field.

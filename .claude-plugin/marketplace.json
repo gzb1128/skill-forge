@@ -64,6 +64,20 @@
       "homepage": "https://github.com/gzb1128/skill-forge"
     },
     {
+      "name": "codex-strategy",
+      "description": "Codex subagent strategy — route implementation workers by design clarity and coupling while leaving other tasks to native model selection",
+      "author": {
+        "name": "Skill Forge Team"
+      },
+      "category": "productivity",
+      "source": {
+        "source": "git-subdir",
+        "url": "gzb1128/skill-forge",
+        "path": "plugins/codex-strategy"
+      },
+      "homepage": "https://github.com/gzb1128/skill-forge"
+    },
+    {
       "name": "github-contrib",
       "description": "GitHub contribution discovery — investigate open issues in a repository and rank them by how contribute-able they are, with difficulty, claimed status, linked PRs, staleness, maintainer engagement, and area indicators for filtering",
       "author": {

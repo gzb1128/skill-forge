@@ -47,7 +47,9 @@ Keep it concise, verified, and useful across repeated tasks.
 
 ## Knowledge Maintenance
 
-- Use `/agent-docs:learn` to capture and route valuable session knowledge.
+- Use `/agent-docs:learn` only when explicitly reviewing a session to capture
+  newly discovered repository knowledge. Handle requested document and task-list
+  updates directly without routing them through `learn`.
 - Use `/agent-docs:remember` to audit this file and any scoped `AGENTS.md` files.
 - Use `/agent-docs:curate` to audit an existing `docs/` knowledge base.
 - Create a docs category and its `INDEX.md` only when the first useful document

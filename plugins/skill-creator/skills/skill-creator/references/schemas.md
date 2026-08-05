@@ -89,6 +89,10 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
 
 ```json
 {
+  "evaluator": {
+    "role": "grader",
+    "model": "<model-and-version>"
+  },
   "expectations": [
     {
       "text": "The output includes the name 'John Smith'",
@@ -151,6 +155,7 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
 
 **Fields:**
 - `expectations[]`: Graded expectations with evidence
+- `evaluator`: Frozen grader role and exact model/version from `protocol.json`
 - `summary`: Aggregate pass/fail counts
 - `execution_metrics`: Tool usage and output size (from executor's metrics.json)
 - `timing`: Wall clock timing (from timing.json)
@@ -216,6 +221,132 @@ Wall clock timing for a run. Located at `<run-dir>/timing.json`.
 
 ---
 
+## protocol.json
+
+Frozen benchmark design. Located at `<iteration-dir>/protocol.json` and written
+before the first run. Do not update it with observed results; store coverage,
+discarded infrastructure attempts, and conclusions in separate artifacts.
+
+```json
+{
+  "status": "frozen-before-execution",
+  "candidate": {
+    "mode": "candidate",
+    "path": "/absolute/path/to/candidate",
+    "revision": "working-tree",
+    "content_sha256": "<sha256>"
+  },
+  "baseline": {
+    "mode": "frozen_old_snapshot",
+    "path": "/absolute/path/to/baseline",
+    "revision": "<git-sha>",
+    "content_sha256": "<sha256>"
+  },
+  "evals_sha256": "<sha256>",
+  "executor": {
+    "model": "<model-and-version>",
+    "tools": ["read", "edit", "shell"],
+    "time_limit_seconds": 600,
+    "token_budget": 20000
+  },
+  "evaluation": {
+    "grader_model": "<model-and-version>",
+    "comparator_model": "<model-and-version>",
+    "analyzer_model": "<model-and-version>"
+  },
+  "fixture_build_command": "bash docs/verify/scenarios/example/build-a.sh",
+  "fixture_revision": "<git-sha>",
+  "trials_per_eval_per_configuration": 3,
+  "paired_order": {
+    "1": ["with_skill", "without_skill"],
+    "2": ["without_skill", "with_skill"],
+    "3": ["with_skill", "without_skill"]
+  },
+  "must_pass_expectations": ["boundary behavior never regresses"],
+  "promotion_rule": "All must-pass expectations pass and candidate mean pass rate exceeds baseline."
+}
+```
+
+Use `null` for an unavailable executor limit; do not infer one. For a new skill,
+set `baseline.mode` to `no_skill`. For an existing skill, use
+`frozen_old_snapshot` and include its immutable content hash. `revision` is an
+optional human-readable source label; `content_sha256` is the required
+immutable identity. `evals_sha256` is
+the SHA-256 of the exact `evals/evals.json` bytes. When a configuration `path`
+names one file, `content_sha256` is that file's SHA-256. When it names a skill
+directory, hash every file in sorted relative-path order, feeding each relative
+path, a NUL byte, its bytes, and another NUL byte into one SHA-256 digest. This
+freezes scripts, references, and assets as well as `SKILL.md`.
+
+---
+
+## run_manifest.json
+
+Per-run provenance. Located at `<run-dir>/run_manifest.json` and written before
+the executor starts.
+
+```json
+{
+  "eval_id": 1,
+  "trial": 1,
+  "pair_id": "eval-1-trial-1",
+  "configuration": "without_skill",
+  "configuration_role": "baseline",
+  "execution_order": 2,
+  "skill_source": {
+    "mode": "frozen_old_snapshot",
+    "path": "/absolute/path/to/baseline",
+    "revision": "<git-sha>",
+    "content_sha256": "<sha256>"
+  },
+  "prompt_sha256": "<sha256>",
+  "fixture_revision": "<git-sha>",
+  "executor": {
+    "model": "<model-and-version>",
+    "tools": ["read", "edit", "shell"],
+    "time_limit_seconds": 600,
+    "token_budget": 20000
+  }
+}
+```
+
+`configuration` must match the canonical directory name. The role and
+`skill_source.mode` distinguish a true no-skill baseline from an old-skill
+snapshot. When the protocol records a `revision`, the run manifest repeats it;
+otherwise the required path and content hash identify the source. Both members
+of a pair must share `pair_id`, prompt hash, fixture
+revision, model, tools, and budgets while recording their actual order.
+
+---
+
+## discarded_attempt.json
+
+Infrastructure-failure record. Located at
+`<iteration-dir>/discarded_attempts/attempt-N/discarded_attempt.json`; sibling
+configuration directories retain both members' partial outputs. This directory
+is outside the canonical `eval-N/` tree and is intentionally not aggregated.
+
+```json
+{
+  "attempt_id": "attempt-1",
+  "eval_id": 2,
+  "trial": 1,
+  "pair_id": "eval-2-trial-1",
+  "discarded_at": "2026-01-15T11:00:00Z",
+  "reason": "Executor transport closed before either task completed.",
+  "classification": "infrastructure_failure",
+  "configurations_retained": ["with_skill", "without_skill"],
+  "replacement_pair_id": "eval-2-trial-1"
+}
+```
+
+Only infrastructure failures that prevent task execution qualify. A weak,
+incorrect, timed-out-by-task, or otherwise disappointing completed result stays
+in the canonical run tree and is graded. Preserve any available transcript,
+manifest, timing, and partial outputs beneath the attempt directory.
+
+---
+
 ## benchmark.json
 
 Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
@@ -229,7 +360,24 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
     "analyzer_model": "most-capable-model",
     "timestamp": "2026-01-15T10:30:00Z",
     "evals_run": [1, 2, 3],
-    "runs_per_configuration": 3
+    "evals_planned": [1, 2, 3],
+    "runs_per_configuration": 3,
+    "planned_runs_per_eval_per_configuration": 3,
+    "completed_runs_per_configuration": {
+      "with_skill": 9,
+      "without_skill": 9
+    },
+    "completed_runs_by_eval": {
+      "1": {"with_skill": 3, "without_skill": 3},
+      "2": {"with_skill": 3, "without_skill": 3},
+      "3": {"with_skill": 3, "without_skill": 3}
+    },
+    "run_provenance_validation": "passed",
+    "evaluation_provenance_validation": "passed",
+    "provenance_validation": "passed",
+    "blind_comparisons_completed": 9,
+    "blind_comparisons_validated": 9,
+    "blind_comparisons_missing": []
   },
 
   "runs": [
@@ -290,16 +438,39 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
   - `skill_name`: Name of the skill
   - `timestamp`: When the benchmark was run
   - `evals_run`: List of eval names or IDs
-  - `runs_per_configuration`: Number of runs per config (e.g. 3)
+  - `evals_planned`: Frozen eval IDs from the iteration's `evals/evals.json`;
+    unlike `evals_run`, this retains evals with zero completed runs
+  - `runs_per_configuration`: Uniform completed runs per eval/config, or `null`
+    when the observed matrix is incomplete or uneven
+  - `planned_runs_per_eval_per_configuration`: Frozen trial count from
+    `protocol.json`, or `null` when no valid protocol is available
+  - `completed_runs_per_configuration`: Actual graded run count by configuration
+  - `completed_runs_by_eval`: Actual graded run count by eval and configuration
+  - `run_provenance_validation`: `passed` when every canonical run manifest and
+    grader identity matches the frozen protocol
+  - `evaluation_provenance_validation`: `passed` when every completed pair has
+    comparison, mapping, and analysis artifacts with the frozen evaluator
+    identities; `incomplete` when those artifacts are missing
+  - `provenance_validation`: Overall `passed`, `incomplete`, or legacy
+    `not_run` status
+  - `blind_comparisons_completed`, `blind_comparisons_validated`, and
+    `blind_comparisons_missing`: Human-auditable comparison coverage
 - `runs[]`: Individual run results
   - `eval_id`: Numeric eval identifier
   - `eval_name`: Human-readable eval name (used as section header in the viewer)
   - `configuration`: Must be `"with_skill"` or `"without_skill"` (the viewer uses this exact string for grouping and color coding)
   - `run_number`: Integer run number (1, 2, 3...)
-  - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`
+  - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`,
+    `tokens`, and `errors`; unavailable measurements are JSON `null`, never zero
+    or a proxy such as output characters
 - `run_summary`: Statistical aggregates per configuration
-  - `with_skill` / `without_skill`: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
-  - `delta`: Difference strings like `"+0.50"`, `"+13.0"`, `"+1700"`
+  - `with_skill` / `without_skill`: Each contains `pass_rate`, `time_seconds`,
+    and `tokens` objects with `mean`, `stddev`, `min`, `max`,
+    `available_count`, and `total_count`; statistics are `null` when no samples
+    are available
+- `delta`: Candidate-minus-baseline difference strings like `"+0.50"`,
+  `"+13.0"`, `"+1700"`; canonical runs always calculate this as
+  `with_skill - without_skill`, independent of directory discovery order
 - `notes`: Freeform observations from the analyzer
 
 **Important:** The viewer reads these field names exactly. Using `config` instead of `configuration`, or putting `pass_rate` at the top level of a run instead of nested under `result`, will cause the viewer to show empty/zero values. Always reference this schema when generating benchmark.json manually.
@@ -308,12 +479,24 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
 
 ## comparison.json
 
-Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
+Output from blind comparator. In full benchmark mode, located at
+`<iteration-dir>/comparisons/eval-N-trial-N/comparison.json`.
 
 ```json
 {
+  "pair_id": "eval-1-trial-1",
+  "evaluator": {
+    "role": "comparator",
+    "model": "<model-and-version>"
+  },
   "winner": "A",
   "reasoning": "Output A provides a complete solution with proper formatting and all required fields. Output B is missing the date field and has formatting inconsistencies.",
+  "input_provenance": {
+    "prompt_sha256": "<sha256>",
+    "expectations_sha256": "<sha256>",
+    "A": {"transcript_sha256": "<sha256>", "outputs_sha256": "<sha256>"},
+    "B": {"transcript_sha256": "<sha256>", "outputs_sha256": "<sha256>"}
+  },
   "rubric": {
     "A": {
       "content": {
@@ -379,18 +562,54 @@ Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
 }
 ```
 
+The comparator receives only anonymized material. After it has completed its
+decision, the orchestrator appends `input_provenance` with canonical hashes of
+the frozen prompt, frozen expectation list, and each A/B transcript and output
+bundle. It must do this before hashing `comparison.json` into `mapping.json`.
+
+## mapping.json
+
+Blinded comparison provenance. The orchestrator writes this only after the
+comparator has completed the sibling `comparison.json`.
+
+```json
+{
+  "pair_id": "eval-1-trial-1",
+  "comparison_completed_at": "2026-01-15T11:05:00Z",
+  "comparison_sha256": "<sha256 of completed comparison.json>",
+  "comparator_model": "<model-and-version>",
+  "mapping": {
+    "A": "without_skill",
+    "B": "with_skill"
+  }
+}
+```
+
+The mapping values must contain `with_skill` and `without_skill` exactly once.
+`comparison_sha256` binds this revealed mapping to the completed comparator
+result and its hashed inputs. Do not place configuration-bearing paths or this
+file in the comparator's context before its decision is final.
+
 ---
 
 ## analysis.json
 
-Output from post-hoc analyzer. Located at `<grading-dir>/analysis.json`.
+Output from post-hoc analyzer. In full benchmark mode, located at
+`<iteration-dir>/comparisons/eval-N-trial-N/analysis.json`.
 
 ```json
 {
+  "pair_id": "eval-1-trial-1",
+  "evaluator": {
+    "role": "analyzer",
+    "model": "<model-and-version>"
+  },
   "comparison_summary": {
     "winner": "A",
     "winner_skill": "path/to/winner/skill",
     "loser_skill": "path/to/loser/skill",
+    "winner_configuration": "with_skill",
+    "loser_configuration": "without_skill",
     "comparator_reasoning": "Brief summary of why comparator chose winner"
   },
   "winner_strengths": [
@@ -428,3 +647,8 @@ Output from post-hoc analyzer. Located at `<grading-dir>/analysis.json`.
   }
 }
 ```
+
+When `comparison_summary.winner` is `TIE`, replace winner/loser fields with
+`skill_a`, `skill_b`, `configuration_a`, and `configuration_b`, and include
+the analyzer contract's `tie_analysis` object. Do not synthesize a winner to
+satisfy the decisive-result example.

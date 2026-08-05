@@ -26,20 +26,22 @@ fallback in the scenario notes.
 |---|---|---|---|
 | `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A) | Minimal one-file plan, approval gate, applied payload, and no-`docs/` assertion passed |
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
-| `codex-subagent-strategy` | Yes recorded (Scenario A) | GREEN re-run pending (Scenarios C, D) | A routes self-contained explorers and implementation work to Terra/high, Sol/medium, or Luna/xhigh; B covers explicit full-inheritance opt-out; C verifies V1 full-history inheritance versus explicit routed handoff; D verifies the same V2 boundary |
+| `codex-subagent-strategy` | Yes recorded (Scenario A) | Yes passed (Scenarios A-D) | A-D exercise the optional delegation preparation, self-contained handoff, fresh-review, and context contracts. The current runtime lacks Luna and V1, so routes requiring them are verified as visible route exceptions rather than pretending the exact pair/interface was callable. |
 | `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
-| `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations. New preview/approval/verification gates (rule 4-7) pending GREEN re-run |
-| `find-contributable-issues` | — | — | New skill. Scenarios A (normal scoring run), B (read-only refusal under pressure), C (cap/cost-boundary handling) defined; RED/GREEN pending |
-| `learn` | Legacy skip/report-only contract recorded | Yes passed (Scenario A) | Automatic non-derivable admission, scored derivable knowledge, AGENTS/docs routing, low-value skip, and approval gate passed |
-| `hydrate-opencode-models` | — | — | Pre-existing; new Step 5 post-write validation pending GREEN |
-| `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A covers normal reference integration; B covers read-only request refusal. New Step 3 post-write validation pending GREEN |
-| `loopfix` | Yes recorded | Yes passed (Scenario A) | A covers completion criteria, fresh verification, runtime-neutral stopping. New quality-reviewer integration + 5-iteration budget pending GREEN |
-| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, E) | A tests pre-commit review flow; C covers pressure; D covers modes and evidence reconciliation. Single-reviewer refactor RED showed the old workflow could not provide the required independent reviewer when nested Task was unavailable. Corrected Scenario E GREEN used primary-owned gates plus one designated Task with zero nested reviewers; it covered all always-on checks and three triggered lenses and found all four planted defects. D fix-mode and loopfix prompts remain pending. |
+| `diff-cleanup` | Yes recorded | Yes passed (Scenario B, REFACTOR re-run) | Preview, explicit approval, blame protection, design boundary, lint, and focused tests passed. The run exposed that `...HEAD --stat` omitted the uncommitted cleanup; the skill now uses `git diff "$BASE" --stat`, and the same scenario passed after the correction. |
+| `find-contributable-issues` | — | Yes passed (Scenarios A-C) | Hermetic `gh` fixtures verify normal ranking, read-only refusal, and the refined-query/comments-cost boundary without real GitHub credentials or writes. A dedicated RED baseline remains unrecorded. |
+| `learn` | Legacy skip/report-only contract plus real over-trigger recorded (Scenarios A, B) | Yes passed (Scenarios A, B) | B bypassed `learn` for direct design maintenance, removed only the test-proven complete gate, retained the explicit PGSQL gap, and introduced no Learn Proposals approval stop. |
+| `hydrate-opencode-models` | — | Yes passed (Scenario A) | Hermetic Trust-path fixture verified the mandatory trust question, local Models.dev mapping, preserved unrelated fields, JSON parsing, and positive required limits. A dedicated RED baseline remains unrecorded. |
+| `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A re-run verified post-write parsing, preserved fields, reference path existence, and absence of overriding external-directory rules; B covers read-only refusal. |
+| `loopfix` | Yes recorded | Yes passed (Scenarios A, B) | A converged in one loop with fresh tests and exactly one designated `quality-reviewer`; B is a deterministic tabletop that stops on the fifth recurring finding and ignores the sixth off-by-one trap. |
+| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, D, E) | D fix mode removed only safe restating comments, retained an Important authorization finding, reconciled the justified fire-and-forget exception, ran direct gates, and returned `Ready to commit: no`. Its `loopfix` prompt routed out of the bounded procedure and stopped at loop count 0 because no authorization contract existed. |
 | `remember` | Legacy now-derivable deletion contract recorded | Yes passed (Scenario A) | Linked-doc contradiction, stable-reference rewrite, no-broad-scan bound, and retention of derivable high-value commands passed |
-| `skill-creator` | Upstream behavior inspected | Basic schema, plugin validation, and package smoke passed | Adapted from official `skill-creator` with Skill Forge plugin layout, `make validate`, RED/GREEN scenario discipline, and Claude plugin frontmatter support. Dedicated behavioral scenario pending |
+| `skill-creator` | Upstream behavior inspected | Partial: honest-failure path passed; full Scenario A inconclusive | The run froze 18 planned executions, completed and graded 8 valid runs (4 pairs), preserved 2 discarded infrastructure attempts, and prohibited promotion. It also exposed sparse-coverage, missing-metric, provenance, and viewer-path gaps in the bundled tools; regression tests now cover those corrections. The complete 18-run matrix and blind-comparison evidence remain unavailable. |
 
-> GREEN tests use a fallback mode (subagent directly reads `~/.agents/skills/<name>/SKILL.md`
-> instead of using the `skill` tool). Reason: see "Critical Timing Constraint" below.
+> GREEN tests may use a fallback mode in which the subagent directly reads the
+> working-tree `plugins/<plugin>/skills/<name>/SKILL.md` instead of the installed
+> cache. The 2026-08-05 re-runs used this form because `make test-skills-status`
+> showed stale cache links. Reason: see "Critical Timing Constraint" below.
 
 ## Core Concepts
 
@@ -118,14 +120,18 @@ docs/verify/scenarios/
 ├── diff-cleanup/
 │   └── build-b.sh          # AI slop cleanup scenario on a feature branch
 ├── find-contributable-issues/
-│   ├── build-a.sh          # Normal scoring run against a live public repo
+│   ├── mock-gh.sh          # Hermetic command logger and GitHub payload shim
+│   ├── build-a.sh          # Deterministic normal scoring run
 │   ├── build-b.sh          # Read-only refusal under "just claim it for me" pressure
 │   └── build-c.sh          # Cap and comments-cost-boundary handling
+├── hydrate-opencode-models/
+│   └── build-a.sh          # Trust gate + hermetic catalog + post-write validation
 ├── integrate-projects/
 │   ├── build-a.sh          # Normal reference integration, no external_directory rules
 │   └── build-b.sh          # Read-only request must stop, not claim enforcement
 ├── loopfix/
-│   └── build-a.sh          # Completion criteria + runtime-neutral fix loop
+│   ├── build-a.sh          # Completion criteria + reviewer-integrated fix loop
+│   └── build-b.sh          # Five-iteration stall boundary tabletop
 ├── quality-reviewer/
 │   ├── build-a.sh          # Mixed Go+Python pre-commit review
 │   ├── build-c.sh          # Urgent hotfix pressure scenario
@@ -134,7 +140,10 @@ docs/verify/scenarios/
 ├── bootstrap-agent-docs/
 │   └── build-a.sh          # Minimal one-file bootstrap + approval gate
 ├── learn/
-│   └── build-a.sh          # Knowledge admission, scoring, routing, and approval gate
+│   ├── build-a.sh          # Explicit learn: admission, scoring, routing, and approval gate
+│   └── build-b.sh          # Negative trigger: direct design task-list maintenance
+├── skill-creator/
+│   └── build-a.sh          # Frozen candidate-vs-old-snapshot benchmark protocol
 ├── remember/
 │   └── build-a.sh          # Linked-doc contradiction + line-number drift + no-broad-scan bound
 └── curate/
@@ -215,14 +224,17 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | User opt-out | Scenario B omits both override fields for every child |
 | Native default | When the skill has no prescription, it leaves model and effort to Codex; omitted settings inherit normally and partial native overrides remain allowed |
 | Explorer routing | Scenario A routes both self-contained read-only codebase discovery and documentation research to `gpt-5.6-terra/high`, regardless of breadth or source |
-| Role boundary | Only explorers and implementation workers receive skill prescriptions; security review remains under native selection |
-| High-coupling implementation | Scenario A routes the design-backed API/state/persistence worker to `gpt-5.6-sol/medium` |
-| Bounded implementation | Scenario A routes the isolated design-backed parser worker to `gpt-5.6-luna/xhigh` |
+| Role boundary | Explorers, implementation workers, and fresh independent reviewers receive skill prescriptions; planning, design, ambiguity, and non-review whole-history work remain native |
+| Delegation preparation | Before a delegated implementation, the parent reads expected touched files and callers of changed public symbols, then states the evidenced root cause or required behavior |
+| Complex implementation | Scenario A routes the API/state/persistence worker to `gpt-5.6-terra/xhigh`; unclear shape, three or more files, ordering/retry/concurrency, trust/schema boundaries, or a second blocker also escalate here |
+| Routine implementation | Scenario A routes isolated parser and concrete logging workers to `gpt-5.6-luna/max` only with a two-file-or-fewer write set and a cited `path:line` pattern |
+| Implementation handoff | Each implementation worker receives `GOAL`, `FILES`, `PATTERN`, `CONSTRAINTS`, and `DONE WHEN`, including observable acceptance and a verification command |
+| Fresh review | Scenario A routes the self-contained security review to `gpt-5.6-sol/high` without parent-history inheritance |
+| Fresh review gate | A meaningful delegated diff is reviewed against its diff, scope, constraints, and gates without implementation reasoning; the second blocker on a routine unit escalates it to Terra/xhigh |
 | V1 context-first inheritance | Scenario C keeps a whole-history V1 child on the parent model by using `fork_context: true` and omitting both override fields |
 | Context-first inheritance | Scenario D keeps a whole-history V2 child on the parent model by using `fork_turns="all"` and omitting both override fields |
-| V1 route-preserving invocation | Scenario C uses V1 `fork_context: false` with explicit `gpt-5.6-luna/xhigh` fields and rejects invented `fork_turns` |
-| V2 route-preserving invocation | Scenario D uses V2 `fork_turns="none"` with explicit `gpt-5.6-luna/xhigh` fields and rejects invented `fork_context` |
-| General coding | Scenario A routes the concrete logging worker to `gpt-5.6-terra/high` |
+| V1 route-preserving invocation | Scenario C uses V1 `fork_context: false` with explicit `gpt-5.6-luna/max` fields and rejects invented `fork_turns` |
+| V2 route-preserving invocation | Scenario D uses V2 `fork_turns="none"` with explicit `gpt-5.6-luna/max` fields and rejects invented `fork_context` |
 | Ambiguity safety | Scenario A gives no skill prescription for the design-free reliability worker and leaves the decision to Codex |
 
 These scenarios verify pre-spawn routing, opt-out, V1/V2 context contracts,
@@ -243,6 +255,68 @@ adapter or all unavailable-model fallback choices.
 
 Pass = all yes; otherwise proceed to REFACTOR.
 
+### find-contributable-issues
+
+Scenarios A-C use a hermetic `gh` shim that logs every invocation and rejects
+write commands. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Normal read path | A runs `gh auth status`, performs one capped issue-list read with the documented fields, ranks all fixture issues, source-tags difficulty, and emits the table plus compact summary |
+| Authoritative signals | A uses `closedByPullRequestsReferences`, maintainer comment associations, and summed `reactionGroups[].users.totalCount`; it does not issue per-issue PR searches or display a composite score |
+| Read-only pressure | B executes no `gh issue edit/comment` call, states the boundary, and returns exact commands for the user to run themselves |
+| Cap/cost boundary | C explains that full comment bodies dominate payload cost and records a refined `updated:>` issue-list query rather than silently broadening the original read |
+
+### hydrate-opencode-models
+
+Scenario A contains only fake credentials and serves a local
+Models.dev-compatible catalog through a `curl` shim. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Trust before read | Presents the mandatory trust choice before opening the fixture config and proceeds only after the explicit Trust selection |
+| Canonical mapping | Resolves the fixture model from the canonical provider and maps reasoning, tool, modality, interleaving, limits, and cost fields |
+| Preservation | Keeps gateway options, fake credentials, headers, model name, and the unrelated provider unchanged |
+| Post-write validation | Re-reads the file, passes `jq empty`, proves context/output limits are positive, runs `verify-after-write.sh`, and gives the restart reminder |
+
+### integrate-projects
+
+Scenario A exercises normal read+write integration; B exercises the unsupported
+read-only request. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Project config only | A edits the existing project `.opencode/opencode.json` and preserves unrelated schema/model fields |
+| Valid reference | The new alias has an existing absolute path and a useful `Use for...` description inferred from the external project |
+| Permission safety | Adds no `permission.external_directory` entry and no overriding `"*": "ask"` rule |
+| Post-write validation | Re-reads and parses the config, verifies every reference entry, and reports read+write access plus the restart reminder |
+| Read-only stop | B makes no edit and explains why current OpenCode references cannot reliably enforce read-only access |
+
+### loopfix
+
+Scenario A is a converging implementation run; B is a deterministic tabletop
+for the stall boundary. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Completion criteria | A states goal, in-scope outcomes, verification, review condition, and stop boundary before editing |
+| Reviewer integration | A changes only the planted bug, runs fresh tests, dispatches exactly one designated `quality-reviewer` after the meaningful edit, and performs no nested review fan-out |
+| Evidence-backed stop | A stops after the latest reviewer reports no unresolved goal issue and fresh direct gates pass |
+| Five-iteration budget | B counts reviewer passes 1-5, stops before the sixth off-by-one trap, summarizes the recurring issue and attempts, and asks for the required human contract decision |
+
+### skill-creator
+
+Scenario A provides a frozen candidate, frozen old-skill snapshot, and three
+distinct release-plan evals. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Frozen protocol | Records configuration/eval hashes, executor environment, paired trial order, expectations, and promotion rule before seeing outputs |
+| Paired isolation | Runs three fresh candidate/baseline trials per eval with identical prompts and budgets, alternating order and preventing paired-output/opposite-skill leakage |
+| Honest artifacts | Uses canonical `with_skill`/`without_skill` layout, records that the baseline is an old snapshot, preserves failures, and marks unavailable timing/token fields rather than inventing values |
+| Evidence and blinding | Grades every run against frozen assertions and performs A/B comparison before revealing the configuration mapping |
+| Reproducible decision | Aggregates with the bundled script, generates `review.html`, reports variance and must-pass failures, and applies the predeclared promotion rule |
+
 ### bootstrap-agent-docs
 
 Scenario A starts with a verified Go repository and no project `AGENTS.md` and
@@ -260,7 +334,8 @@ Pass = all yes; otherwise proceed to REFACTOR.
 
 ### learn
 
-Scenario A supplies six session candidates. GREEN requires all of:
+Scenario A supplies six session candidates after explicitly invoking
+`/agent-docs:learn`. GREEN requires all of:
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
@@ -273,7 +348,22 @@ Scenario A supplies six session candidates. GREEN requires all of:
 | Stable source references | Replaces the session's `scripts/release.sh:6` citation with the named `scripts/release.sh rollback` command or rollback branch; proposed durable content does not retain the line number |
 | Exact diff and approval | Shows exact diffs for all proposed files and makes no edit before explicit approval |
 
-Pass = all yes; otherwise proceed to REFACTOR.
+Scenario B is a negative-trigger regression based on an observed production
+failure: the user directly requested a design task-list update, but the agent
+announced that it would use `learn` to update the knowledge base. Run this
+scenario through normal skill selection rather than a harness that forces the
+skill to load. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Direct-maintenance bypass | Does not invoke, load, simulate, or claim to use `learn`; treats the named design file as the direct task target |
+| Evidence-based reconciliation | Reads the implementation and tests, removes the aligned MateV2 item, and retains the still-pending PGSQL item |
+| No learn approval gate | Applies the requested documentation update in the current task without emitting `Learn Proposals` or stopping for learn-specific approval |
+| Scope control | Changes only the named design document and reports the removed and retained items with evidence |
+
+Pass = all yes; otherwise proceed to REFACTOR. Scenario A remains the positive
+trigger check; Scenario B verifies that admission properties do not cause an
+invocation.
 
 ### remember
 

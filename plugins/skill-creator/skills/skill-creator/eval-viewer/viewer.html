@@ -1130,8 +1130,20 @@
       html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
       if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
       if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
-      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
-      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      if (metadata.evals_run && metadata.evals_run.length) html += "Evals with results: " + metadata.evals_run.join(", ") + " &mdash; ";
+      if (metadata.evals_planned && metadata.evals_planned.length) html += "Planned evals: " + metadata.evals_planned.join(", ") + " &mdash; ";
+      if (metadata.runs_per_configuration != null) {
+        html += metadata.runs_per_configuration + " completed runs per eval/configuration";
+      } else {
+        const completed = metadata.completed_runs_per_configuration || {};
+        const completedText = Object.entries(completed)
+          .map(([config, count]) => config + "=" + count)
+          .join(", ");
+        html += "Completed runs: " + (completedText || "none");
+      }
+      if (metadata.planned_runs_per_eval_per_configuration != null) {
+        html += " (planned " + metadata.planned_runs_per_eval_per_configuration + " per eval/configuration)";
+      }
       html += "</p>";
 
       // Summary table
@@ -1139,10 +1151,16 @@
 
       function fmtStat(stat, pct) {
         if (!stat) return "—";
+        const available = stat.available_count || 0;
+        const total = stat.total_count || 0;
+        const coverage = total && available !== total
+          ? " (" + available + "/" + total + " measured)"
+          : "";
+        if (stat.mean == null || stat.stddev == null) return "Unavailable" + coverage;
         const suffix = pct ? "%" : "";
         const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
         const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
-        return m + suffix + " ± " + s + suffix;
+        return m + suffix + " ± " + s + suffix + coverage;
       }
 
       function deltaClass(val) {
@@ -1176,7 +1194,10 @@
         html += "<tr><td><strong>Time (s)</strong></td>";
         html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
         html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
-        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+        const timeDelta = delta.time_seconds && delta.time_seconds !== "—"
+          ? delta.time_seconds + "s"
+          : "—";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + timeDelta + "</td></tr>";
       }
 
       // Tokens (only show row if data exists)

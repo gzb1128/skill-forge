@@ -2,7 +2,7 @@
 # Build scenario D for codex-subagent-strategy V2 context-first verification.
 #
 # GREEN requirements:
-#   1. a self-contained Luna/xhigh worker uses fork_turns="none" plus both
+#   1. a self-contained Luna/max worker uses fork_turns="none" plus both
 #      explicit route fields;
 #   2. a child that needs the whole parent history uses fork_turns="all" and
 #      omits model and reasoning_effort;
@@ -54,5 +54,5 @@ git commit -q -m "initial"
 echo "Scenario built at: $SCEN"
 echo "Prompt: In Codex, explicitly delegate both TASKS.md items after reading RUNTIME.md."
 echo "Before dispatch, report each exact spawn payload and context-fork choice."
-echo "The parser worker must use Luna/xhigh with fork_turns none; the history worker must use fork_turns all and omit both route fields."
+echo "The parser worker must use Luna/max with fork_turns none; the history worker must use fork_turns all and omit both route fields."
 echo "Do not invent fork_context or execute either worker."

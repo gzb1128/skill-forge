@@ -1,14 +1,15 @@
 ---
 name: learn
-description: Use when the user says "learn", "save this insight", or wants to persist valuable knowledge from the current session to AGENTS.md or docs/
+description: Use only when the user explicitly invokes /agent-docs:learn, directs the agent to "learn" or "save this insight", or asks to retrospectively extract and persist newly discovered repository knowledge from the current session; do not use for direct documentation edits or maintenance
 disable-model-invocation: true
 argument-hint: [optional-context]
 allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 ---
 
-> **Manual-trigger skill.** `disable-model-invocation: true` keeps the model from
-> invoking this workflow automatically mid-task. When installed from this plugin,
-> invoke it deliberately as `/agent-docs:learn` at the end of a session.
+> **Explicit retrospective trigger.** `disable-model-invocation: true` keeps the
+> model from invoking this workflow automatically mid-task. When installed from
+> this plugin, invoke it deliberately as `/agent-docs:learn` at the end of a
+> session or explicitly ask to extract newly discovered session knowledge.
 > Do not add hooks, background tasks, auto-trigger behavior, runtime storage,
 > vector databases, MCP integration, or external memory systems.
 
@@ -23,6 +24,34 @@ and `curate` rather than owned by this workflow.
 
 When a candidate belongs under `docs/`, also read the
 [Documentation Structure Reference](../../references/doc-structure.md).
+
+## Invocation Boundary
+
+This skill is a retrospective knowledge-capture workflow, not a general
+documentation writer or maintenance entry point.
+
+- Invoke it only when the user explicitly requests the `learn` workflow,
+  invokes `/agent-docs:learn`, asks the agent to save an insight, or clearly
+  asks to review the current session for newly discovered repository knowledge
+  worth preserving. Merely mentioning or discussing `learn` is not a trigger.
+- Do **not** invoke, load, simulate, or claim to use `learn` when the user
+  directly asks to create, update, reconcile, synchronize, prune, or clean an
+  `AGENTS.md`, design document, task list, runbook, index, or knowledge base.
+  Perform that requested documentation task directly, using its stated target
+  and acceptance criteria.
+- A phrase such as "update the knowledge base" or the discovery of a durable,
+  non-derivable fact during another task is not by itself a `learn` trigger.
+  Finish the requested task without adding the `Learn Proposals` approval gate.
+- Explicit design intent is direct authoring input. If the user asks to record
+  a decision, update a design, or reconcile its completion status, edit that
+  artifact directly. A design decision is a `learn` candidate only when it
+  emerged during the session and the user explicitly requested retrospective
+  capture.
+
+The admission rules below apply only **after** this invocation boundary has
+been satisfied. Non-derivability, durability, value, and a possible `docs/`
+destination decide whether and where a candidate is admitted; they never
+trigger this skill on their own.
 
 ## Admission Model
 
@@ -39,9 +68,15 @@ purpose-specific surfaces instead of being mislabeled as hidden knowledge.
 
 ## Step 1: Extract candidate insights
 
-Review the current session and list candidate insights. Candidates usually come
-from hidden dependencies, misleading failures, project-specific workarounds,
-critical ordering, command discovery, or documentation gaps.
+First confirm that the request satisfies the Invocation Boundary. If it does
+not, leave this workflow and perform the user's direct documentation task
+without producing a `Learn Proposals` report.
+
+Otherwise, review the current session and list candidate insights. Candidates
+usually come from hidden dependencies, misleading failures, project-specific
+workarounds, critical ordering, command discovery, or documentation gaps that
+were discovered during the work rather than already specified as a direct
+documentation deliverable.
 
 Do not write anything yet. First classify each candidate.
 

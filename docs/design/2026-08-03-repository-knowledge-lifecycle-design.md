@@ -25,13 +25,22 @@ plugin-owned references:
 | Skill | Role | Write boundary |
 |---|---|---|
 | `bootstrap-agent-docs` | Initialize a repository that lacks a project entry point | Create only root `AGENTS.md` after approval |
-| `learn` | Produce newly discovered repository knowledge | Propose exact `AGENTS.md` or `docs/` diffs; apply only after approval |
+| `learn` | Retrospectively capture newly discovered repository knowledge after an explicit trigger | Propose exact `AGENTS.md` or `docs/` diffs; apply only after approval |
 | `remember` | Audit prompt-resident repository memory | Inspect `AGENTS.md` files; report first |
 | `curate` | Audit the pull-based knowledge base | Inspect `docs/`; report first |
 
 All four read the same knowledge admission policy. None invokes another skill.
 This shares the stable decision model without nesting prompts, approval gates,
 or incompatible scan scopes.
+
+Invocation and admission are separate decisions. `learn` is invoked only when
+the user explicitly requests the workflow or asks to retrospectively extract
+and preserve newly discovered session knowledge. Merely mentioning `learn`
+does not invoke it. A direct request to create, update, reconcile, or prune a
+design, task list, `AGENTS.md`, runbook, index, or knowledge base is ordinary
+document authoring and must be completed directly. Non-derivability and value
+affect admission only after `learn` has been explicitly triggered; they do not
+turn document maintenance into a learn run.
 
 ## Admission Model
 
@@ -82,8 +91,9 @@ record only project-specific knowledge.
 - Existing bootstrapped repositories keep their current docs; `curate` can
   assess them without assuming the old non-derivability rule is authoritative.
 - New repositories receive a much smaller, lower-drift baseline.
-- `learn` can persist high-value docs instead of returning a destination-only
-  suggestion that requires another workflow.
+- When explicitly triggered for retrospective capture, `learn` can persist
+  high-value docs instead of returning a destination-only suggestion that
+  requires another workflow; explicit document maintenance remains direct.
 - `remember` and `curate` remain focused and cannot accidentally broaden each
   other's audit scope.
 
@@ -93,6 +103,9 @@ record only project-specific knowledge.
   knowledge and high-scoring derivable knowledge, skip a low-value derivable
   restatement, and extract a durable design decision from a transient checklist
   without creating `docs/plans/`.
+- A negative-trigger learn scenario must keep an explicit design task-list
+  maintenance request on the direct editing path without invoking, simulating,
+  or claiming to use `learn` or adding its proposal approval gate.
 - A remember scenario must retain useful derivable build/test commands.
 - A curate scenario must retain a useful derivable runbook while still finding
   structural and drift defects, rank categories by risk, and leave an existing

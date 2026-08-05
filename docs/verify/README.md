@@ -26,7 +26,7 @@ fallback in the scenario notes.
 |---|---|---|---|
 | `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A) | Minimal one-file plan, approval gate, applied payload, and no-`docs/` assertion passed |
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
-| `codex-subagent-strategy` | Yes recorded (Scenario A) | Yes passed (Scenarios A, B) | Scenario A routes both local-codebase and documentation explorers to Terra/high, high coupling to Sol/medium, bounded pre-design to Luna/xhigh, and general coding to Terra/high while unmatched tasks stay native; B retains explicit full-inheritance opt-out coverage |
+| `codex-subagent-strategy` | Yes recorded (Scenario A) | GREEN re-run pending (Scenarios C, D) | A routes self-contained explorers and implementation work to Terra/high, Sol/medium, or Luna/xhigh; B covers explicit full-inheritance opt-out; C verifies V1 full-history inheritance versus explicit routed handoff; D verifies the same V2 boundary |
 | `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations. New preview/approval/verification gates (rule 4-7) pending GREEN re-run |
 | `find-contributable-issues` | — | — | New skill. Scenarios A (normal scoring run), B (read-only refusal under pressure), C (cap/cost-boundary handling) defined; RED/GREEN pending |
@@ -112,7 +112,9 @@ Current scripts:
 docs/verify/scenarios/
 ├── codex-subagent-strategy/
 │   ├── build-a.sh          # Three worker routes plus native-selection boundaries
-│   └── build-b.sh          # Explicit user opt-out forces full inheritance
+│   ├── build-b.sh          # Explicit user opt-out forces full inheritance
+│   ├── build-c.sh          # V1 fork_context separates inheritance and routing
+│   └── build-d.sh          # V2 fork_turns separates inheritance and routing
 ├── diff-cleanup/
 │   └── build-b.sh          # AI slop cleanup scenario on a feature branch
 ├── find-contributable-issues/
@@ -212,15 +214,20 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Explicit Codex trigger | Applies only when the current user explicitly requests Codex subagents and an actual spawn is planned |
 | User opt-out | Scenario B omits both override fields for every child |
 | Native default | When the skill has no prescription, it leaves model and effort to Codex; omitted settings inherit normally and partial native overrides remain allowed |
-| Explorer routing | Scenario A routes both read-only codebase discovery and documentation research to `gpt-5.6-terra/high`, regardless of breadth or source |
+| Explorer routing | Scenario A routes both self-contained read-only codebase discovery and documentation research to `gpt-5.6-terra/high`, regardless of breadth or source |
 | Role boundary | Only explorers and implementation workers receive skill prescriptions; security review remains under native selection |
 | High-coupling implementation | Scenario A routes the design-backed API/state/persistence worker to `gpt-5.6-sol/medium` |
 | Bounded implementation | Scenario A routes the isolated design-backed parser worker to `gpt-5.6-luna/xhigh` |
+| V1 context-first inheritance | Scenario C keeps a whole-history V1 child on the parent model by using `fork_context: true` and omitting both override fields |
+| Context-first inheritance | Scenario D keeps a whole-history V2 child on the parent model by using `fork_turns="all"` and omitting both override fields |
+| V1 route-preserving invocation | Scenario C uses V1 `fork_context: false` with explicit `gpt-5.6-luna/xhigh` fields and rejects invented `fork_turns` |
+| V2 route-preserving invocation | Scenario D uses V2 `fork_turns="none"` with explicit `gpt-5.6-luna/xhigh` fields and rejects invented `fork_context` |
 | General coding | Scenario A routes the concrete logging worker to `gpt-5.6-terra/high` |
 | Ambiguity safety | Scenario A gives no skill prescription for the design-free reliability worker and leaves the decision to Codex |
 
-These scenarios verify the pre-spawn routing decision and opt-out contract.
-They do not claim coverage of live spawn arguments or unavailable-model fallback.
+These scenarios verify pre-spawn routing, opt-out, V1/V2 context contracts,
+and the full-history inheritance boundary. They do not claim coverage of every
+adapter or all unavailable-model fallback choices.
 
 ### diff-cleanup
 

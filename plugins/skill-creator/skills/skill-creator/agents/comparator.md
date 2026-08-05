@@ -14,15 +14,19 @@ You receive these parameters in your prompt:
 
 - **output_a_path**: Path to the first output file or directory
 - **output_b_path**: Path to the second output file or directory
+- **transcript_a_path**: Path to A's anonymized final response or transcript
+- **transcript_b_path**: Path to B's anonymized final response or transcript
 - **eval_prompt**: The original task/prompt that was executed
 - **expectations**: List of expectations to check (optional - may be empty)
+- **pair_id**: Canonical `eval-N-trial-N` identifier supplied by the orchestrator
+- **comparator_model**: Exact frozen comparator model/version from `protocol.json`
 
 ## Process
 
 ### Step 1: Read Both Outputs
 
-1. Examine output A (file or directory)
-2. Examine output B (file or directory)
+1. Examine A's final response or transcript and output artifact (if any)
+2. Examine B's final response or transcript and output artifact (if any)
 3. Note the type, structure, and content of each
 4. If outputs are directories, examine all relevant files inside
 
@@ -96,6 +100,11 @@ Write a JSON file with this structure:
 
 ```json
 {
+  "pair_id": "<pair_id exactly as provided>",
+  "evaluator": {
+    "role": "comparator",
+    "model": "<comparator_model exactly as provided>"
+  },
   "winner": "A",
   "reasoning": "Output A provides a complete solution with proper formatting and all required fields. Output B is missing the date field and has formatting inconsistencies.",
   "rubric": {

@@ -53,7 +53,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 | Skill | Type | Purpose |
 |---|---|---|
 | `bootstrap-agent-docs` | model-invoked | Create a minimal root `AGENTS.md` with verified commands and architecture routing |
-| `learn` | manual skill (`/agent-docs:learn`) | Score, route, and propose valuable session knowledge for `AGENTS.md` or `docs/` — verified and approval-gated |
+| `learn` | manual skill (`/agent-docs:learn`) | Retrospectively score, route, and propose newly discovered session knowledge — never a substitute for direct documentation maintenance |
 | `remember` | manual skill (`/agent-docs:remember`) | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
 | `curate` | manual skill (`/agent-docs:curate`) | Audit the `docs/` knowledge base for stale links, encyclopedia bloat, naming drift, and missing indexes — the docs counterpart to `/agent-docs:remember` |
 
@@ -85,7 +85,7 @@ The minimal `AGENTS.md` template used by `bootstrap-agent-docs` lives at `plugin
 
 | Skill | Type | Purpose |
 |---|---|---|
-| `codex-subagent-strategy` | model-invoked | Before an explicitly requested Codex spawn, route every explorer to Terra/high; route high-coupling pre-design work to Sol/medium, bounded pre-design work to Luna/xhigh, and general coding to Terra/high |
+| `codex-subagent-strategy` | model-invoked | Before an explicitly requested Codex spawn, route explorers to Terra/high, routine implementation to Luna/max, complex implementation to Terra/xhigh, and fresh independent review to Sol/high |
 
 Skill Forge keeps marketplace source in plugin layout. Compatible agent skill
 installers expose installed skills through `~/.agents/skills/<skill>`.
@@ -107,8 +107,10 @@ your-repo/
 ```
 
 It does not pre-create `docs/` categories or copy plugin policy into the target
-repository. `/agent-docs:learn` creates a category and its `INDEX.md` on demand
-when the first admitted document needs that surface.
+repository. When explicitly invoked for retrospective capture,
+`/agent-docs:learn` creates a category and its `INDEX.md` on demand when the
+first admitted document needs that surface. Explicit requests to create or
+update documentation are handled directly without invoking `learn`.
 
 ## Practices
 

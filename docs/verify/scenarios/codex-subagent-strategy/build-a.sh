@@ -9,19 +9,20 @@
 # GREEN routing requirements:
 #   1. local codebase explorer -> gpt-5.6-terra/high
 #   2. documentation explorer -> gpt-5.6-terra/high
-#   3. high-coupling worker -> gpt-5.6-sol/medium
-#   4. bounded design-backed worker -> gpt-5.6-luna/xhigh
-#   5. general coding worker -> gpt-5.6-terra/high
-#   6. security reviewer -> no skill prescription; Codex decides natively
+#   3. high-coupling worker -> gpt-5.6-terra/xhigh
+#   4. bounded design-backed worker -> gpt-5.6-luna/max
+#   5. general coding worker -> gpt-5.6-luna/max
+#   6. security reviewer -> fresh gpt-5.6-sol/high
 #   7. ambiguous worker -> no skill prescription; Codex decides natively
 #
-# This scenario validates routing decisions, not the delegated implementation.
+# This scenario validates routing, self-contained implementation handoffs, and
+# fresh-review preparation; it does not execute the delegated implementation.
 
 set -euo pipefail
 
 SCEN="${TMPDIR:-/tmp}/opencode/skill-tests/codex-subagent-strategy-a"
 rm -rf "$SCEN"
-mkdir -p "$SCEN/docs/design" "$SCEN/internal/parser" "$SCEN/internal/store"
+mkdir -p "$SCEN/docs/design" "$SCEN/internal/parser" "$SCEN/internal/store" "$SCEN/internal/handler"
 cd "$SCEN"
 
 git init -q
@@ -54,10 +55,11 @@ cat > TASKS.md <<'EOF'
 3. Worker: implement the approved cache-refresh design across API, state
    transitions, and persistence packages.
 4. Worker: implement only the isolated parser helper and its table tests exactly
-   as specified by the approved design. Its write set is the two parser files.
+   as specified by the approved design, following `internal/parser/parse.go:3`.
+   Its write set is the two parser files.
 5. Worker: add structured refresh-attempt logging to the existing handler using
-   the repository's established logging pattern. Do not change contracts or
-   state behavior; verify with `go test ./...`.
+   `internal/handler/logging.go:6`. Do not change contracts or state behavior;
+   verify with `go test ./...`.
 6. Reviewer: perform a security review of the authentication path.
 7. Worker: improve deployment reliability. There is no approved design, scope,
    acceptance behavior, or verification plan for this item.
@@ -85,10 +87,22 @@ type Generation struct {
 }
 EOF
 
+cat > internal/handler/logging.go <<'EOF'
+package handler
+
+import "log/slog"
+
+func logRefreshAttempt(logger *slog.Logger, generation int64) {
+	logger.Info("refresh attempt", "generation", generation)
+}
+EOF
+
 git add -A
 git commit -q -m "initial"
 
 echo "Scenario built at: $SCEN"
 echo "Prompt: In Codex, explicitly delegate every item in TASKS.md to subagents."
 echo "Before dispatch, report the exact model and reasoning_effort fields for each."
+echo "Each implementation handoff must use GOAL, FILES, PATTERN, CONSTRAINTS, and DONE WHEN."
+echo "Prepare the reviewer with only the diff, scope, constraints, and required gates; do not give it implementation reasoning."
 echo "For this verification run, do not execute the delegated tasks."

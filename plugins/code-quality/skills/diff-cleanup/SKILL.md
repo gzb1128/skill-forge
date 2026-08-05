@@ -64,7 +64,10 @@ If you find yourself wanting to redesign, **stop and flag it**. Do not silently 
    - Run a focused test on touched paths (or the smallest meaningful command). If none exist, say so.
    - If a removed line turns out load-bearing (a test fails, lint errors), revert that removal and report it — it was not slop.
    - Optionally load `quality-reviewer` for a focused pass on the cleaned diff.
-8. `git diff "$BASE"...HEAD --stat` to confirm the final shape.
+8. `git diff "$BASE" --stat` to confirm the final shape, including the
+   uncommitted cleanup. Do not use `git diff "$BASE"...HEAD --stat` here: the
+   `...HEAD` form stops at the committed branch tip and omits edits just made
+   in the working tree.
 9. Report: categories removed, design concerns flagged but not touched, verification results, and final stat.
 
 ## Common Mistakes

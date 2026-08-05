@@ -11,6 +11,10 @@
 #   - rule 2: git blame distinguishes base-authored null check (keep) from
 #             branch-authored slop (remove)
 #   - rule 3: OrderBuilder flagged as a design choice, NOT rewritten
+#   - rules 4-5: previews every candidate with blame evidence and waits for
+#                explicit approval before editing
+#   - rule 7: runs npm run lint and npm test after cleanup; both exercise the
+#             touched TypeScript module with Node's built-in type stripping
 #
 # Usage:
 #   bash docs/verify/scenarios/diff-cleanup/build-b.sh
@@ -28,7 +32,7 @@ git init -q
 git config user.email t@t
 git config user.name t
 git checkout -q -b main
-mkdir -p src
+mkdir -p src test
 
 # BASE commit: human-written, slop-free, with an intentional null check at
 # the public API boundary (untrusted JSON).
@@ -45,7 +49,40 @@ export function calculateTotal(items: Array<{price: number; qty: number}> | null
 }
 EOF
 cat > package.json <<'EOF'
-{ "name": "scen-b", "scripts": {} }
+{
+  "name": "scen-b",
+  "type": "module",
+  "scripts": {
+    "lint": "node --experimental-strip-types --check src/orders.ts",
+    "test": "node --experimental-strip-types --test test/orders.test.ts"
+  }
+}
+EOF
+cat > test/orders.test.ts <<'EOF'
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { calculateTotal, OrderBuilder } from '../src/orders.ts';
+
+test('calculateTotal preserves all untrusted-input guards', () => {
+  assert.equal(calculateTotal(null), 0);
+  assert.equal(calculateTotal(undefined as unknown as Parameters<typeof calculateTotal>[0]), 0);
+  assert.equal(calculateTotal({} as unknown as Parameters<typeof calculateTotal>[0]), 0);
+  assert.equal(calculateTotal([
+    { price: 'invalid', qty: 99 },
+    { price: 4, qty: 2 },
+  ] as unknown as Parameters<typeof calculateTotal>[0]), 8);
+});
+
+test('calculateTotal sums valid items', () => {
+  assert.equal(calculateTotal([{ price: 3, qty: 2 }, { price: 5, qty: 1 }]), 11);
+});
+
+test('the chosen builder design remains intact', () => {
+  assert.deepEqual(new OrderBuilder().setId('A').setTotal(11).build(), {
+    id: 'A',
+    total: 11,
+  });
+});
 EOF
 git add -A
 git commit -q -m "initial"
@@ -127,3 +164,5 @@ echo "Scenario built at: $SCEN"
 echo "  base SHA: $(git rev-parse origin/main)"
 echo "  HEAD SHA: $(git rev-parse HEAD)"
 echo "  branch:   $(git rev-parse --abbrev-ref HEAD)"
+echo "Prompt: Clean up AI-generated slop on this feature branch."
+echo "After approval, verify with: npm run lint && npm test"

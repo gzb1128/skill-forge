@@ -10,13 +10,19 @@ After the blind comparator determines a winner, the Post-hoc Analyzer "unblids" 
 
 You receive these parameters in your prompt:
 
-- **winner**: "A" or "B" (from blind comparison)
-- **winner_skill_path**: Path to the skill that produced the winning output
-- **winner_transcript_path**: Path to the execution transcript for the winner
-- **loser_skill_path**: Path to the skill that produced the losing output
-- **loser_transcript_path**: Path to the execution transcript for the loser
+- **winner**: "A", "B", or "TIE" (from blind comparison)
+- **winner_skill_path**: For a decisive result, path to the winning skill
+- **winner_transcript_path**: For a decisive result, winner transcript path
+- **loser_skill_path**: For a decisive result, path to the losing skill
+- **loser_transcript_path**: For a decisive result, loser transcript path
+- **skill_a_path**, **transcript_a_path**, **skill_b_path**,
+  **transcript_b_path**: For `TIE`, the two symmetric skill/transcript pairs;
+  do not invent winner/loser labels
 - **comparison_result_path**: Path to the blind comparator's output JSON
 - **output_path**: Where to save the analysis results
+- **pair_id**: Canonical `eval-N-trial-N` identifier supplied by the orchestrator
+- **analyzer_model**: Exact frozen analyzer model/version from `protocol.json`
+- **mapping**: The revealed A/B-to-configuration mapping and frozen source paths
 
 ## Process
 
@@ -88,16 +94,30 @@ Prioritize by impact. Focus on changes that would have changed the outcome.
 
 Save structured analysis to `{output_path}`.
 
+### Tie Handling
+
+When `winner` is `TIE`, use the A/B inputs and analyze both sides symmetrically.
+Report shared strengths, shared weaknesses, and observed differences that were
+not decisive. Do not emit winner/loser fields or improvement advice framed as
+fixing a loser. A tie is a valid comparison outcome, not missing evidence.
+
 ## Output Format
 
 Write a JSON file with this structure:
 
 ```json
 {
+  "pair_id": "<pair_id exactly as provided>",
+  "evaluator": {
+    "role": "analyzer",
+    "model": "<analyzer_model exactly as provided>"
+  },
   "comparison_summary": {
     "winner": "A",
     "winner_skill": "path/to/winner/skill",
     "loser_skill": "path/to/loser/skill",
+    "winner_configuration": "with_skill",
+    "loser_configuration": "without_skill",
     "comparator_reasoning": "Brief summary of why comparator chose winner"
   },
   "winner_strengths": [
@@ -149,6 +169,31 @@ Write a JSON file with this structure:
   "transcript_insights": {
     "winner_execution_pattern": "Read skill -> Followed 5-step process -> Used validation script -> Fixed 2 issues -> Produced output",
     "loser_execution_pattern": "Read skill -> Unclear on approach -> Tried 3 different methods -> No validation -> Output had errors"
+  }
+}
+```
+
+For a tie, use this top-level shape instead:
+
+```json
+{
+  "pair_id": "<pair_id exactly as provided>",
+  "evaluator": {
+    "role": "analyzer",
+    "model": "<analyzer_model exactly as provided>"
+  },
+  "comparison_summary": {
+    "winner": "TIE",
+    "skill_a": "path/to/skill-a",
+    "skill_b": "path/to/skill-b",
+    "configuration_a": "without_skill",
+    "configuration_b": "with_skill",
+    "comparator_reasoning": "Brief summary of why neither side won"
+  },
+  "tie_analysis": {
+    "shared_strengths": ["Both satisfy all frozen must-pass expectations"],
+    "shared_weaknesses": ["Neither records optional timing data"],
+    "non_decisive_differences": ["A is shorter; B gives more context"]
   }
 }
 ```

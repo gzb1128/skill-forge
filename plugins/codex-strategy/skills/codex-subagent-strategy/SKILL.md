@@ -9,6 +9,10 @@ Codex already knows how to call subagents. This skill creates a short,
 just-in-time model-routing checkpoint for an explicitly requested delegation.
 It does not authorize delegation.
 
+This is a delegation aid, not a mandatory orchestrator framework. Apply the
+preparation, handoff, and review gates only when the user has asked for a
+delegated implementation; ordinary local work may proceed without a child.
+
 ## Before The First Spawn
 
 1. Read this skill before dispatching any child.
@@ -20,49 +24,73 @@ It does not authorize delegation.
    `collaboration.spawn_agent` shape (`fork_turns`).
 5. Decide whether a self-contained handoff can give the child everything it
    needs: outcome, design path when applicable, write scope, verification, and
-   a stop condition. If the child instead needs the whole parent history or
-   unrecorded decisions, preserve that context and inherit the parent model.
-6. Classify every remaining, self-contained child and apply the first matching
+   a stop condition. For an independent review, create a fresh review packet
+   containing the scope, base, changed paths, acceptance criteria, and required
+   gates; do not copy the parent reasoning or conclusions.
+6. If a non-review child instead needs the whole parent history or unrecorded
+   decisions, preserve that context and inherit the parent model.
+7. Classify every remaining, self-contained child and apply the first matching
    route below.
 
 Do not load this skill for conceptual questions about subagents or ordinary
 tasks where the user did not explicitly request delegation.
 
+## Preparation For Implementation Delegation
+
+Before handing implementation to a child, read every file that the requested
+change is expected to touch and trace callers of each changed public symbol.
+State the evidenced root cause in one sentence (or, for new behavior, the
+required behavior and its source). If that cannot be stated, keep the work
+native or route it as complex; do not disguise uncertainty as a routine task.
+
+This preparation is scoped to the delegated unit. It is not a requirement to
+turn an otherwise straightforward task into a multi-agent orchestration.
+
 ## Routes
 
-Only self-contained explorers and implementation workers receive routes from
-this skill. A self-contained handoff is the cost-and-throughput boundary: it
-lets Codex use a purpose-fit child model without copying the whole parent turn.
+Only self-contained explorers, implementation workers, and independent
+reviewers receive routes from this skill. A self-contained handoff is the
+cost-and-throughput boundary: it lets Codex use a purpose-fit child model
+without copying the whole parent turn.
 
 | Child task shape | Model | Effort |
 |---|---|---|
 | Explorer: any read-only discovery or research, including codebase tracing, documentation lookup, dependency investigation, or symbol mapping | `gpt-5.6-terra` | `high` |
-| Approved pre-design plus high-coupling integration | `gpt-5.6-sol` | `medium` |
-| Approved pre-design plus a narrow, fully decided boundary | `gpt-5.6-luna` | `xhigh` |
-| General coding with a concrete implementation outcome | `gpt-5.6-terra` | `high` |
+| Complex implementation: high-coupling integration, or a concrete change with unresolved cross-component behavior | `gpt-5.6-terra` | `xhigh` |
+| Routine implementation: a concrete, bounded coding or test change without high coupling | `gpt-5.6-luna` | `max` |
+| Fresh independent review, including security review | `gpt-5.6-sol` | `high` |
 | Anything else | native | native |
 
 Evaluate high coupling before the narrow-task route. High coupling includes API
 or schema contracts, persistence, migrations, concurrency, distributed state,
 authentication, and multi-stage state machines.
 
-A pre-designed task is narrow only when its spawn prompt can cite the approved
-design and all of these are explicit:
+A routine implementation has a concrete outcome and verification command, and
+all of these are explicit:
 
 - objective and out-of-scope behavior;
-- narrow, disjoint write set;
+- a write set of at most two files;
+- an existing pattern to imitate, cited as `path:line`;
 - no open product, architecture, contract, or migration decision;
 - acceptance behavior and verification command.
 
-General coding means normal code or test implementation with a concrete
-outcome that does not match either pre-design route and does not require the
-child to make design or product decisions.
+Complex implementation covers a high-coupling boundary even when an approved
+design exists. It also covers a concrete task whose cross-component behavior,
+contract, or rollout implications cannot be made routine in the handoff. Route
+as complex when three or more files, an unclear shape, ordering/retry/
+concurrency behavior, a trust boundary (input, authentication, secrets, or
+payments), a schema or hard-to-reverse change, or two blocking review cycles
+are involved. Ambiguity about a concrete implementation's shape routes to
+complex, never to a separate fast mode.
 
 Every self-contained read-only exploration task uses Terra/high, regardless of
-breadth or source. Review, security analysis, test execution, planning, design,
-ambiguous work, mixed-purpose work, and children that require the whole parent
-history stay native. Native means Codex decides: omitted settings inherit
-normally, and Codex may still override one or both settings when useful.
+breadth or source. Every independent review uses a fresh Sol/high child,
+including security review: use a self-contained review packet and a V1
+`fork_context: false` or V2 `fork_turns: "none"` call. Test execution,
+planning, design, mixed-purpose work, a request without a concrete goal or
+scope, and non-review children that require the whole parent history stay
+native. Native means Codex decides: omitted settings inherit normally, and
+Codex may still override one or both settings when useful.
 
 ## Spawn Rules
 
@@ -70,6 +98,8 @@ normally, and Codex may still override one or both settings when useful.
   using an adapter/context form that permits them.
 - For a child that requires whole-parent history, omit both fields. It is an
   intentional inheritance decision, not a failed route.
+- Do not give an independent reviewer whole-parent history just to avoid
+  preparing a review packet. That breaks the fresh Sol/high review boundary.
 - Check the active spawn tool's model and effort metadata before dispatch. A
   pair is unavailable only when no compatible invocation form exposes it.
 - If the exact pair is unavailable, report a **route exception** with the
@@ -79,10 +109,27 @@ normally, and Codex may still override one or both settings when useful.
   Ask the user only when they required that exact pair or the choice changes a
   material task outcome.
 - A custom agent file that pins model settings keeps its normal precedence.
-- Worker prompts include the outcome, design path when applicable, write scope,
-  verification, and a stop condition for unresolved decisions. Explorer prompts
-  state the read-only question and required discovery output.
+- Worker prompts use these labeled fields: `GOAL`, `FILES`, `PATTERN`,
+  `CONSTRAINTS`, and `DONE WHEN`. `PATTERN` cites the existing `path:line` to
+  imitate; if no usable pattern can be named, route the work as complex.
+  `DONE WHEN` includes the verification command and observable acceptance
+  behavior. Ask the worker to return unresolved decisions rather than inventing
+  them. If this contract needs more than two short paragraphs of explanation,
+  split the work first. Explorer prompts instead state the read-only question
+  and required discovery output.
 - Do not spawn an extra child just to classify another spawn.
+
+## Fresh Review Gate
+
+After a meaningful delegated implementation diff, use a fresh Sol/high child
+for adversarial review. Give it the diff, `GOAL`, `CONSTRAINTS`, changed paths,
+base, and required verification — not the parent solution rationale or the
+implementer's reasoning. Send a blocking finding verbatim to the same
+implementer. A second blocking review for the same routine unit escalates that
+unit to Terra/xhigh; the parent decides and records any non-blocking risk.
+
+This is a gate for delegated implementation, not a rule that every ordinary
+edit must be orchestrated or independently reviewed.
 
 ### Context And Call Shape
 
@@ -163,10 +210,12 @@ Do not include `fork_context` in a V2 call.
   worker, then claiming that its no-override rule makes the route unavailable.
 - **False unavailability:** treating V2 full-history mode as proof that a
   `"none"` or numeric-window invocation cannot use a model/effort pair.
+- **Stale reviewer context:** using inherited parent history for a review that
+  should be a fresh Sol/high assessment.
 - **Unobservable fallback:** calling automatic selection a strategy fallback
   without reporting the attempted route, compatibility check, and actual pair
   or inheritance choice.
 
-The Luna/Terra bias is consistent with the official [Codex Subagents
-guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents); the Sol
-route is this skill's policy for design-backed high-coupling implementation.
+The Luna/max routine route, Terra/xhigh complex route, and fresh Sol/high
+reviewer route are this skill's local policy. The context-boundary mechanics follow the official
+[Codex Subagents guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents).

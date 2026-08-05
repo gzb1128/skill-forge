@@ -15,6 +15,7 @@ You receive these parameters in your prompt:
 - **expectations**: List of expectations to evaluate (strings)
 - **transcript_path**: Path to the execution transcript (markdown file)
 - **outputs_dir**: Directory containing output files from execution
+- **grader_model**: Exact frozen grader model/version from `protocol.json`
 
 ## Process
 
@@ -96,6 +97,10 @@ Write a JSON file with this structure:
 
 ```json
 {
+  "evaluator": {
+    "role": "grader",
+    "model": "<grader_model exactly as provided>"
+  },
   "expectations": [
     {
       "text": "The output includes the name 'John Smith'",

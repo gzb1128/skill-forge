@@ -2,7 +2,7 @@
 # Build scenario C for codex-subagent-strategy route-preserving invocation.
 #
 # GREEN requirements when the Codex V1 interface uses `fork_context`:
-#   1. a self-contained Luna/xhigh worker retains both route fields with
+#   1. a self-contained Luna/max worker retains both route fields with
 #      fork_context false;
 #   2. a whole-history child uses fork_context true and omits both route fields;
 #   3. the agent does not invent V2's fork_turns parameter.
@@ -52,5 +52,5 @@ git commit -q -m "initial"
 echo "Scenario built at: $SCEN"
 echo "Prompt: In Codex, explicitly delegate TASKS.md after reading RUNTIME.md."
 echo "Before dispatch, report the exact spawn fields and context-fork choice."
-echo "The parser worker must use Luna/xhigh with fork_context false; the history worker must use fork_context true and omit both route fields."
+echo "The parser worker must use Luna/max with fork_context false; the history worker must use fork_context true and omit both route fields."
 echo "Do not invent fork_turns or execute the worker."

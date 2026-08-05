@@ -29,7 +29,7 @@ claude plugin install github-contrib@skill-forge
 #    "loopfix"                    -> autonomous review-fix loop
 #    "migrate this skill"         -> adapt/create skills with eval discipline
 #    "hydrate model config"       -> fill OpenCode custom model parameters
-#    "delegate this to subagents" -> route Codex implementation workers
+#    "delegate this to subagents" -> route Codex explorers and implementation workers
 #    "find issues I can pick up"  -> rank contribution-ready GitHub issues
 ```
 
@@ -43,7 +43,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
 | `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
-| `codex-strategy` | Route explicitly requested Codex implementation workers by design clarity and coupling while leaving other roles native | `codex-subagent-strategy` |
+| `codex-strategy` | Route explicitly requested Codex explorers and implementation workers by task shape while leaving other roles native | `codex-subagent-strategy` |
 | `github-contrib` | Find contribution-ready GitHub issues with claimed status, PR linkage, difficulty, staleness, maintainer engagement, and area signals | `find-contributable-issues` |
 
 ## Skill Catalog
@@ -85,7 +85,7 @@ The minimal `AGENTS.md` template used by `bootstrap-agent-docs` lives at `plugin
 
 | Skill | Type | Purpose |
 |---|---|---|
-| `codex-subagent-strategy` | model-invoked | Before an explicitly requested Codex spawn, route high-coupling pre-design work to Sol/medium, bounded pre-design work to Luna/xhigh, and general coding to Terra/high |
+| `codex-subagent-strategy` | model-invoked | Before an explicitly requested Codex spawn, route every explorer to Terra/high; route high-coupling pre-design work to Sol/medium, bounded pre-design work to Luna/xhigh, and general coding to Terra/high |
 
 Skill Forge keeps marketplace source in plugin layout. Compatible agent skill
 installers expose installed skills through `~/.agents/skills/<skill>`.

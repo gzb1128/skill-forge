@@ -26,7 +26,7 @@ fallback in the scenario notes.
 |---|---|---|---|
 | `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A) | Minimal one-file plan, approval gate, applied payload, and no-`docs/` assertion passed |
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
-| `codex-subagent-strategy` | Yes recorded (Scenario A) | Yes passed (Scenarios A, B) | A produced Sol/medium for high coupling, Luna/xhigh for bounded pre-design, and Terra/high for general coding while leaving unmatched tasks native; B enforced full inheritance under explicit opt-out |
+| `codex-subagent-strategy` | Yes recorded (Scenario A) | Yes passed (Scenarios A, B) | Scenario A routes both local-codebase and documentation explorers to Terra/high, high coupling to Sol/medium, bounded pre-design to Luna/xhigh, and general coding to Terra/high while unmatched tasks stay native; B retains explicit full-inheritance opt-out coverage |
 | `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations. New preview/approval/verification gates (rule 4-7) pending GREEN re-run |
 | `find-contributable-issues` | — | — | New skill. Scenarios A (normal scoring run), B (read-only refusal under pressure), C (cap/cost-boundary handling) defined; RED/GREEN pending |
@@ -212,7 +212,8 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Explicit Codex trigger | Applies only when the current user explicitly requests Codex subagents and an actual spawn is planned |
 | User opt-out | Scenario B omits both override fields for every child |
 | Native default | When the skill has no prescription, it leaves model and effort to Codex; omitted settings inherit normally and partial native overrides remain allowed |
-| Role boundary | Only implementation workers receive skill prescriptions; exploration and security review remain under native selection |
+| Explorer routing | Scenario A routes both read-only codebase discovery and documentation research to `gpt-5.6-terra/high`, regardless of breadth or source |
+| Role boundary | Only explorers and implementation workers receive skill prescriptions; security review remains under native selection |
 | High-coupling implementation | Scenario A routes the design-backed API/state/persistence worker to `gpt-5.6-sol/medium` |
 | Bounded implementation | Scenario A routes the isolated design-backed parser worker to `gpt-5.6-luna/xhigh` |
 | General coding | Scenario A routes the concrete logging worker to `gpt-5.6-terra/high` |

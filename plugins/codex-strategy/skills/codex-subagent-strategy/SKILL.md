@@ -107,8 +107,21 @@ Codex may still override one or both settings when useful.
   available explicit pair or parent inheritance based on the child’s context
   need. Do not silently omit the fields or call automatic selection compliance.
   Ask the user only when they required that exact pair or the choice changes a
-  material task outcome.
-- A custom agent file that pins model settings keeps its normal precedence.
+  material task outcome. The Luna/max recovery rule below overrides this
+  fallback choice for a rejected routine-Luna route.
+- A custom agent file that pins model settings keeps its normal precedence. If
+  the Luna/max routine route is rejected but the active tool lists
+  `agent_type: "luna_max"`, invoke that role and omit raw `model` and
+  `reasoning_effort`; report the role as the actual Luna/max route.
+- If the Luna/max route is rejected and `luna_max` is not listed, report the
+  attempted pair and the rejection, then ask whether the user wants the
+  optional `codex-luna-agent-config` skill to configure that isolated role.
+  Do not load that skill, edit Codex configuration, or silently substitute a
+  native/other-model worker until the user explicitly approves.
+- If the user declines configuration but still wants delegation, say that the
+  Luna route remains unavailable and ask them to choose a named available pair
+  or parent inheritance. A refusal is not permission to pick that fallback;
+  dispatch it only after the user chooses.
 - Worker prompts use these labeled fields: `GOAL`, `FILES`, `PATTERN`,
   `CONSTRAINTS`, and `DONE WHEN`. `PATTERN` cites the existing `path:line` to
   imitate; if no usable pattern can be named, route the work as complex.
@@ -210,6 +223,8 @@ Do not include `fork_context` in a V2 call.
   worker, then claiming that its no-override rule makes the route unavailable.
 - **False unavailability:** treating V2 full-history mode as proof that a
   `"none"` or numeric-window invocation cannot use a model/effort pair.
+- **Unapproved role installation:** loading `codex-luna-agent-config` or
+  editing global Codex configuration merely because a Luna route failed.
 - **Stale reviewer context:** using inherited parent history for a review that
   should be a fresh Sol/high assessment.
 - **Unobservable fallback:** calling automatic selection a strategy fallback

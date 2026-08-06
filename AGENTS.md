@@ -14,7 +14,7 @@
 | `code-quality` | Code review, commit gates, diff cleanup, and autonomous fix loops | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Skill creation, upstream skill migration, behavioral evals, and trigger tuning | `skill-creator` |
 | `opencode-customize` | OpenCode configuration customization, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
-| `codex-strategy` | Codex explorer and implementation-worker routing by task shape | `codex-subagent-strategy` |
+| `codex-strategy` | Codex subagent routing plus approval-gated Luna/max role configuration | `codex-subagent-strategy`, `codex-luna-agent-config` |
 | `github-contrib` | GitHub contribution discovery and issue ranking | `find-contributable-issues` |
 
 ## What's here
@@ -28,7 +28,7 @@
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `plugins/skill-creator/` | Skill creation plugin: `skill-creator` |
 | `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects` |
-| `plugins/codex-strategy/` | Codex orchestration plugin: `codex-subagent-strategy` |
+| `plugins/codex-strategy/` | Codex orchestration plugin: `codex-subagent-strategy`, `codex-luna-agent-config` |
 | `plugins/github-contrib/` | GitHub contribution plugin: `find-contributable-issues` |
 | `docs/design/` | Durable decisions, constraints, verification boundaries, and rollback rationale for this repo |
 | `docs/verify/` | RED→GREEN→REFACTOR skill test process and scenario build scripts |

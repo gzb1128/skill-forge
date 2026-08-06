@@ -1,6 +1,6 @@
 {
   "name": "codex-strategy",
-  "description": "Codex subagent strategy — route explorers and implementation workers by task shape while leaving other tasks native",
+  "description": "Codex subagent routing plus approval-gated local Luna/max role configuration",
   "author": {
     "name": "Skill Forge Team"
   }

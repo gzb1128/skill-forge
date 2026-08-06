@@ -26,7 +26,8 @@ fallback in the scenario notes.
 |---|---|---|---|
 | `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A) | Minimal one-file plan, approval gate, applied payload, and no-`docs/` assertion passed |
 | `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
-| `codex-subagent-strategy` | Yes recorded (Scenario A) | Yes passed (Scenarios A-D) | A-D exercise the optional delegation preparation, self-contained handoff, fresh-review, and context contracts. The current runtime lacks Luna and V1, so routes requiring them are verified as visible route exceptions rather than pretending the exact pair/interface was callable. |
+| `codex-subagent-strategy` | Yes recorded (Scenario A) | GREEN re-run pending (Scenario E) | A-D cover delegation preparation, self-contained handoff, fresh review, and context contracts; E requires a rejected Luna route to request explicit role-configuration approval without editing configuration. |
+| `codex-luna-agent-config` | RED/GREEN pending (Scenarios A-D) | — | A creates one standalone `luna_max` role after a real Luna route rejection plus explicit approval; B guards the missing-approval stop, while C and D guard declared and standalone role conflicts. |
 | `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B, REFACTOR re-run) | Preview, explicit approval, blame protection, design boundary, lint, and focused tests passed. The run exposed that `...HEAD --stat` omitted the uncommitted cleanup; the skill now uses `git diff "$BASE" --stat`, and the same scenario passed after the correction. |
 | `find-contributable-issues` | — | Yes passed (Scenarios A-C) | Hermetic `gh` fixtures verify normal ranking, read-only refusal, and the refined-query/comments-cost boundary without real GitHub credentials or writes. A dedicated RED baseline remains unrecorded. |
@@ -116,7 +117,13 @@ docs/verify/scenarios/
 │   ├── build-a.sh          # Three worker routes plus native-selection boundaries
 │   ├── build-b.sh          # Explicit user opt-out forces full inheritance
 │   ├── build-c.sh          # V1 fork_context separates inheritance and routing
-│   └── build-d.sh          # V2 fork_turns separates inheritance and routing
+│   ├── build-d.sh          # V2 fork_turns separates inheritance and routing
+│   └── build-e.sh          # Rejected Luna requests explicit role-config approval
+├── codex-luna-agent-config/
+│   ├── build-a.sh          # Explicit approval creates only the isolated Luna role
+│   ├── build-b.sh          # Rejection without approval leaves configuration untouched
+│   ├── build-c.sh          # Conflicting declared luna_max role is reported, not overwritten
+│   └── build-d.sh          # Conflicting standalone luna_max role is reported, not overwritten
 ├── diff-cleanup/
 │   └── build-b.sh          # AI slop cleanup scenario on a feature branch
 ├── find-contributable-issues/
@@ -235,11 +242,28 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Context-first inheritance | Scenario D keeps a whole-history V2 child on the parent model by using `fork_turns="all"` and omitting both override fields |
 | V1 route-preserving invocation | Scenario C uses V1 `fork_context: false` with explicit `gpt-5.6-luna/max` fields and rejects invented `fork_turns` |
 | V2 route-preserving invocation | Scenario D uses V2 `fork_turns="none"` with explicit `gpt-5.6-luna/max` fields and rejects invented `fork_context` |
+| Role-route parity | Scenarios C and D invoke their exposed `luna_max` role for an independent worker, omitting raw model and effort fields without retrying the rejected raw Luna path |
+| Rejected Luna boundary | Scenario E reports the direct Luna rejection and asks for approval to configure `luna_max`; it does not load the configuration skill, edit TOML, or silently substitute another worker |
 | Ambiguity safety | Scenario A gives no skill prescription for the design-free reliability worker and leaves the decision to Codex |
 
 These scenarios verify pre-spawn routing, opt-out, V1/V2 context contracts,
-and the full-history inheritance boundary. They do not claim coverage of every
-adapter or all unavailable-model fallback choices.
+the full-history inheritance boundary, and the approval boundary for optional
+Luna role configuration. They do not claim coverage of every adapter or all
+unavailable-model fallback choices.
+
+### codex-luna-agent-config
+
+Scenario A starts from a real Luna route rejection and explicit user approval;
+Scenario B omits approval; Scenarios C and D start with conflicting declared
+and standalone roles. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Dual trigger | It does not load or edit before both the observed rejection and explicit approval are present |
+| Isolated role | It adds one standalone `agents/luna-max.toml` with `name = "luna_max"` and `gpt-5.6-luna/max` |
+| Defaults preserved | It does not set either `agents.default_subagent_*` key or alter `config.toml` when adding a new role |
+| Conflict safety | A pre-existing different declared or standalone `luna_max` role is reported rather than overwritten |
+| Runtime boundary | It validates configuration loading, asks for a new task/client restart, and does not claim to grant unavailable model access |
 
 ### diff-cleanup
 

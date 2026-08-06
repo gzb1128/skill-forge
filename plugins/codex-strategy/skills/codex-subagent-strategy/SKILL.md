@@ -19,9 +19,9 @@ delegated implementation; ordinary local work may proceed without a child.
 2. If the user requests no child-model routing or says every child must inherit,
    omit both `model` and `reasoning_effort` for every spawn and stop here.
 3. Honor any explicit per-child model or effort requested by the user.
-4. Read the active spawn tool description. Identify whether it is the V1
-   `multi_agent_v1__spawn_agent` shape (`fork_context`) or the V2
-   `collaboration.spawn_agent` shape (`fork_turns`).
+4. Read the active spawn tool description and select its call-shape adapter.
+   V1 and V2 change only invocation and context mechanics; they do not change
+   the model route or role selected below.
 5. Decide whether a self-contained handoff can give the child everything it
    needs: outcome, design path when applicable, write scope, verification, and
    a stop condition. For an independent review, create a fresh review packet
@@ -85,11 +85,10 @@ complex, never to a separate fast mode.
 
 Every self-contained read-only exploration task uses Terra/high, regardless of
 breadth or source. Every independent review uses a fresh Sol/high child,
-including security review: use a self-contained review packet and a V1
-`fork_context: false` or V2 `fork_turns: "none"` call. Test execution,
-planning, design, mixed-purpose work, a request without a concrete goal or
-scope, and non-review children that require the whole parent history stay
-native. Native means Codex decides: omitted settings inherit normally, and
+including security review, using the independent-child adapter below. Test
+execution, planning, design, mixed-purpose work, a request without a concrete
+goal or scope, and non-review children that require the whole parent history
+stay native. Native means Codex decides: omitted settings inherit normally, and
 Codex may still override one or both settings when useful.
 
 ## Spawn Rules
@@ -107,8 +106,21 @@ Codex may still override one or both settings when useful.
   available explicit pair or parent inheritance based on the child’s context
   need. Do not silently omit the fields or call automatic selection compliance.
   Ask the user only when they required that exact pair or the choice changes a
-  material task outcome.
-- A custom agent file that pins model settings keeps its normal precedence.
+  material task outcome. The Luna/max recovery rule below overrides this
+  fallback choice for a rejected routine-Luna route.
+- A custom agent file that pins model settings keeps its normal precedence. If
+  the Luna/max routine route is rejected but the active tool lists
+  `agent_type: "luna_max"`, invoke that role and omit raw `model` and
+  `reasoning_effort`; report the role as the actual Luna/max route.
+- If the Luna/max route is rejected and `luna_max` is not listed, report the
+  attempted pair and the rejection, then ask whether the user wants the
+  optional `codex-luna-agent-config` skill to configure that isolated role.
+  Do not load that skill, edit Codex configuration, or silently substitute a
+  native/other-model worker until the user explicitly approves.
+- If the user declines configuration but still wants delegation, say that the
+  Luna route remains unavailable and ask them to choose a named available pair
+  or parent inheritance. A refusal is not permission to pick that fallback;
+  dispatch it only after the user chooses.
 - Worker prompts use these labeled fields: `GOAL`, `FILES`, `PATTERN`,
   `CONSTRAINTS`, and `DONE WHEN`. `PATTERN` cites the existing `path:line` to
   imitate; if no usable pattern can be named, route the work as complex.
@@ -131,74 +143,27 @@ unit to Terra/xhigh; the parent decides and records any non-blocking risk.
 This is a gate for delegated implementation, not a rule that every ordinary
 edit must be orchestrated or independently reviewed.
 
-### Context And Call Shape
+### Spawn Adapter
 
-Never infer spawn fields from memory or another agent runtime. Before the first
-spawn, inspect the active tool description for its model, reasoning, and
-context-propagation fields. Do not decide context propagation before deciding
-whether the worker can use a self-contained handoff.
+Never infer spawn fields from memory or another runtime. Inspect the active
+tool schema. The route table above applies unchanged to both versions.
 
-#### Codex V1: `multi_agent_v1__spawn_agent`
+| Active tool shape | Independent prescribed child | Whole-parent-history child |
+|---|---|---|
+| V1 `multi_agent_v1__spawn_agent` | Use `fork_context: false`; pass route `model` and `reasoning_effort` only when the schema exposes them. | Use `fork_context: true`; omit route fields as an intentional inheritance decision. |
+| V2 `spawn_agent` | Supply required `task_name` and `message`; use `fork_turns: "none"` (or a small positive window when essential recent context is known) and pass route fields only when exposed. | Omit `fork_turns` or use `"all"`; omit route fields as an intentional inheritance decision. |
 
-V1 exposes independent `model`, `reasoning_effort`, and boolean `fork_context`
-fields. It permits an explicit route with either context choice. Prefer
-`fork_context: false` for self-contained work to avoid copying unnecessary
-history. For a child that needs the whole parent history, set
-`fork_context: true` and omit both route fields.
-Although V1 technically permits a routed full-context child, this strategy
-treats a child that truly needs the whole parent history as inheritance-first
-so the same context boundary applies across V1 and V2.
+For either version, use `agent_type: "luna_max"` only for a non-full-history
+child. Full-history forks reject an `agent_type` override and must inherit the
+parent role. Do not pass `fork_turns` to V1 or `fork_context` to V2.
 
 ```text
-spawn_agent({
-  message: child_prompt,
-  model: route.model,
-  reasoning_effort: route.effort,
-  fork_context: true | false,
-})
+// V1 independent route
+spawn_agent({ message: handoff, fork_context: false, model: route.model, reasoning_effort: route.effort })
+
+// V2 independent route
+spawn_agent({ task_name: name, message: handoff, fork_turns: "none", model: route.model, reasoning_effort: route.effort })
 ```
-
-Do not include `fork_turns` in a V1 call.
-
-```text
-spawn_agent({
-  message: child_prompt,
-  fork_context: true,
-  // no model or reasoning_effort
-})
-```
-
-#### Codex V2: `collaboration.spawn_agent`
-
-V2 exposes `fork_turns` (and normally `task_name`, `model`, and
-`reasoning_effort`). Full-history mode — `fork_turns` omitted or set to
-`"all"` — inherits the parent model and effort and does not accept model
-overrides. Use it only for a child that needs the whole parent history:
-
-```text
-spawn_agent({
-  task_name: child_name,
-  message: child_prompt,
-  fork_turns: "all",
-  // no model or reasoning_effort
-})
-```
-
-For a prescribed route, use `fork_turns: "none"` or a positive integer string
-and include both route fields. Prefer `"none"` when the handoff is complete;
-use a small positive window only when recent turns contain essential context.
-
-```text
-spawn_agent({
-  task_name: child_name,
-  message: self_contained_handoff,
-  fork_turns: "none",
-  model: route.model,
-  reasoning_effort: route.effort,
-})
-```
-
-Do not include `fork_context` in a V2 call.
 
 ### Anti-Patterns
 
@@ -206,10 +171,10 @@ Do not include `fork_context` in a V2 call.
   self-contained prescribed child is a route violation. Omitting them for an
   intentional full-history inheritance is correct.
 - **Foreign parameters:** passing `fork_turns` to V1 or `fork_context` to V2.
-- **Fork-first routing:** choosing V2 `fork_turns="all"` for a self-contained
-  worker, then claiming that its no-override rule makes the route unavailable.
-- **False unavailability:** treating V2 full-history mode as proof that a
-  `"none"` or numeric-window invocation cannot use a model/effort pair.
+- **Fork-first routing:** choosing a full-history mode for a self-contained
+  worker, then claiming the inheritance choice makes the route unavailable.
+- **Unapproved role installation:** loading `codex-luna-agent-config` or
+  editing global Codex configuration merely because a Luna route failed.
 - **Stale reviewer context:** using inherited parent history for a review that
   should be a fresh Sol/high assessment.
 - **Unobservable fallback:** calling automatic selection a strategy fallback

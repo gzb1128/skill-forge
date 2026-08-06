@@ -5,7 +5,8 @@
 #   1. a self-contained Luna/max worker retains both route fields with
 #      fork_context false;
 #   2. a whole-history child uses fork_context true and omits both route fields;
-#   3. the agent does not invent V2's fork_turns parameter.
+#   3. an exposed luna_max role works with fork_context false and no raw fields;
+#   4. the agent does not invent V2's fork_turns parameter.
 
 set -euo pipefail
 
@@ -35,7 +36,9 @@ cat > RUNTIME.md <<'EOF'
 `reasoning_effort`, and boolean `fork_context` fields. `fork_turns` is not a
 parameter of this tool. Either `fork_context` value may be used with both
 explicit route fields. The strategy uses `fork_context: true` plus omitted
-route fields when a child needs the whole parent history.
+route fields when a child needs the whole parent history. Its `agent_type` list
+also exposes `luna_max`, which pins GPT-5.6 Luna/max; role calls must omit raw
+`model` and `reasoning_effort`.
 EOF
 
 cat > TASKS.md <<'EOF'
@@ -44,6 +47,8 @@ cat > TASKS.md <<'EOF'
 2. Worker: reconcile the design discussion from the entire parent conversation.
    The needed decisions are intentionally not written down anywhere else, so it
    requires the full parent history. Do not make edits.
+3. Worker: make the same bounded parser change using the exposed `luna_max`
+   role. It is self-contained and must not retry raw Luna model fields.
 EOF
 
 git add -A
@@ -53,4 +58,5 @@ echo "Scenario built at: $SCEN"
 echo "Prompt: In Codex, explicitly delegate TASKS.md after reading RUNTIME.md."
 echo "Before dispatch, report the exact spawn fields and context-fork choice."
 echo "The parser worker must use Luna/max with fork_context false; the history worker must use fork_context true and omit both route fields."
+echo "The role worker must use agent_type luna_max with fork_context false and omit raw model and reasoning_effort."
 echo "Do not invent fork_turns or execute the worker."

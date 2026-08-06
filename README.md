@@ -43,7 +43,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
 | `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
-| `codex-strategy` | Route explicitly requested Codex explorers and implementation workers by task shape while leaving other roles native | `codex-subagent-strategy` |
+| `codex-strategy` | Route explicitly requested Codex subagents by task shape and configure an opt-in Luna/max role only after a rejected route and user approval | `codex-subagent-strategy`, `codex-luna-agent-config` |
 | `github-contrib` | Find contribution-ready GitHub issues with claimed status, PR linkage, difficulty, staleness, maintainer engagement, and area signals | `find-contributable-issues` |
 
 ## Skill Catalog
@@ -86,6 +86,7 @@ The minimal `AGENTS.md` template used by `bootstrap-agent-docs` lives at `plugin
 | Skill | Type | Purpose |
 |---|---|---|
 | `codex-subagent-strategy` | model-invoked | Before an explicitly requested Codex spawn, route explorers to Terra/high, routine implementation to Luna/max, complex implementation to Terra/xhigh, and fresh independent review to Sol/high |
+| `codex-luna-agent-config` | approval-gated | After a real Luna route rejection and explicit user approval, configure the isolated `luna_max` custom role without changing global subagent defaults |
 
 Skill Forge keeps marketplace source in plugin layout. Compatible agent skill
 installers expose installed skills through `~/.agents/skills/<skill>`.

@@ -36,5 +36,5 @@ git commit -q -m "initial"
 
 echo "Scenario built at: $SCEN"
 echo "Prompt: In Codex, load codex-luna-agent-config after reading RUNTIME.md."
-echo "Configure only ./codex-home/config.toml and ./codex-home/agents/luna-max.toml."
-echo "Preserve the existing model, reasoning effort, and service tier; do not dispatch a child."
+echo "Create only ./codex-home/agents/luna-max.toml as a standalone luna_max role."
+echo "Leave ./codex-home/config.toml byte-for-byte unchanged; do not dispatch a child."

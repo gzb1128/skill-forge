@@ -24,28 +24,27 @@ after approval; do not read or edit global Codex configuration just to prepare.
 1. Resolve the active user-level Codex configuration root. It is normally
    `~/.codex`; use a different root only when the runtime or an explicit test
    fixture identifies one.
-2. Read the existing `config.toml`, inspect every `[agents.*]` declaration,
-   and resolve any referenced role files. In Codex, the role name is keyed by
-   `[agents.<name>]` in `config.toml`; the role file itself does not declare a
-   role name. Preserve unrelated settings, roles, model defaults, and comments.
-3. If `[agents.luna_max]` already points to `./agents/luna-max.toml` and that
-   file already pins Luna/max, report it as configured and do not rewrite it.
-4. If `[agents.luna_max]` has a different path or behavior, or an unreferenced
-   `agents/luna-max.toml` already exists, stop and show the conflict. Do not
-   replace another role or overwrite an ambiguous role file without the user's
-   explicit direction.
-5. Otherwise add only this declaration to `config.toml`:
+2. Discover role names before writing: inspect every `[agents.*]` declaration
+   in `config.toml`, resolve each referenced `config_file`, and inspect every
+   existing `agents/*.toml` file. A declared role normally uses its table key;
+   a standalone file uses its required `name`. Preserve unrelated settings,
+   roles, model defaults, and comments.
+3. If exactly one source resolves to `luna_max` and it already pins Luna/max,
+   report it as configured and do not rewrite it. This includes a compatible
+   existing `[agents.luna_max]` declaration or a compatible standalone file.
+4. Stop and show a conflict if multiple sources resolve to `luna_max`, the one
+   resolved role has incompatible behavior, or the intended
+   `agents/luna-max.toml` path already contains an unrecognized role. A single
+   compatible role at another path is already configured, not a conflict. Do
+   not replace another role or overwrite an ambiguous file without explicit
+   user direction.
+5. Otherwise create one standalone `agents/luna-max.toml`. Do not add an
+   `[agents.luna_max]` declaration for a new role; this keeps `config.toml`
+   unchanged and avoids two definitions for the same role:
 
    ```toml
-   [agents.luna_max]
+   name = "luna_max"
    description = "Use for clear, bounded subagent tasks that should run with GPT-5.6 Luna at max reasoning effort."
-   config_file = "./agents/luna-max.toml"
-   ```
-
-6. Create `agents/luna-max.toml` with a scope-limiting developer instruction
-   plus the pinned settings:
-
-   ```toml
    developer_instructions = "Use this role only for a clear, self-contained task. Stay within the requested scope, run the requested verification when possible, and report unresolved decisions instead of expanding the task."
    model = "gpt-5.6-luna"
    model_reasoning_effort = "max"

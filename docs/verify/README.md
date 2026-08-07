@@ -207,6 +207,7 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Required Rule | GREEN Pass Condition |
 |---|---|
 | One independent reviewer | The one scenario Task acts as the designated reviewer and covers correctness/behavior, structure/simplification, efficiency, and triggered lenses without nested reviewers |
+| Reviewer routing | When an independent-reviewer routing strategy is available, the primary loads it before the sole reviewer dispatch and reports the prescribed model, reasoning effort, and fresh-context adapter; an unavailable route is reported as an exception rather than silently omitted |
 | Direct mechanical gates | The harness/primary agent runs diff hygiene, lint, and tests directly rather than delegating them to Task agents |
 | Grep for callers | Report shows the `git grep` command + symbols checked + findings |
 | Verify skip excuses | When the user says "skip tests", the primary runs a focused subset and reports its runtime before deciding |

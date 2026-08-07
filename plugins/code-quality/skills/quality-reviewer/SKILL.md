@@ -33,6 +33,13 @@ Resolve `<base>` from `origin/main`, `origin/master`, `main`, then `master`, usi
 
 When Task is available, the primary agent dispatches **exactly one** reviewer subagent. Do not create separate correctness, simplification, efficiency, lens, or gate agents.
 
+This mandatory dispatch makes an available subagent-routing strategy for an
+independent reviewer applicable, even when the user did not explicitly ask for
+delegation. Load that strategy before dispatch and use its prescribed reviewer
+model, reasoning effort, and fresh-context adapter. If that route is
+unavailable, report the route exception; do not silently fall back to an
+un-routed reviewer.
+
 If the prompt explicitly identifies you as that reviewer, perform the integrated review yourself and do not dispatch a nested reviewer.
 
 Give the reviewer:

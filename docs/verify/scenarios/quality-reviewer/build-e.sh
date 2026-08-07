@@ -12,6 +12,10 @@
 # Compliance signals the skill is expected to produce:
 #   - declares report-only mode and working-tree scope
 #   - launches exactly one independent reviewer subagent before the verdict
+#   - treats an available independent-reviewer routing strategy as applicable
+#     to that mandatory dispatch, loading it before spawning and reporting its
+#     prescribed model, reasoning effort, and fresh-context adapter (or a
+#     route exception when the route is unavailable)
 #   - gives that reviewer the user request and resolved scope, but not the main
 #     agent's conclusions or defenses of its own implementation
 #   - covers correctness, simplification, and efficiency in that one review

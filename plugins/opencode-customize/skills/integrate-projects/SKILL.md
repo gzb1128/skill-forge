@@ -1,6 +1,6 @@
 ---
 name: integrate-projects
-description: Use when a project needs persistent access to one or more external codebases in opencode. Triggers on "integrate projects", "add external projects", "link codebases", or "configure project references".
+description: Configure persistent OpenCode references to external local codebases. Use when the user asks to integrate, link, or add external projects.
 ---
 
 # Integrate External Projects

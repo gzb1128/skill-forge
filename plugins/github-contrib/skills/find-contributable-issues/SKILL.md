@@ -1,6 +1,6 @@
 ---
 name: find-contributable-issues
-description: Use when a contributor wants to find GitHub issues worth picking up — ranking open issues by how contribute-able they are with difficulty, claimed status, linked PRs, staleness, maintainer engagement, and area. Triggers on "good first issue", "what can I work on", "what's up for grabs", "any low-hanging fruit", "easy issues to pick up", "find a bug to fix", "issues I could take", "help wanted issues", or when a user is about to start contributing to a repo and wants to know what's worth claiming.
+description: Rank open GitHub issues for contribution readiness using scope, ownership, linked work, activity, and maintainer signals. Use when a contributor asks what issue to pick up.
 ---
 
 # Find Contributable Issues

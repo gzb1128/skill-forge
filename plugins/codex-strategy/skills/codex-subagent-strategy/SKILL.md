@@ -1,6 +1,6 @@
 ---
 name: codex-subagent-strategy
-description: Use in Codex when the user explicitly asks to spawn subagents, delegate work, or run parallel agents and the parent is about to dispatch them; read this strategy before the first spawn and route explorers and implementation workers by task shape. Also use it when the user requests parent-model inheritance for every child so the opt-out is enforced.
+description: Choose Codex subagent roles and dispatch strategy. Use immediately before spawning only when the user explicitly requests subagents, delegation, parallel agents, or parent-model inheritance.
 ---
 
 # Codex Subagent Strategy

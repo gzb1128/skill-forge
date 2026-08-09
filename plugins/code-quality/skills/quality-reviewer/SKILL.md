@@ -1,6 +1,6 @@
 ---
 name: quality-reviewer
-description: Use when local code changes need a quality pass before commit, before opening a PR, or before claiming work is complete. Triggers on "review", "quality review", "quality review and fix", "fix review findings", "ready to commit", "check before merge". Do NOT use for remote MR/PR review.
+description: Review local changes for correctness, scope, tests, and maintainability, optionally fixing findings. Use for explicit quality-review requests before commit or merge; not for remote PR/MR review.
 ---
 
 # Quality Reviewer

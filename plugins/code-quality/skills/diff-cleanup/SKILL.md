@@ -1,6 +1,6 @@
 ---
 name: diff-cleanup
-description: Use when the user asks to remove AI slop, clean up AI-generated code, strip bloated comments, or simplify code on a feature branch. Triggers on "remove slop", "clean up AI code", "remove unnecessary comments", "simplify this diff", "this code feels bloated".
+description: Clean an existing diff of AI-generated bloat, redundant comments, needless abstractions, or overcomplication. Use when the user asks to remove AI slop or simplify the diff.
 ---
 
 # Diff Cleanup

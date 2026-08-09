@@ -7,12 +7,13 @@ plugin frontmatter fields used by this repository, but it does not replace
 `claude plugin validate` or `make validate`.
 """
 
+import argparse
 import sys
 import re
 import yaml
 from pathlib import Path
 
-def validate_skill(skill_path):
+def validate_skill(skill_path, max_description_chars=1024):
     """Basic validation of a skill"""
     skill_path = Path(skill_path)
 
@@ -88,13 +89,18 @@ def validate_skill(skill_path):
     if not isinstance(description, str):
         return False, f"Description must be a string, got {type(description).__name__}"
     description = description.strip()
+    if not description:
+        return False, "Description must not be empty"
     if description:
         # Check for angle brackets
         if '<' in description or '>' in description:
             return False, "Description cannot contain angle brackets (< or >)"
         # Check description length (max 1024 characters per spec)
-        if len(description) > 1024:
-            return False, f"Description is too long ({len(description)} characters). Maximum is 1024 characters."
+        if len(description) > max_description_chars:
+            return False, (
+                f"Description is too long ({len(description)} characters). "
+                f"Maximum is {max_description_chars} characters."
+            )
 
     # Validate compatibility field if present (optional)
     compatibility = frontmatter.get('compatibility', '')
@@ -125,10 +131,21 @@ def validate_skill(skill_path):
     return True, "Skill is valid!"
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python quick_validate.py <skill_directory>")
-        sys.exit(1)
-    
-    valid, message = validate_skill(sys.argv[1])
+    parser = argparse.ArgumentParser(description="Validate a skill directory")
+    parser.add_argument("skill_directory")
+    parser.add_argument(
+        "--max-description-chars",
+        type=int,
+        default=1024,
+        help="Description budget for the target repository (default: format limit 1024)",
+    )
+    args = parser.parse_args()
+    if not 1 <= args.max_description_chars <= 1024:
+        parser.error("--max-description-chars must be between 1 and 1024")
+
+    valid, message = validate_skill(
+        args.skill_directory,
+        max_description_chars=args.max_description_chars,
+    )
     print(message)
     sys.exit(0 if valid else 1)

@@ -63,6 +63,7 @@ def improve_description(
     test_results: dict | None = None,
     log_dir: Path | None = None,
     iteration: int | None = None,
+    max_description_chars: int = 1024,
 ) -> str:
     """Call Claude to improve the description based on eval results."""
     failed_triggers = [
@@ -135,7 +136,7 @@ Based on the failures, write a new and improved description that is more likely 
 1. Avoid overfitting
 2. The list might get loooong and it's injected into ALL queries and there might be a lot of skills, so we don't want to blow too much space on any given description.
 
-Concretely, your description should not be more than about 100-200 words, even if that comes at the cost of accuracy. There is a hard limit of 1024 characters — descriptions over that will be truncated, so stay comfortably under it.
+Keep the description comfortably under the target repository's {max_description_chars}-character metadata budget, even if that comes at the cost of accuracy.
 
 Here are some tips that we've found to work well in writing these descriptions:
 - The skill should be phrased in the imperative -- "Use this skill for" rather than "this skill does"
@@ -158,22 +159,23 @@ Please respond with only the new description text in <new_description> tags, not
         "response": text,
         "parsed_description": description,
         "char_count": len(description),
-        "over_limit": len(description) > 1024,
+        "over_limit": len(description) > max_description_chars,
     }
 
-    # Safety net: the prompt already states the 1024-char hard limit, but if
+    # Safety net: the prompt already states the target budget, but if
     # the model blew past it anyway, make one fresh single-turn call that
     # quotes the too-long version and asks for a shorter rewrite. (The old
     # SDK path did this as a true multi-turn; `claude -p` is one-shot, so we
     # inline the prior output into the new prompt instead.)
-    if len(description) > 1024:
+    if len(description) > max_description_chars:
         shorten_prompt = (
             f"{prompt}\n\n"
             f"---\n\n"
             f"A previous attempt produced this description, which at "
-            f"{len(description)} characters is over the 1024-character hard limit:\n\n"
+            f"{len(description)} characters is over the "
+            f"{max_description_chars}-character target budget:\n\n"
             f'"{description}"\n\n'
-            f"Rewrite it to be under 1024 characters while keeping the most "
+            f"Rewrite it to be under {max_description_chars} characters while keeping the most "
             f"important trigger words and intent coverage. Respond with only "
             f"the new description in <new_description> tags."
         )
@@ -186,6 +188,12 @@ Please respond with only the new description text in <new_description> tags, not
         transcript["rewrite_description"] = shortened
         transcript["rewrite_char_count"] = len(shortened)
         description = shortened
+
+    if len(description) > max_description_chars:
+        raise RuntimeError(
+            f"Description optimizer returned {len(description)} characters after "
+            f"the rewrite; target budget is {max_description_chars}"
+        )
 
     transcript["final_description"] = description
 
@@ -203,8 +211,16 @@ def main():
     parser.add_argument("--skill-path", required=True, help="Path to skill directory")
     parser.add_argument("--history", default=None, help="Path to history JSON (previous attempts)")
     parser.add_argument("--model", required=True, help="Model for improvement")
+    parser.add_argument(
+        "--max-description-chars",
+        type=int,
+        default=1024,
+        help="Target repository's description budget (default: 1024)",
+    )
     parser.add_argument("--verbose", action="store_true", help="Print thinking to stderr")
     args = parser.parse_args()
+    if not 1 <= args.max_description_chars <= 1024:
+        parser.error("--max-description-chars must be between 1 and 1024")
 
     skill_path = Path(args.skill_path)
     if not (skill_path / "SKILL.md").exists():
@@ -230,6 +246,7 @@ def main():
         eval_results=eval_results,
         history=history,
         model=args.model,
+        max_description_chars=args.max_description_chars,
     )
 
     if args.verbose:

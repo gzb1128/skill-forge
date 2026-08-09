@@ -67,11 +67,17 @@ def run_loop(
     verbose: bool,
     live_report_path: Path | None = None,
     log_dir: Path | None = None,
+    max_description_chars: int = 1024,
 ) -> dict:
     """Run the eval + improvement loop."""
     project_root = find_project_root()
     name, original_description, content = parse_skill_md(skill_path)
     current_description = description_override or original_description
+    if len(current_description) > max_description_chars:
+        raise ValueError(
+            f"Starting description has {len(current_description)} characters; "
+            f"target budget is {max_description_chars}"
+        )
 
     # Split into train/test if holdout > 0
     if holdout > 0:
@@ -214,6 +220,7 @@ def run_loop(
             model=model,
             log_dir=log_dir,
             iteration=iteration,
+            max_description_chars=max_description_chars,
         )
         improve_elapsed = time.time() - t0
 
@@ -262,10 +269,18 @@ def main():
     parser.add_argument("--trigger-threshold", type=float, default=0.5, help="Trigger rate threshold")
     parser.add_argument("--holdout", type=float, default=0.4, help="Fraction of eval set to hold out for testing (0 to disable)")
     parser.add_argument("--model", required=True, help="Model for improvement")
+    parser.add_argument(
+        "--max-description-chars",
+        type=int,
+        default=1024,
+        help="Target repository's description budget (default: 1024)",
+    )
     parser.add_argument("--verbose", action="store_true", help="Print progress to stderr")
     parser.add_argument("--report", default="auto", help="Generate HTML report at this path (default: 'auto' for temp file, 'none' to disable)")
     parser.add_argument("--results-dir", default=None, help="Save all outputs (results.json, report.html, log.txt) to a timestamped subdirectory here")
     args = parser.parse_args()
+    if not 1 <= args.max_description_chars <= 1024:
+        parser.error("--max-description-chars must be between 1 and 1024")
 
     eval_set = json.loads(Path(args.eval_set).read_text())
     skill_path = Path(args.skill_path)
@@ -313,6 +328,7 @@ def main():
         verbose=args.verbose,
         live_report_path=live_report_path,
         log_dir=log_dir,
+        max_description_chars=args.max_description_chars,
     )
 
     # Save JSON output

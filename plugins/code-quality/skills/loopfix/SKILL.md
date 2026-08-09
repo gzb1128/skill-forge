@@ -1,6 +1,6 @@
 ---
 name: loopfix
-description: Use when an approved goal, design, or implementation plan needs autonomous hardening after a first pass, especially when the user says loopfix, loop-fix, review-fix loop, keep fixing, or do not wait unless impact is broad.
+description: Run an autonomous review-fix loop for an approved goal until current-scope findings are resolved. Use only for explicit loopfix, review-fix loop, or keep-fixing requests.
 ---
 
 # Loopfix
@@ -72,34 +72,17 @@ Final response must include:
 - deferred audit items the agent decided not to fix now
 - residual risk or blockers, if any
 
-## Red Flags
+## Failure Modes
 
-- "One review pass is enough" after meaningful changes
-- "The user wants concise updates, so I will hide review triage until final"
-- "The reviewer mentioned it, so I should fix everything"
-- "This is broad, so I should stop and wait" when it can be deferred
-- "Targeted tests passed, so no reviewer is needed"
-- "A hook/runtime should keep looping for me"
-- "No explicit completion criteria are needed; I will know done when I see it"
-- "I must keep looping past 5 iterations to prove thoroughness" — a stall is a signal to stop and surface the conflict, not to grind
-
-## Rationalizations
-
-| Excuse | Reality |
-|---|---|
-| "Bounded review-and-fix pass, not an open-ended loop" | Loopfix is bounded by current-goal cleanliness, not by one pass. |
-| "One reviewer is enough forever" | Use exactly one per iteration. Meaningful changes require a fresh iteration, not parallel fan-out. |
-| "Reviewer noise wastes time" | Triage noise; do not remove the review loop. |
-| "Asking the user is safer" | Main agent owns normal triage. Defer broad items and keep moving. |
-| "Fixing all comments is thorough" | Overfixing broad or unrelated items violates scope control. |
-| "Forced looping is more reliable" | Runtime-neutral loopfix relies on fresh evidence and agent judgment, not hooks or state files. |
-
-## Common Mistakes
-
-- Letting the subagent decide scope. The main agent must inspect findings and own the decision.
-- Dispatching a freeform reviewer instead of the single designated subagent that follows `quality-reviewer`'s integrated rubric and evidence rules.
-- Looping past 5 iterations on a recurring disagreement instead of stopping to surface the conflict.
-- Running review before reconstructing the current goal. Review without scope creates noisy refactors.
-- Treating deferred audit items as hidden work. Report them when found and summarize them at the end.
-- Claiming ready while checks are stale. Any accepted fix requires fresh relevant verification.
-- Letting completion criteria drift after work starts. Change them only when the user goal or discovered blocker requires it, and say why.
+- Do not stop after one review when meaningful fixes made the review stale.
+- Do not hide triage or deferred findings until the final response.
+- Do not let the reviewer own scope, fix every comment, or fan out parallel
+  reviewers; the main agent triages exactly one designated reviewer per
+  iteration.
+- Do not skip review because targeted tests passed, or claim completion with
+  stale verification.
+- Do not use hooks, state files, forced re-prompts, or another runtime to keep
+  the loop alive.
+- Do not change completion criteria silently after work starts.
+- Stop and surface the conflict when the same issue does not converge within
+  five iterations.

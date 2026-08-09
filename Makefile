@@ -11,25 +11,37 @@
 PLUGIN_DIRS := $(wildcard $(CURDIR)/plugins/*)
 SKILLS_SRC_DIRS := $(wildcard $(CURDIR)/plugins/*/skills)
 SKILLS_DST := $(HOME)/.agents/skills
+SKILL_VALIDATOR := $(CURDIR)/plugins/skill-creator/skills/skill-creator/scripts/quick_validate.py
 
-.PHONY: help validate check-references sync-references test-skills-link test-skills-unlink test-skills-status
+.PHONY: help validate check-skills check-references sync-references test-skills-link test-skills-unlink test-skills-status
 
 help:
 	@echo "Targets:"
 	@echo "  validate              run 'claude plugin validate' on marketplace + all plugins"
+	@echo "  check-skills          validate every SKILL.md, including the description budget"
 	@echo "  sync-references       fan plugin-level references/ into consuming skill dirs"
 	@echo "  check-references      fail on reference fan-out drift (chained into validate)"
 	@echo "  test-skills-link      symlink every skill into ~/.agents/skills/ (for GREEN tests)"
 	@echo "  test-skills-unlink    remove those symlinks"
 	@echo "  test-skills-status    show which symlinks currently exist"
 
-validate: check-references
+validate: check-skills check-references
 	claude plugin validate .
 	@for plugin in $(PLUGIN_DIRS); do \
 		if [ -d "$$plugin/.claude-plugin" ]; then \
 			claude plugin validate "$$plugin" || exit $$?; \
 		fi; \
 	done
+
+check-skills:
+	@status=0; \
+	for skills_dir in $(SKILLS_SRC_DIRS); do \
+		for skill_dir in "$$skills_dir"/*/; do \
+			[ -f "$$skill_dir/SKILL.md" ] || continue; \
+			python3 "$(SKILL_VALIDATOR)" "$$skill_dir" --max-description-chars 300 || status=1; \
+		done; \
+	done; \
+	exit $$status
 
 # Fan the plugin-level shared references/ directory out into every skill that
 # links references/<file> from its SKILL.md. Skills must be self-contained:

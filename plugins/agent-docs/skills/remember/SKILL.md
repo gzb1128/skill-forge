@@ -1,6 +1,6 @@
 ---
 name: remember
-description: Use when the user says "remember", "audit knowledge", or wants to review and reorganize AGENTS.md memory for staleness, duplication, and misplacement
+description: Audit and reorganize project AGENTS.md memory, or evaluate an explicitly named rule for promotion into the nearest AGENTS.md. Use for explicit memory-audit or rule-promotion requests; not to capture new session insights.
 disable-model-invocation: true
 argument-hint: [optional-scope]
 allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
@@ -12,8 +12,8 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 > up. Do not add hooks, background tasks, auto-trigger behavior, runtime storage,
 > vector databases, MCP integration, or external memory systems.
 
-Review all `AGENTS.md` files across the project and produce a structured
-`Memory Health Report` using the workflow below.
+Choose the explicit scope below and produce a structured `Memory Health
+Report` using the workflow.
 
 ## What this does
 
@@ -23,15 +23,39 @@ This is the complement to `/agent-docs:learn`:
   `docs/` from the current session.
 - `/agent-docs:remember` audits existing `AGENTS.md` memory surfaces for staleness,
   duplication, misplacement, and low-signal content.
+- It may also accept one explicitly named docs entry as a candidate for
+  promotion into the nearest `AGENTS.md`.
 
 Read and apply the shared
 [Knowledge Admission Policy](references/knowledge-admission.md). Do not
 invoke `learn`; both workflows independently apply the same policy in opposite
 directions.
 
-## Step 1: Gather memory layers
+## Step 1: Choose scope and gather memory layers
 
-Read all project `AGENTS.md` files. Typical layers include:
+Use exactly one mode:
+
+- **Full memory audit:** when the user asks to audit or reorganize project
+  memory, read all project `AGENTS.md` files.
+- **Targeted promotion:** when the user explicitly names a rule in docs or a
+  codemap for possible promotion, read that entry and the nearest candidate
+  `AGENTS.md` only. Do not turn it into a full memory audit.
+
+Resolve "nearest" from the source path affected by the rule, not from whichever
+`AGENTS.md` the runtime loaded first:
+
+1. Extract the primary affected source path or paths from the named entry.
+2. For one path, walk from its containing directory toward the repository root
+   and select the deepest existing project `AGENTS.md`. For multiple paths,
+   use the deepest `AGENTS.md` at their common scope.
+3. If the entry does not identify an affected path and the target cannot be
+   verified, report `Needs user input` instead of defaulting to root.
+
+Locating candidate filenames along that ancestor chain is allowed; do not open
+or audit non-target `AGENTS.md` files. A root `AGENTS.md` already present in
+the runtime context is not evidence that it is the nearest target.
+
+Typical project memory layers include:
 
 ```text
 AGENTS.md
@@ -39,9 +63,10 @@ internal/<package>/AGENTS.md
 <other-package>/AGENTS.md
 ```
 
-Audit project `AGENTS.md` files only. Exclude personal preference files such as
-`~/.claude/CLAUDE.md` or `~/.config/opencode/AGENTS.md`, every `CLAUDE.md`, and
-any non-project `AGENTS.md`.
+Exclude personal preference files such as `~/.claude/CLAUDE.md` or
+`~/.config/opencode/AGENTS.md`, every `CLAUDE.md`, and any non-project
+`AGENTS.md`. In targeted-promotion mode, do not enumerate or audit the rest of
+`docs/`; the named entry is input evidence, not a docs curation license.
 
 ## Step 2: Audit memory surfaces
 
@@ -93,6 +118,7 @@ Before proposing a cleanup, verify it:
 | Now-derivable hidden knowledge | Cite the code, docs, git history, or AGENTS.md main-body section that now covers it, then assess whether it remains valuable in another surface |
 | Potentially low-value derivable entry | Show the shared-policy score and the lower-cost source or document that would replace it |
 | Memory assertion backed by a linked doc | Open that one linked doc and confirm it still supports the assertion |
+| Explicit docs promotion candidate | Cite the named entry, verify it changes recurring agent behavior, score its prompt value, and confirm it is absent from the nearest `AGENTS.md` |
 
 If a finding cannot be verified, label it `Needs user input` instead of treating
 it as fact.
@@ -110,7 +136,7 @@ here is whether the linked doc still backs the memory claim that cites it.
 
 | Action | Use when |
 |--------|----------|
-| `Promotions` | Lower-level guidance affects multiple packages or belongs in a higher-level `AGENTS.md` surface |
+| `Promotions` | Lower-level guidance affects multiple packages, belongs in a higher-level `AGENTS.md`, or an explicitly named docs rule earns prompt space in the nearest `AGENTS.md` |
 | `Deletions` | Content fails a hard gate, or derivable content scores too low for prompt-resident memory; derivability alone is insufficient, and valid non-derivable content must be retained or rerouted |
 | `Rewrites` | Content is true but unclear, too verbose, misplaced within the same file, or missing verification context |
 | `Duplicates` | Exact or overlapping guidance appears in multiple places |

@@ -403,6 +403,18 @@ Scenario A plants two memory-health problems and a scope bound. GREEN requires a
 
 Pass = all yes; otherwise proceed to REFACTOR.
 
+Scenario B uses `docs/verify/scenarios/knowledge-promotion/build-a.sh` and the
+explicit targeted-promotion prompt printed by the fixture. GREEN requires all
+of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Targeted scope | Reads the named codemap entry and nearest `internal/api/AGENTS.md`; does not audit all AGENTS.md files or enumerate unrelated docs |
+| Correct authority | Proposes moving the generated-code behavior rule into `internal/api/AGENTS.md`, while leaving the concept-to-source table in the codemap |
+| Prompt-value gate | Verifies the schema/generation path and explains why the recurring behavior-changing rule earns prompt space |
+| Workflow boundary | Does not invoke `learn` or turn the request into a general `curate` audit |
+| Approval gate | Reports the exact proposed promotion without editing before approval |
+
 ### curate
 
 Scenario A plants five docs/ problems plus an AGENTS.md scope-guard bait. GREEN requires all of:
@@ -422,6 +434,17 @@ Scenario A plants five docs/ problems plus an AGENTS.md scope-guard bait. GREEN 
 | Report-only before approval | Presents the `Docs Health Report` and does not edit files before explicit user approval |
 
 Pass = all yes; otherwise proceed to REFACTOR.
+
+Scenario B reuses
+`docs/verify/scenarios/knowledge-promotion/build-a.sh` with
+`/agent-docs:curate docs/codemaps/api.md`. GREEN requires all of:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Authority placement | Flags only the generated-code behavior rule as an `AGENTS.md` promotion candidate and keeps the navigation table in the codemap |
+| Bounded AGENTS read | Opens only the nearest `internal/api/AGENTS.md` needed to verify the target and duplication; does not audit its unrelated entries or `internal/other/AGENTS.md` |
+| Verification | Confirms the schema, generated path, and `make generate` entry exist before proposing promotion |
+| Report-only | Includes the targeted promotion in the Docs Health Report and makes no edit before approval |
 
 ## REFACTOR: Turn Rationalizations Into Rules
 

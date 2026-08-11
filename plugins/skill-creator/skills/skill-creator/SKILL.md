@@ -37,11 +37,17 @@ resolves installed versions to git commit SHAs.
 - Treat local skills as enhanced variants of upstream ideas. Preserve useful
   upstream mechanics, but replace assumptions that conflict with this repo.
 - Preserve licenses for copied upstream files and make derivative edits obvious.
-- Optimize loaded context, not line count. State each instruction once.
+- Budget by progressive-disclosure layer: skill name and description are
+  catalog metadata, the main `SKILL.md` loads after selection, and bundled
+  resources load only when the selected workflow needs them.
+- Optimize the context loaded at each layer, not line count. Keep metadata
+  discriminating, keep the main body focused on the core workflow and routing,
+  and state each instruction once.
 - Keep explicit routing, concrete workflow, required outputs, gotchas, and
   examples that encode a product requirement or correct a measured gap.
-- Move optional schemas, long rubrics, scripts, templates, and examples into
-  bundled resources so they are loaded only when needed.
+- Move optional schemas, long rubrics, scripts, templates, examples, and
+  domain/framework variants into named bundled resources so only the selected
+  material is loaded.
 - Start from a working prompt and tool set. Remove one instruction, example, or
   tool group at a time; expose only tools the workflow needs; then rerun the
   same representative evals and compare quality, context growth, tokens, and

@@ -94,7 +94,7 @@ an existing repo rule — cite the rule when raising a finding.
 | `Naming` | Files use lowercase-hyphen naming; designs use a date prefix when chronology matters; no ambiguous `-v2` suffix | [Documentation Structure Reference](references/doc-structure.md) §Naming |
 | `Depth ∝ Surface` | Detail matches workflow/interface complexity and retrieval value rather than a uniform line target | [Documentation Structure Reference](references/doc-structure.md) §Maps, Not Encyclopedias |
 | `Knowledge Value` | Non-derivable knowledge is admitted automatically; derivable docs remain when impact, recurrence, discovery cost, actionability, durability, and scope justify maintenance | [Knowledge Admission Policy](references/knowledge-admission.md) §Admission Rule and §Value Score |
-| `Doc↔Source Drift` | Claims about source still match current symbols, paths, and behavior; prefer stable symbol/package references over line numbers | [Documentation Structure Reference](references/doc-structure.md) §Stable References |
+| `Doc↔Source Drift` | Claims about source still match current symbols, paths, and behavior; prefer stable symbol/package references over line numbers. Frozen decision records are exempt — a landed record that no longer matches source needs a superseding record, not a rewrite; living contracts are not exempt | [Documentation Structure Reference](references/doc-structure.md) §Stable References and §Design Docs Are Point-in-Time Records |
 
 ## Step 3: Verify findings
 

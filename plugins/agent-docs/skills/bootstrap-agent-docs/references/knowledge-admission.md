@@ -50,8 +50,16 @@ Use the total as a decision aid, not a substitute for evidence:
 |---|---|
 | `AGENTS.md` | Usually score 9+ and express the result concisely; prompt-resident content has the highest cost |
 | `docs/` | Usually score 7+; pull-based docs may carry more detail when they reduce navigation, execution, or handoff risk |
-| Source, tests, or tooling | Prefer mechanical enforcement when possible; documentation may still explain the workflow or rationale |
+| Code comment or module doc | Passes the hard gates and is naturally about one code artifact; no numeric threshold — it pays no prompt cost, but keep it tight because it pays review cost on every diff touching the file |
+| Source, tests, or tooling | First choice when a compiler, test, linter, or script can enforce the rule; documentation may still explain the workflow or rationale |
 | Skip | Below the relevant threshold, generic, one-off, stale, unverifiable, or redundant |
+
+Placement order: prefer the cheapest tier that works — mechanical
+enforcement or a self-documenting API shape first, then the owning
+artifact's doc comment or module doc, then the nearest `AGENTS.md`, then
+the `docs/` tree. Knowledge that describes one specific function, type,
+module, or file belongs next to that artifact, where every edit, move,
+and review of the code carries it along.
 
 Non-derivable knowledge does not need to meet a numeric threshold after the hard
 gates, but it still needs correct placement. A niche library quirk may belong in
@@ -68,6 +76,10 @@ Keep only prompt-resident knowledge that changes agent behavior frequently:
 - project-specific hard rules;
 - concise hidden dependencies, misleading failures, quirks, and ordering.
 
+When knowledge has a long-form authoritative copy — a module doc or a
+`docs/design/` contract — the `AGENTS.md` entry is a 1-3 line summary plus
+a link, never an inline copy of the contract body.
+
 Derivable content may remain when its score justifies prompt cost. Do not delete
 a valid build command or architecture entry merely because source inspection
 could rediscover it.
@@ -78,6 +90,30 @@ Optimize for retrieval value, navigability, correctness, and maintenance cost.
 High-value documentation may intentionally summarize or organize derivable
 facts, provided it links to authoritative source instead of copying volatile
 implementation bodies.
+
+### Code Comments and Module Docs
+
+Knowledge that is naturally about one code artifact — a function, type,
+module, or file — belongs in that artifact's doc comment or module doc
+rather than in prompt-resident memory:
+
+- It travels with every edit, move, and review of the code, so the reader
+  who most needs it always sees it exactly when it matters.
+- It pays no prompt cost, but it pays review cost on every diff that
+  touches the file: keep doc comments to roughly 1-5 lines, and put larger
+  invariants in a module doc section at the top of the owning file.
+- Prefer making the API self-documenting (named methods, enums, newtypes)
+  or enforcing the rule mechanically first; use a comment only when a
+  smaller change is more appropriate.
+- Hybrid pattern for large knowledge: the module doc carries the
+  explanation, and the nearest `AGENTS.md` carries only a one-line pointer
+  plus a sync-guard reminder, so agents working in that directory are
+  routed to the authoritative in-file explanation without paying its
+  prompt cost.
+
+Code-comment candidates carry no numeric threshold: they pass the hard
+gates and must be scoped to a specific owning artifact. Scope, not
+derivability, decides this surface.
 
 ### Source and Automation
 
@@ -91,5 +127,9 @@ Derivability alone never triggers deletion. Delete or rewrite content when it is
 stale, duplicated, misplaced, or more cheaply and reliably represented
 elsewhere. A low score may justify deleting derivable content. Non-derivable
 content that still passes the hard gates must remain documented; reroute it if
-the current surface is too expensive. Audits should cite both the value judgment
-and the verification evidence.
+the current surface is too expensive. Relocation is bidirectional: an
+`AGENTS.md` entry whose knowledge is scoped to a single code artifact may move
+into that artifact's doc comment or module doc — triggered by scope and
+conciseness, never by derivability alone — keeping at most a one-line pointer
+in memory. Audits should cite both the value judgment and the verification
+evidence.

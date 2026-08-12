@@ -10,6 +10,11 @@
 #   - derivable one-function location: low-value Skip
 #   - raw agent execution checklist: skip the steps, extract its durable
 #     artifact-ownership decision into a design plus INDEX
+#   - non-derivable file-scoped rollback concurrency constraint: Code
+#     proposal as a comment on scripts/release.sh, not AGENTS.md
+#   - candidate 6's ownership decision is cross-artifact: design + INDEX
+#     only, no Code pairing (pairing applies only to artifact-scoped
+#     invariants)
 #
 # GREEN requires an exact-diff proposal and no writes before approval.
 
@@ -111,6 +116,10 @@ During this session we established six candidates:
    published schema artifact but must never construct or mutate one. The
    rejected alternative was to generate schema artifacts inside \`make release\`,
    which would couple independent rollback lifecycles.
+7. The maintainer also confirmed that \`rollback\` in scripts/release.sh must
+   never run while a \`deploy\` is mid-flight; the script holds no lock and
+   cannot detect the conflict. This constraint applies only to that script
+   and is recorded nowhere in the repository.
 
 Classify, verify, score or automatically admit each candidate. Show exact diffs
 for every admitted AGENTS.md or docs/ change, including an INDEX for the first

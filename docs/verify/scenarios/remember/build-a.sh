@@ -8,6 +8,10 @@
 #     doc that now contradicts it
 #   - stable-reference rewrite heuristic (Step 5): a Quick Reference entry pins a
 #     line number that has drifted, while the named symbol still exists
+#   - relocation to code (2026-08-25 code-adjacent tiering): a symbol-scoped
+#     Hidden Knowledge entry about `Render`'s error contract is proposed as a
+#     Relocation into a doc comment on `Render` in src/engine.go — NOT a
+#     Deletion and NOT "No Action"
 #
 # Suggested prompt:
 #   /agent-docs:remember
@@ -20,6 +24,8 @@
 #     NOT merely bumping `:42` to the new line number
 #   - leaves `make build` and `go test ./...` as No Action Needed: they are
 #     derivable from Makefile/source but high-value recurring entry points
+#   - relocation target check: the audit opens only src/engine.go to verify the
+#     `Render` relocation — it does not turn into a source-tree audit
 #   - does NOT enumerate, open, or score the decoy docs (docs/other.md,
 #     docs/design/2026-01-01-init.md, docs/extra/notes.md) — linked-doc check is
 #     a verification method, not a docs/ audit license
@@ -134,6 +140,10 @@ Sample repo for the remember skill audit scenario.
 
 - **Render pipeline is lazy**: `Render` must remain first-use initialized; do not
   replace it with eager process-startup construction. See [render.md](docs/render.md).
+- **`Render` error contract is externally parsed**: maintainers confirmed the
+  empty-template error wording is matched by billing alert rules outside this
+  repository; rewording it silently breaks those alerts. Scoped to `Render`
+  only, recorded nowhere else, and not covered by its current doc comment.
 EOF
 
 git add -A

@@ -31,18 +31,38 @@ entry maps, deterministic runbooks, verification contracts, and safety rules.
 Reconstructing them from source may be possible but unnecessarily slow or
 error-prone.
 
+## Rejection and Residual-Value Pass
+
+Before automatic admission, scoring, or placement, run the cheapest relevant
+probe that could reject the candidate or route it to a lower-cost surface:
+
+1. Inspect the owning symbols and their references.
+2. Check whether a compiler, type/interface boundary, focused test, linter, or
+   script already enforces the relationship or external value.
+3. Search the likely authoritative documentation surface for an equivalent
+   entry.
+4. State what durable value remains after those artifacts are considered.
+
+Mechanical enforcement is not an automatic rejection: documentation may still
+carry non-obvious rationale, an operator workflow, a navigation map, a safety
+boundary, or a compatibility/migration constraint. However, when the enforcing
+artifact plus one targeted lookup reconstructs the complete relationship and
+no such residual value remains, classify the candidate as `Skip`. Do not add a
+comment merely to narrate an already enforced relationship.
+
 ## Value Score
 
-Score each dimension from 0 (none) to 2 (high):
+Score each dimension from 0 (none) to 2 (high) after the rejection pass. Use
+these anchors rather than scoring from the apparent complexity of the session:
 
-| Dimension | Question |
-|---|---|
-| Impact | Would missing this knowledge cause costly mistakes, outages, unsafe operations, or major rework? |
-| Recurrence | Will multiple future tasks need it? |
-| Discovery cost | Is reconstructing it slow, cross-cutting, or easy to get wrong? |
-| Actionability | Does it provide a command, decision rule, sequence, map, or expected result? |
-| Durability | Is it expected to remain useful across several changes? |
-| Scope | Does it help multiple files, packages, workflows, agents, or people? |
+| Dimension | 0 | 1 | 2 |
+|---|---|---|---|
+| Impact | Cosmetic or negligible | Avoids limited rework | Prevents costly mistakes, outages, or unsafe operations |
+| Recurrence | One-off | Plausible in a few future tasks | Recurs across many tasks or releases |
+| Discovery cost | One obvious targeted lookup | Several local hops or a focused check | Cross-package/system evidence, execution, or maintainer context |
+| Actionability | Description only | Partial guidance | Direct command, rule, sequence, map, or expected result |
+| Durability | Tied to the current change | Useful across several changes | Long-lived contract or workflow |
+| Scope | One symbol or call site | One package or workflow | Multiple packages, workflows, agents, or people |
 
 Use the total as a decision aid, not a substitute for evidence:
 
@@ -54,12 +74,15 @@ Use the total as a decision aid, not a substitute for evidence:
 | Source, tests, or tooling | First choice when a compiler, test, linter, or script can enforce the rule; documentation may still explain the workflow or rationale |
 | Skip | Below the relevant threshold, generic, one-off, stale, unverifiable, or redundant |
 
-Placement order: prefer the cheapest tier that works — mechanical
-enforcement or a self-documenting API shape first, then the owning
-artifact's doc comment or module doc, then the nearest `AGENTS.md`, then
-the `docs/` tree. Knowledge that describes one specific function, type,
-module, or file belongs next to that artifact, where every edit, move,
-and review of the code carries it along.
+Prefer the cheapest authoritative tier that serves the candidate's audience:
+mechanical enforcement or a self-documenting API shape first; the owning
+artifact's doc comment or module doc for artifact-scoped explanation;
+pull-based `docs/` for longer, narrower, or occasional knowledge; and
+`AGENTS.md` only for concise rules, maps, commands, or traps that must change
+recurring agent behavior before the relevant artifact is opened. Automatic
+admission chooses no destination by itself. Knowledge that describes one
+specific function, type, module, or file belongs next to that artifact, where
+every edit, move, and review of the code carries it along.
 
 Non-derivable knowledge does not need to meet a numeric threshold after the hard
 gates, but it still needs correct placement. A niche library quirk may belong in

@@ -78,10 +78,13 @@ Do not write anything yet. First classify each candidate.
 | `Code` | Doc comment or module doc on the owning symbol/file, plus an optional one-line pointer in the nearest `AGENTS.md` | Verified knowledge about a specific function, type, module, or file's behavior or invariant that fits a concise comment; prefer a self-documenting API shape or mechanical enforcement when feasible |
 | `Skip` | No write | Fails a hard gate, falls below the destination threshold, is one-off/generic, or is mechanically enforceable with no durable explanation value left |
 
-Knowledge that a compiler, test, linter, or script could enforce is not
-skipped by default: propose the `Code` comment — or the enforcement change
-itself when the session makes it natural — and skip only when no durable
-explanation value remains.
+Before retaining any classification, run the rejection and residual-value pass
+in Step 3. Prefer an enforcement change when the session makes it natural. If
+source or automation already carries the complete relationship and a targeted
+lookup leaves no durable rationale, workflow, navigation, safety, or
+compatibility value, classify it as `Skip`; do not propose a comment that only
+narrates the enforcement. High-value derivable knowledge may still be admitted
+when it has independent value after that check.
 
 ## Non-derivable candidates
 
@@ -93,7 +96,9 @@ knowledge without a numeric threshold:
    `diff` can show two files currently match — but the "must stay in sync" rule
    is an unwritten convention the compiler/linter/git does not enforce. Record
    it. Objective bar: acting on the insight requires **≥2 artifacts plus a
-   convention not written in any single file**.
+   convention not expressed or enforced by any single authoritative artifact**.
+   A shared constant, interface, generated contract, or focused test harness
+   counts as an artifact when it mechanically carries the relationship.
 2. **Misleading errors**: Error messages that point to the wrong location or
    cause.
 3. **Workarounds and quirks**: Project-specific behavior that differs from the
@@ -156,6 +161,24 @@ Every retained candidate needs explicit evidence before it can be proposed:
 | Existing repository knowledge | Search root guidance and the relevant docs category for an equivalent authoritative entry |
 | Code comment target | Confirm the symbol or file exists and the comment attaches to the owning artifact — a doc comment on the item or a module doc at the top of the file, not a stray line comment far from it |
 | Non-derivability claim | Search source, git, and existing docs for the rule; authoritative maintainer context may establish that a convention is intentionally unwritten |
+| Mechanical enforcement | Inspect owning symbols, references, focused tests, linters, and scripts for a single artifact that already carries the relationship or external value |
+| Residual explanation value | State what rationale, workflow, navigation, safety, or compatibility value remains after existing enforcement and the cheapest targeted reconstruction probe |
+
+**Required rejection pass.** Run the cheapest relevant probe before automatic
+admission or scoring. Record the probe and one of these outcomes for every
+candidate:
+
+- `Skip`: source or automation carries the complete relationship, one targeted
+  lookup reconstructs it, and no durable explanation value remains.
+- `Retain as derivable`: enforcement exists or reconstruction is possible, but
+  the candidate still provides independently valuable rationale, workflow,
+  navigation, safety, or compatibility guidance; score that residual value.
+- `Automatic admission — non-derivable`: no authoritative artifact expresses
+  or enforces the verified convention, error interpretation, quirk, or order.
+
+Do not require all probes to fail before admitting high-value derivable
+knowledge. The pass chooses the cheapest adequate surface and removes redundant
+narration; it does not replace the admission model.
 
 **Stable-reference rule.** When proposed knowledge points to source, prefer
 package paths, files, symbols, headings, and named commands over line numbers.
@@ -167,11 +190,12 @@ If verification fails, classify the candidate as `Skip` and explain the failed
 check. If verification cannot be performed safely, report it as unverified and
 do not propose a write.
 
-After verification, record either:
+After verification and the rejection pass, record either:
 
 - `Automatic admission — non-derivable`, or
 - the six-dimension value score and destination threshold from the shared
-  policy.
+  policy, including the residual value that is being scored, or
+- `Skip`, with the enforcing artifact or cheap reconstruction evidence.
 
 ## Step 4: Choose the target
 
@@ -229,7 +253,7 @@ Before editing any file, show all proposals in this format:
 
 ### Skipped Candidates
 
-1. `<candidate>` -> skipped because <reason>
+1. `<candidate>` -> skipped because <enforcing artifact or failed gate, cheapest probe, and why no residual explanation value remains>
 
 For a new document, include the document diff and the matching `INDEX.md` diff
 in the same proposal. A `Code` proposal's diff targets the owning source file;

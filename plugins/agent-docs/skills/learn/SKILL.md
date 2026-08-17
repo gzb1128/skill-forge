@@ -18,12 +18,12 @@ proposals for the appropriate `AGENTS.md` or `docs/` surface using the exact-dif
 workflow below.
 
 Before classifying candidates, read and apply the shared
-[Knowledge Admission Policy](../../references/knowledge-admission.md). This
+[Knowledge Admission Policy](references/knowledge-admission.md). This
 skill produces new knowledge proposals; the policy is shared with `remember`
 and `curate` rather than owned by this workflow.
 
 When a candidate belongs under `docs/`, also read the
-[Documentation Structure Reference](../../references/doc-structure.md).
+[Documentation Structure Reference](references/doc-structure.md).
 
 ## Invocation Boundary
 

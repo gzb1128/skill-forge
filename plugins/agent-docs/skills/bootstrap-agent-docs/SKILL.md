@@ -15,8 +15,8 @@ categories should be created on demand after useful knowledge is identified.
 capture and cleanup belong to `learn`, `remember`, and `curate`.
 
 Read the plugin-owned
-[Knowledge Admission Policy](../../references/knowledge-admission.md) and
-[Documentation Structure Reference](../../references/doc-structure.md). Use
+[Knowledge Admission Policy](references/knowledge-admission.md) and
+[Documentation Structure Reference](references/doc-structure.md). Use
 them to choose the small amount of high-value entry-point content, but do not
 copy either reference into the target repository or invoke `learn`.
 

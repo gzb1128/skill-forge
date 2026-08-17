@@ -31,8 +31,8 @@ judges **navigability, link integrity, structure, and drift** — not brevity fo
 its own sake. Derivability alone never makes useful documentation invalid.
 
 Read and apply the shared
-[Knowledge Admission Policy](../../references/knowledge-admission.md) and
-[Documentation Structure Reference](../../references/doc-structure.md). Do not
+[Knowledge Admission Policy](references/knowledge-admission.md) and
+[Documentation Structure Reference](references/doc-structure.md). Do not
 invoke `learn`; all knowledge workflows independently use the shared policy.
 
 **Scope guard — `docs/` only, never `AGENTS.md`.** Audit files under `docs/`
@@ -86,13 +86,13 @@ an existing repo rule — cite the rule when raising a finding.
 
 | Dimension | Checks | Source rule |
 |-----------|--------|-------------|
-| `INDEX Health` | Categories containing documents normally have an `INDEX.md` with a routing table and no tutorial prose; absent/empty categories do not need placeholders | [Documentation Structure Reference](../../references/doc-structure.md) §INDEX Standards |
-| `Maps-not-Encyclopedias` | Codemaps map concepts and workflows to source; no copied function bodies or config dumps; link to authoritative source instead | [Documentation Structure Reference](../../references/doc-structure.md) §Maps, Not Encyclopedias |
+| `INDEX Health` | Categories containing documents normally have an `INDEX.md` with a routing table and no tutorial prose; absent/empty categories do not need placeholders | [Documentation Structure Reference](references/doc-structure.md) §INDEX Standards |
+| `Maps-not-Encyclopedias` | Codemaps map concepts and workflows to source; no copied function bodies or config dumps; link to authoritative source instead | [Documentation Structure Reference](references/doc-structure.md) §Maps, Not Encyclopedias |
 | `Link Integrity` | Internal doc→doc and doc→source links resolve; no dangling `](./missing.md)`; source links point at paths that still exist | progressive disclosure (implicit) |
-| `Naming` | Files use lowercase-hyphen naming; designs use a date prefix when chronology matters; no ambiguous `-v2` suffix | [Documentation Structure Reference](../../references/doc-structure.md) §Naming |
-| `Depth ∝ Surface` | Detail matches workflow/interface complexity and retrieval value rather than a uniform line target | [Documentation Structure Reference](../../references/doc-structure.md) §Maps, Not Encyclopedias |
-| `Knowledge Value` | Non-derivable knowledge is admitted automatically; derivable docs remain when impact, recurrence, discovery cost, actionability, durability, and scope justify maintenance | [Knowledge Admission Policy](../../references/knowledge-admission.md) §Admission Rule and §Value Score |
-| `Doc↔Source Drift` | Claims about source still match current symbols, paths, and behavior; prefer stable symbol/package references over line numbers | [Documentation Structure Reference](../../references/doc-structure.md) §Stable References |
+| `Naming` | Files use lowercase-hyphen naming; designs use a date prefix when chronology matters; no ambiguous `-v2` suffix | [Documentation Structure Reference](references/doc-structure.md) §Naming |
+| `Depth ∝ Surface` | Detail matches workflow/interface complexity and retrieval value rather than a uniform line target | [Documentation Structure Reference](references/doc-structure.md) §Maps, Not Encyclopedias |
+| `Knowledge Value` | Non-derivable knowledge is admitted automatically; derivable docs remain when impact, recurrence, discovery cost, actionability, durability, and scope justify maintenance | [Knowledge Admission Policy](references/knowledge-admission.md) §Admission Rule and §Value Score |
+| `Doc↔Source Drift` | Claims about source still match current symbols, paths, and behavior; prefer stable symbol/package references over line numbers | [Documentation Structure Reference](references/doc-structure.md) §Stable References |
 
 ## Step 3: Verify findings
 

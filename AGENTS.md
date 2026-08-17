@@ -23,7 +23,7 @@
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`skill-forge`) |
 | `plugins/agent-docs/` | Repository knowledge plugin: `bootstrap-agent-docs`, `learn`, `remember`, `curate` |
-| `plugins/agent-docs/references/` | Shared knowledge admission and documentation structure policy |
+| `plugins/agent-docs/references/` | Single-source shared policy; `make sync-references` fans it out into each consuming skill's `references/` (drift-gated by `make validate`) |
 | `plugins/agent-docs/templates/` | Minimal `AGENTS.md` payload copied by `bootstrap-agent-docs` |
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `plugins/skill-creator/` | Skill creation plugin: `skill-creator` |
@@ -40,6 +40,7 @@
 | Action | Command |
 |--------|---------|
 | Validate marketplace + plugins | `make validate` |
+| Propagate shared references into consuming skills | `make sync-references` |
 | Link skills into `~/.agents/skills/` for testing | `make test-skills-link` then restart opencode |
 | Check current symlink state | `make test-skills-status` |
 | Build a scenario for GREEN testing | `bash docs/verify/scenarios/<skill>/build-<letter>.sh` |
@@ -102,6 +103,12 @@ claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
    git status
    ```
 3. Commit.
+
+### Editing shared references
+
+1. Edit `plugins/<plugin-name>/references/<file>` — the plugin-level directory is the only editable source. Never edit a `skills/<name>/references/` copy directly; `make validate` fails on drift.
+2. Run `make sync-references` to re-fan the source into every skill whose `SKILL.md` links it, and commit the copies together with the source edit.
+3. Skills link them as `references/<file>` (no `../..`): installed skills are exposed one directory at a time and parent-plugin paths do not survive that.
 
 ## Hidden Knowledge
 

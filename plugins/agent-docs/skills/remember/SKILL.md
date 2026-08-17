@@ -25,7 +25,7 @@ This is the complement to `/agent-docs:learn`:
   duplication, misplacement, and low-signal content.
 
 Read and apply the shared
-[Knowledge Admission Policy](../../references/knowledge-admission.md). Do not
+[Knowledge Admission Policy](references/knowledge-admission.md). Do not
 invoke `learn`; both workflows independently apply the same policy in opposite
 directions.
 

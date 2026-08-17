@@ -12,22 +12,89 @@ PLUGIN_DIRS := $(wildcard $(CURDIR)/plugins/*)
 SKILLS_SRC_DIRS := $(wildcard $(CURDIR)/plugins/*/skills)
 SKILLS_DST := $(HOME)/.agents/skills
 
-.PHONY: help validate test-skills-link test-skills-unlink test-skills-status
+.PHONY: help validate check-references sync-references test-skills-link test-skills-unlink test-skills-status
 
 help:
 	@echo "Targets:"
 	@echo "  validate              run 'claude plugin validate' on marketplace + all plugins"
+	@echo "  sync-references       fan plugin-level references/ into consuming skill dirs"
+	@echo "  check-references      fail on reference fan-out drift (chained into validate)"
 	@echo "  test-skills-link      symlink every skill into ~/.agents/skills/ (for GREEN tests)"
 	@echo "  test-skills-unlink    remove those symlinks"
 	@echo "  test-skills-status    show which symlinks currently exist"
 
-validate:
+validate: check-references
 	claude plugin validate .
 	@for plugin in $(PLUGIN_DIRS); do \
 		if [ -d "$$plugin/.claude-plugin" ]; then \
 			claude plugin validate "$$plugin" || exit $$?; \
 		fi; \
 	done
+
+# Fan the plugin-level shared references/ directory out into every skill that
+# links references/<file> from its SKILL.md. Skills must be self-contained:
+# installed skills are exposed one directory at a time (~/.agents/skills/<skill>,
+# standalone .skill packages), and ../../ links do not survive that exposure.
+# plugins/<plugin>/references/ stays the single editable source; commit the
+# fanned-out copies together with the source edit.
+sync-references:
+	@for plugin in $(PLUGIN_DIRS); do \
+		refs="$$plugin/references"; \
+		[ -d "$$refs" ] || continue; \
+		for skill_dir in "$$plugin"/skills/*/; do \
+			[ -f "$$skill_dir/SKILL.md" ] || continue; \
+			for ref in "$$refs"/*; do \
+				[ -f "$$ref" ] || continue; \
+				name=$$(basename "$$ref"); \
+				grep -q "references/$$name" "$$skill_dir/SKILL.md" || continue; \
+				mkdir -p "$$skill_dir/references" || exit 1; \
+				cmp -s "$$ref" "$$skill_dir/references/$$name" && continue; \
+				cp "$$ref" "$$skill_dir/references/$$name" || exit 1; \
+				echo "SYNC $$skill_dir/references/$$name"; \
+			done; \
+		done; \
+	done
+
+# Drift gate for the fan-out above. Fails when a SKILL.md links a shared
+# reference that has not been synced into that skill directory, when a synced
+# copy differs from its plugin-level source, when a skill references/ copy
+# has no plugin-level source anymore, or when a SKILL.md percent-encodes a
+# references/ link (fan-out matches literal filenames). Never deletes
+# anything; run make sync-references to re-copy, and remove orphans manually.
+check-references:
+	@status=0; \
+	for plugin in $(PLUGIN_DIRS); do \
+		refs="$$plugin/references"; \
+		[ -d "$$refs" ] || continue; \
+		for skill_dir in "$$plugin"/skills/*/; do \
+			[ -f "$$skill_dir/SKILL.md" ] || continue; \
+			if grep -qE '\]\(references/[^)]*%' "$$skill_dir/SKILL.md"; then \
+				echo "BADLINK $$skill_dir/SKILL.md: percent-encoded references/ link; fan-out matches literal filenames"; \
+				status=1; \
+			fi; \
+			for ref in "$$refs"/*; do \
+				[ -f "$$ref" ] || continue; \
+				name=$$(basename "$$ref"); \
+				if grep -q "references/$$name" "$$skill_dir/SKILL.md" && [ ! -f "$$skill_dir/references/$$name" ]; then \
+					echo "MISSING $$skill_dir/references/$$name (run make sync-references)"; \
+					status=1; \
+				fi; \
+			done; \
+			[ -d "$$skill_dir/references" ] || continue; \
+			for copy in "$$skill_dir"/references/*; do \
+				[ -f "$$copy" ] || continue; \
+				name=$$(basename "$$copy"); \
+				if [ ! -f "$$refs/$$name" ]; then \
+					echo "ORPHAN  $$copy (no source at $$refs/$$name)"; \
+					status=1; \
+				elif ! cmp -s "$$refs/$$name" "$$copy"; then \
+					echo "DRIFT   $$copy differs from $$refs/$$name (run make sync-references)"; \
+					status=1; \
+				fi; \
+			done; \
+		done; \
+	done; \
+	exit $$status
 
 # Create symlinks at ~/.agents/skills/<name> for each plugin's skills/<name>/.
 # The source is always the repo directory, so SKILL.md edits are immediately testable.

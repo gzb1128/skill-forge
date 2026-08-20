@@ -89,9 +89,13 @@ claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
 ### Editing a skill
 
 1. Edit `plugins/<plugin-name>/skills/<name>/SKILL.md` — the plugin directory is the only source of truth.
-2. Run `claude plugin validate ./plugins/<plugin-name>`.
-3. Re-install locally and confirm new SHA: `claude plugin install <plugin-name>@skill-forge`.
-4. Commit with a message explaining WHY (business impact), not just WHAT (code change).
+2. Keep frontmatter `description` focused on capability and discriminating
+   trigger context. It is prompt-resident catalog metadata and has a
+   repository budget of 300 characters; conditional procedures belong in the
+   SKILL body or a linked reference.
+3. Run `claude plugin validate ./plugins/<plugin-name>`.
+4. Re-install locally and confirm new SHA: `claude plugin install <plugin-name>@skill-forge`.
+5. Commit with a message explaining WHY (business impact), not just WHAT (code change).
 
 ### Editing the template payload
 

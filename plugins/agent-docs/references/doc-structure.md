@@ -59,10 +59,22 @@ plan wholesale into a design.
 
 ## Maps, Not Encyclopedias
 
-Codemaps should provide boundaries, workflows, ownership, diagrams, and tables
-mapping concepts to source. Link to source instead of copying function bodies
-or configuration dumps. Depth should scale with interface and workflow
-complexity rather than an arbitrary global limit.
+Codemaps map concepts and entry flows to authoritative source. They may identify
+the owning package, stable symbols, and major call or data-flow transitions,
+but should not copy function bodies, configuration dumps, or behavior-changing
+policy.
+
+Route knowledge by authority:
+
+- concise recurring rules that change agent behavior belong in the nearest
+  `AGENTS.md`;
+- durable contracts, constraints, alternatives, and rationale belong in
+  `docs/design/`;
+- operational procedures belong in `docs/runbooks/`;
+- codemaps link those surfaces to source instead of restating them.
+
+Depth should scale with navigation value and workflow complexity rather than an
+arbitrary global line limit.
 
 ## Stable References
 

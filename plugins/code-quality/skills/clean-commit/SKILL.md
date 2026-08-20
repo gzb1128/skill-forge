@@ -1,6 +1,6 @@
 ---
 name: clean-commit
-description: Use when the user asks to commit local code changes, or after a feature or bugfix is ready to land.
+description: Review, stage, and commit local changes. Use only when the user explicitly asks to create a commit.
 ---
 
 # Clean Commit

@@ -1,6 +1,6 @@
 ---
 name: bootstrap-agent-docs
-description: Use when a repository has no project AGENTS.md and needs a minimal agent entry point with verified commands and architecture routing, or when the user says "bootstrap agent docs", "init agent docs", or "scaffold AGENTS.md"
+description: Bootstrap a repository that lacks AGENTS.md with a minimal, verified command and architecture entry point. Use for explicit bootstrap, init, or scaffold agent-docs requests.
 ---
 
 # Bootstrap Agent-First Documentation

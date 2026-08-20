@@ -1,6 +1,6 @@
 ---
 name: codex-luna-agent-config
-description: Use in Codex only after an active spawn tool rejects the Luna subagent route and the user explicitly approves configuring a local luna_max custom agent. Add or verify the isolated GPT-5.6 Luna/max role without changing global subagent defaults. Do not load for ordinary routing, anticipated Luna use, or an unapproved route exception.
+description: Configure a local luna_max Codex agent only after a Luna spawn route was rejected and the user explicitly approves the fallback. Do not use for ordinary subagent routing.
 ---
 
 # Codex Luna Agent Config

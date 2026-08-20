@@ -1,6 +1,6 @@
 ---
 name: curate
-description: Use when the user says "curate", "audit docs", or wants to review the docs/ knowledge base for stale links, encyclopedia bloat, naming drift, and missing indexes — the docs/ counterpart to /agent-docs:remember
+description: Audit a repository docs/ tree for routing, drift, links, duplication, and misplaced knowledge. Use only for explicit docs curation or audit requests.
 disable-model-invocation: true
 argument-hint: [optional-scope-or-category]
 allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
@@ -35,12 +35,13 @@ Read and apply the shared
 [Documentation Structure Reference](references/doc-structure.md). Do not
 invoke `learn`; all knowledge workflows independently use the shared policy.
 
-**Scope guard — `docs/` only, never `AGENTS.md`.** Audit files under `docs/`
-and the doc-tree indexes. Do not open, score, or propose edits to any
-`AGENTS.md`; that is `/agent-docs:remember`'s job. Detecting whether a doc
-duplicates an `AGENTS.md` entry would require reading `AGENTS.md`, which is out
-of scope — so do not make that cross-surface comparison. Limit duplicate
-detection to doc↔doc within `docs/`.
+**Scope guard — `docs/` is the audit target.** Audit files under `docs/` and
+the doc-tree indexes. Do not broaden this into an `AGENTS.md` memory audit.
+When a doc contains a behavior-changing rule that appears to belong in
+prompt-resident memory, read only the nearest relevant `AGENTS.md` needed to
+verify its target and whether the rule already exists. Report a targeted
+`AGENTS.md` promotion candidate; do not score unrelated memory entries or
+edit `AGENTS.md` as part of the docs audit.
 
 ## Step 1: Inventory the doc tree
 
@@ -87,7 +88,8 @@ an existing repo rule — cite the rule when raising a finding.
 | Dimension | Checks | Source rule |
 |-----------|--------|-------------|
 | `INDEX Health` | Categories containing documents normally have an `INDEX.md` with a routing table and no tutorial prose; absent/empty categories do not need placeholders | [Documentation Structure Reference](references/doc-structure.md) §INDEX Standards |
-| `Maps-not-Encyclopedias` | Codemaps map concepts and workflows to source; no copied function bodies or config dumps; link to authoritative source instead | [Documentation Structure Reference](references/doc-structure.md) §Maps, Not Encyclopedias |
+| `Maps-not-Encyclopedias` | Codemaps map concepts and entry flows to source; no copied function bodies, config dumps, or behavior-changing policy; link to the authoritative surface instead | [Documentation Structure Reference](references/doc-structure.md) §Maps, Not Encyclopedias |
+| `Authority Placement` | Behavior-changing rules route to the nearest `AGENTS.md`; durable contracts and rationale route to `docs/design/`; operational procedures route to `docs/runbooks/` | [Documentation Structure Reference](references/doc-structure.md) §Maps, Not Encyclopedias |
 | `Link Integrity` | Internal doc→doc and doc→source links resolve; no dangling `](./missing.md)`; source links point at paths that still exist | progressive disclosure (implicit) |
 | `Naming` | Files use lowercase-hyphen naming; designs use a date prefix when chronology matters; no ambiguous `-v2` suffix | [Documentation Structure Reference](references/doc-structure.md) §Naming |
 | `Depth ∝ Surface` | Detail matches workflow/interface complexity and retrieval value rather than a uniform line target | [Documentation Structure Reference](references/doc-structure.md) §Maps, Not Encyclopedias |
@@ -107,6 +109,7 @@ Before proposing a cleanup, verify it:
 | Naming violation | Show the actual filename vs. the required pattern |
 | Derivable doc proposed for deletion | Cite the source/git/doc that covers the same ground, score its remaining value, and identify the cheaper replacement surface |
 | Duplicate across docs | Cite both doc locations |
+| AGENTS.md promotion candidate | Cite the exact doc entry, open only the nearest target `AGENTS.md`, and confirm the rule is recurring, behavior-changing, and not already present |
 
 If a finding cannot be verified, label it `Needs user input` instead of treating
 it as fact.
@@ -120,7 +123,7 @@ every unrelated edit; bumping the number only fixes it until the next edit.
 
 | Action | Use when |
 |--------|----------|
-| `Promotions` | A doc belongs in a different category (e.g. a how-to in `codemaps/` belongs in `runbooks/`) |
+| `Promotions` | A doc belongs in a different docs category, or a concise recurring behavior rule belongs in the nearest `AGENTS.md` |
 | `Deletions` | Content fails a hard gate, is a useless placeholder, or is derivable and scores too low for its maintenance cost; valid non-derivable content must be retained or rerouted |
 | `Rewrites` | Content is true but encyclopedia-style, mis-linked, mis-named, or drifted |
 | `Duplicates` | The same guidance appears in two docs within `docs/` |
@@ -145,7 +148,7 @@ Output a structured report:
 
 ### Promotions
 
-1. `<file>` -> move to `<category>/` because <dimension + verification evidence>
+1. `<file or entry>` -> move to `<docs category or nearest AGENTS.md>` because <dimension + verification evidence>
 
 ### Deletions
 
@@ -176,6 +179,8 @@ knowledge is ready to record; bootstrap does not create docs categories.
 
 - Stop after presenting the report. Modify only proposals the user explicitly
   approves; they may approve any subset, reject all, or request revisions.
+- Treat an approved `AGENTS.md` promotion as a targeted memory edit, not
+  permission to audit or rewrite the rest of that file.
 - Never auto-delete or auto-merge conflicts. Ask which version is correct before
   editing.
 - After applying approved changes, report applied changes, rejected proposals,

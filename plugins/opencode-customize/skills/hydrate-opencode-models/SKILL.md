@@ -1,6 +1,6 @@
 ---
 name: hydrate-opencode-models
-description: Use when adding models to a custom opencode provider and needing to fill in limit, modalities, reasoning, tool_call, cost, interleaved, temperature, and attachment from the Models.dev catalog. Triggers on "fill model params", "hydrate model config", "add model metadata", "configure model specs", or when editing provider.models in opencode.json/opencode.jsonc.
+description: Fill a custom OpenCode provider model with Models.dev capabilities, limits, modalities, and pricing. Use when adding or hydrating model metadata in opencode.json or opencode.jsonc.
 ---
 
 # Hydrate OpenCode Model Parameters

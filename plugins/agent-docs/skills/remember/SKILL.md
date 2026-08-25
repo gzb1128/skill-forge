@@ -96,7 +96,7 @@ whether a specific entry earns prompt space.
 | `Currency` | Paths, commands, symbols, and described behavior are still true |
 | `Actionability` | A future agent can follow the instruction directly with concrete commands, paths, or decision rules |
 | `Signal` | The content is worth prompt space and helps future agents act better |
-| `Placement` | The content lives at the right `AGENTS.md` level and section |
+| `Placement` | The content lives at the right `AGENTS.md` level and section, or in the owning code artifact's doc comment when the knowledge is scoped to a single symbol |
 | `Non-Derivability` | Hidden knowledge cannot now be inferred from code, git, or existing docs; this is an automatic-admission signal, not a universal requirement for every surface |
 | `Knowledge Value` | Derivable content still earns prompt space when impact, recurrence, discovery cost, actionability, durability, and scope justify it |
 | `Duplication` | The same guidance is not repeated across layers or docs |
@@ -116,6 +116,7 @@ Before proposing a cleanup, verify it:
 | Contradicted behavior | Inspect source or run the smallest relevant check |
 | Duplicate content | Cite both locations |
 | Now-derivable hidden knowledge | Cite the code, docs, git history, or AGENTS.md main-body section that now covers it, then assess whether it remains valuable in another surface |
+| Entry better placed as a code comment | Confirm the owning symbol or file exists, the knowledge is scoped to it, and its existing doc comments do not already cover it |
 | Potentially low-value derivable entry | Show the shared-policy score and the lower-cost source or document that would replace it |
 | Memory assertion backed by a linked doc | Open that one linked doc and confirm it still supports the assertion |
 | Explicit docs promotion candidate | Cite the named entry, verify it changes recurring agent behavior, score its prompt value, and confirm it is absent from the nearest `AGENTS.md` |
@@ -138,10 +139,16 @@ here is whether the linked doc still backs the memory claim that cites it.
 |--------|----------|
 | `Promotions` | Lower-level guidance affects multiple packages, belongs in a higher-level `AGENTS.md`, or an explicitly named docs rule earns prompt space in the nearest `AGENTS.md` |
 | `Deletions` | Content fails a hard gate, or derivable content scores too low for prompt-resident memory; derivability alone is insufficient, and valid non-derivable content must be retained or rerouted |
+| `Relocations to code` | A prompt-resident entry is scoped to a single code artifact and fits a concise doc comment or module doc on it; scope and conciseness trigger this, never derivability alone. Keep a one-line pointer in `AGENTS.md` only when agents must know before opening the file |
 | `Rewrites` | Content is true but unclear, too verbose, misplaced within the same file, or missing verification context |
 | `Duplicates` | Exact or overlapping guidance appears in multiple places |
 | `Conflicts` | Two files or sections contradict each other and need user judgment |
 | `No Action Needed` | Content is valid, placed correctly, and useful |
+
+**Relocation scope guard.** Verifying a relocation opens exactly the one
+source file that owns the symbol — a verification method, not a license to
+audit or rewrite source. Do not enumerate the source tree or propose
+unrelated code changes from `/agent-docs:remember`.
 
 **Rewrite heuristic — prefer stable references over line numbers.** When memory
 points at source, prefer stable references (symbol name, package path, heading
@@ -176,6 +183,10 @@ Output a structured report:
 ### Rewrites
 
 1. `<file>`: "<entry>" -> rewrite as "<new wording>" because <dimension + verification evidence>
+
+### Relocations
+
+1. `<file>`: "<entry>" -> move into a doc comment on `<symbol or file>` because <scope evidence + conciseness>; keep a one-line pointer only if agents must know before opening the file
 
 ### Duplicates
 

@@ -43,6 +43,32 @@ docs. If the user does request removal, merge any still-valid durable knowledge
 into the relevant design and delete execution-only artifacts. Do not copy a
 plan wholesale into a design.
 
+## Design Docs Are Point-in-Time Records
+
+`docs/design/` holds two kinds of documents with different maintenance rules:
+
+- **Decision records** (`YYYY-MM-DD-` prefixed): background, alternatives,
+  decision, verification and rollback boundaries for one change. Freeze a
+  record once its decision lands; later edits only update its Status line.
+  Current-state maintenance belongs to code comments, codemaps, or
+  `AGENTS.md` — never to rewriting a landed record. To change a decision,
+  write a new record and supersede the old one explicitly.
+- **Living contracts**: documents stating currently binding constraints,
+  sequencing, or handoff contracts (identity rules, lifecycle contracts).
+  These stay current and are audited against source for drift like any
+  other living document.
+
+Mark the kind in the Status line (`Approved`/`Frozen`/`Superseded` for
+records, `Living` for contracts). A frozen record that no longer matches
+current source is not drift; the remedy is a new superseding record, not a
+rewrite.
+
+Implementation narration — "code changes" step lists, duplicated API
+schemas, pre-landing plans — is plan-time content, not durable design
+knowledge. After the change lands, code and its doc comments are
+authoritative; artifact-scoped invariants from the same decision should
+also land as doc comments on the owning symbols.
+
 ## INDEX Standards
 
 - Keep an index as a navigation surface rather than a tutorial.

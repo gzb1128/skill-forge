@@ -75,7 +75,13 @@ Do not write anything yet. First classify each candidate.
 | `Quick Reference` | Root `AGENTS.md` Quick Reference table | High-value common build, test, lint, run, codegen, clean, or verification commands |
 | `Rule` | Nearest `AGENTS.md` `Golden Rules`/`Key Patterns`, or `docs/rules/` plus its index | Put concise, recurring, usually 9+ prompt-value rules in `AGENTS.md`; put narrower or longer rules in pull-based docs |
 | `Doc` | Appropriate `docs/` category plus its index | High-value design, troubleshoot, runbook, codemap, verification, or library knowledge, including non-derivable knowledge that does not justify prompt space |
-| `Skip` | No write | Fails a hard gate, falls below the destination threshold, is one-off/generic, or is better enforced mechanically without documentation value |
+| `Code` | Doc comment or module doc on the owning symbol/file, plus an optional one-line pointer in the nearest `AGENTS.md` | Verified knowledge about a specific function, type, module, or file's behavior or invariant that fits a concise comment; prefer a self-documenting API shape or mechanical enforcement when feasible |
+| `Skip` | No write | Fails a hard gate, falls below the destination threshold, is one-off/generic, or is mechanically enforceable with no durable explanation value left |
+
+Knowledge that a compiler, test, linter, or script could enforce is not
+skipped by default: propose the `Code` comment — or the enforcement change
+itself when the session makes it natural — and skip only when no durable
+explanation value remains.
 
 ## Non-derivable candidates
 
@@ -98,8 +104,10 @@ knowledge without a numeric threshold:
 
 Route them after admission. A concise cross-cutting trap may belong in
 `AGENTS.md` Hidden Knowledge, while a niche library quirk or longer operational
-constraint belongs in the relevant docs category. Automatic admission does not
-mean automatic prompt residency.
+constraint belongs in the relevant docs category. A quirk scoped to one
+function, type, or file belongs in that artifact's doc comment (`Code`)
+instead of Hidden Knowledge. Automatic admission does not mean automatic
+prompt residency.
 
 ## High-value derivable candidates
 
@@ -146,6 +154,7 @@ Every retained candidate needs explicit evidence before it can be proposed:
 | Behavior or constraint | Run the smallest relevant command, inspect source, or explain why direct execution is unsafe |
 | Existing AGENTS.md content | Read the target section and check for stale or duplicate entries |
 | Existing repository knowledge | Search root guidance and the relevant docs category for an equivalent authoritative entry |
+| Code comment target | Confirm the symbol or file exists and the comment attaches to the owning artifact — a doc comment on the item or a module doc at the top of the file, not a stray line comment far from it |
 | Non-derivability claim | Search source, git, and existing docs for the rule; authoritative maintainer context may establish that a convention is intentionally unwritten |
 
 **Stable-reference rule.** When proposed knowledge points to source, prefer
@@ -184,6 +193,13 @@ when the rule is concise, recurring, and earns prompt space. Otherwise use
 `docs/rules/`. Create a missing AGENTS.md section only as part of the approved
 proposal.
 
+For `Code`, the target is the owning artifact itself: a doc comment on the
+function, type, or module the knowledge describes, or a module doc section at
+the top of the owning file for larger invariants. Prefer the nearest artifact
+over any centralized surface. When the knowledge is too large for a comment,
+write the module doc and add a one-line pointer plus a sync-guard reminder to
+the nearest `AGENTS.md` in the same proposal.
+
 For a docs-bound `Rule` or `Doc`, choose the category from the Documentation
 Structure Reference. Create the category and `INDEX.md` only with the first
 admitted document; never scaffold empty categories. Prefer updating an
@@ -216,8 +232,13 @@ Before editing any file, show all proposals in this format:
 1. `<candidate>` -> skipped because <reason>
 
 For a new document, include the document diff and the matching `INDEX.md` diff
-in the same proposal. Use `report-only` only when a destination conflict or
-missing authoritative context requires user judgment.
+in the same proposal. A `Code` proposal's diff targets the owning source file;
+include the optional nearest-`AGENTS.md` pointer diff in the same proposal when
+the hybrid module-doc pattern is used. When one decision yields both a design
+record and artifact-scoped invariants, propose the `Doc` design diff and its
+`Code` comment diffs in the same batch: the design records why, the comments
+carry the now-binding invariants. Use `report-only` only when a destination
+conflict or missing authoritative context requires user judgment.
 ````
 
 ## Step 6: Approval gate and apply

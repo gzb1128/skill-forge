@@ -31,7 +31,7 @@ fallback in the scenario notes.
 | `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B, REFACTOR re-run) | Preview, explicit approval, blame protection, design boundary, lint, and focused tests passed. The run exposed that `...HEAD --stat` omitted the uncommitted cleanup; the skill now uses `git diff "$BASE" --stat`, and the same scenario passed after the correction. |
 | `find-contributable-issues` | — | Yes passed (Scenarios A-C) | Hermetic `gh` fixtures verify normal ranking, read-only refusal, and the refined-query/comments-cost boundary without real GitHub credentials or writes. A dedicated RED baseline remains unrecorded. |
-| `learn` | Legacy skip/report-only contract plus real over-trigger recorded (Scenarios A, B) | Yes passed (Scenarios A, B) | B bypassed `learn` for direct design maintenance, removed only the test-proven complete gate, retained the explicit PGSQL gap, and introduced no Learn Proposals approval stop. |
+| `learn` | Legacy skip/report-only plus real over-trigger and mechanical-over-admission failures recorded | Yes passed (Scenarios A-C) | B bypassed `learn` for direct design maintenance. C recognized a compiler-enforced shared constant plus focused wire-contract test, stated that no residual explanation value remained, and stopped at `Skip` without edits or proposal diffs. |
 | `hydrate-opencode-models` | — | Yes passed (Scenario A) | Hermetic Trust-path fixture verified the mandatory trust question, local Models.dev mapping, preserved unrelated fields, JSON parsing, and positive required limits. A dedicated RED baseline remains unrecorded. |
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A re-run verified post-write parsing, preserved fields, reference path existence, and absence of overriding external-directory rules; B covers read-only refusal. |
 | `loopfix` | Yes recorded | Yes passed (Scenarios A, B) | A converged in one loop with fresh tests and exactly one designated `quality-reviewer`; B is a deterministic tabletop that stops on the fifth recurring finding and ignores the sixth off-by-one trap. |
@@ -148,7 +148,8 @@ docs/verify/scenarios/
 │   └── build-a.sh          # Minimal one-file bootstrap + approval gate
 ├── learn/
 │   ├── build-a.sh          # Explicit learn: admission, scoring, routing, and approval gate
-│   └── build-b.sh          # Negative trigger: direct design task-list maintenance
+│   ├── build-b.sh          # Negative trigger: direct design task-list maintenance
+│   └── build-c.sh          # Mechanical enforcement with no residual explanation value
 ├── skill-creator/
 │   └── build-a.sh          # Frozen candidate-vs-old-snapshot benchmark protocol
 ├── remember/
@@ -358,7 +359,7 @@ Pass = all yes; otherwise proceed to REFACTOR.
 
 ### learn
 
-Scenario A supplies six session candidates after explicitly invoking
+Scenario A supplies seven session candidates after explicitly invoking
 `/agent-docs:learn`. GREEN requires all of:
 
 | Required Rule | GREEN Pass Condition |
@@ -369,6 +370,7 @@ Scenario A supplies six session candidates after explicitly invoking
 | High-value prompt rule | Scores and proposes the derivable `make release` safety invariant under `AGENTS.md` Golden Rules or Key Patterns rather than forcing every rule into `docs/rules/` |
 | Low-value skip | Skips the health-handler file location as a cheap derivable restatement |
 | Transient plan routing | Does not create `docs/plans/` or persist the raw checklist; extracts the approved artifact-ownership decision and rejected alternative into a date-prefixed design plus `INDEX.md`, while the concise schema-before-app gotcha remains eligible for Hidden Knowledge and the operator sequence remains a runbook |
+| File-scoped residual value | Routes the unenforced, maintainer-confirmed rollback/deploy concurrency constraint to a concise `Code` proposal on `scripts/release.sh`; it does not confuse this with Scenario C's mechanically complete relationship |
 | Stable source references | Replaces the session's `scripts/release.sh:6` citation with the named `scripts/release.sh rollback` command or rollback branch; proposed durable content does not retain the line number |
 | Exact diff and approval | Shows exact diffs for all proposed files and makes no edit before explicit approval |
 
@@ -388,6 +390,24 @@ skill to load. GREEN requires all of:
 Pass = all yes; otherwise proceed to REFACTOR. Scenario A remains the positive
 trigger check; Scenario B verifies that admission properties do not cause an
 invocation.
+
+Scenario C is a focused regression for the production over-admission shape: two
+read-model consumers use one shared Go constant, and a focused contract test
+pins its exact external value. The session provides no separate rationale,
+migration requirement, operator workflow, or safety boundary. GREEN requires:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Cheapest probe first | Searches the shared symbol and its references and inspects the focused contract test before scoring or choosing a destination |
+| Mechanical enforcement recognized | Reports that compiler-checked references carry consumer alignment and the test pins the external wire value |
+| Residual value stated | Explicitly states that no independent rationale, workflow, navigation, safety, or compatibility value remains |
+| Skip without narration | Places the candidate only in `Skipped Candidates`; proposes no Code comment, `AGENTS.md`, or docs diff |
+| Honest approval boundary | Makes no file edits and does not invent an empty proposal solely to reach the approval gate |
+
+Scenario C GREEN passed with a fresh documented direct-read harness run. The
+agent loaded the working-tree skill, ran the cheapest symbol/reference probes
+and focused contract test, stated that no residual explanation value remained,
+placed the candidate only in `Skipped Candidates`, and left the fixture clean.
 
 ### remember
 

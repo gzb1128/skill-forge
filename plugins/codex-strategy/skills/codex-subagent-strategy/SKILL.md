@@ -13,23 +13,43 @@ This is a delegation aid, not a mandatory orchestrator framework. Apply the
 preparation, handoff, and review gates only when the user has asked for a
 delegated implementation; ordinary local work may proceed without a child.
 
+## Subscription Gate
+
+This skill's model routes (Terra/Luna/Sol) are valid only on an official
+ChatGPT/Codex subscription. Before applying any route, inspect the active
+spawn tool description: if it does not expose `gpt-5.6-terra`,
+`gpt-5.6-luna`, or `gpt-5.6-sol` as available models, the session is not on
+an official subscription. In that case, omit both `model` and
+`reasoning_effort` for every spawn so all children inherit the parent model,
+and skip the Routes section entirely.
+
+This fallback must be reported to the user before dispatch: state that the
+active provider is not an official subscription, so all children inherit the
+parent model. Do not silently omit routing fields without this report.
+
+Do not attempt to configure, install, or otherwise enable these models on a
+non-official provider. Parent inheritance is the only fallback.
+
 ## Before The First Spawn
 
 1. Read this skill before dispatching any child.
-2. If the user requests no child-model routing or says every child must inherit,
+2. Check the Subscription Gate above. If the active spawn tool does not expose
+   official subscription models, use parent inheritance for every spawn and
+   stop here — do not apply the Routes table.
+3. If the user requests no child-model routing or says every child must inherit,
    omit both `model` and `reasoning_effort` for every spawn and stop here.
-3. Honor any explicit per-child model or effort requested by the user.
-4. Read the active spawn tool description and select its call-shape adapter.
+4. Honor any explicit per-child model or effort requested by the user.
+5. Read the active spawn tool description and select its call-shape adapter.
    V1 and V2 change only invocation and context mechanics; they do not change
    the model route or role selected below.
-5. Decide whether a self-contained handoff can give the child everything it
+6. Decide whether a self-contained handoff can give the child everything it
    needs: outcome, design path when applicable, write scope, verification, and
    a stop condition. For an independent review, create a fresh review packet
    containing the scope, base, changed paths, acceptance criteria, and required
    gates; do not copy the parent reasoning or conclusions.
-6. If a non-review child instead needs the whole parent history or unrecorded
+7. If a non-review child instead needs the whole parent history or unrecorded
    decisions, preserve that context and inherit the parent model.
-7. Classify every remaining, self-contained child and apply the first matching
+8. Classify every remaining, self-contained child and apply the first matching
    route below.
 
 Do not load this skill for conceptual questions about subagents or ordinary
@@ -46,7 +66,7 @@ native or route it as complex; do not disguise uncertainty as a routine task.
 This preparation is scoped to the delegated unit. It is not a requirement to
 turn an otherwise straightforward task into a multi-agent orchestration.
 
-## Routes
+## Routes (official subscription only)
 
 Only self-contained explorers, implementation workers, and independent
 reviewers receive routes from this skill. A self-contained handoff is the

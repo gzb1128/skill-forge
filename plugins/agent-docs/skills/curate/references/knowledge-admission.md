@@ -41,7 +41,11 @@ probe that could reject the candidate or route it to a lower-cost surface:
    script already enforces the relationship or external value.
 3. Search the likely authoritative documentation surface for an equivalent
    entry.
-4. State what durable value remains after those artifacts are considered.
+4. Inspect what the current session itself produced — diffs, commits, MR/PR
+   bodies, and test comments written minutes ago. Candidates born from a
+   change are usually already carried in place by that change, so probing only
+   pre-existing surfaces misses the most common carriers.
+5. State what durable value remains after those artifacts are considered.
 
 Mechanical enforcement is not an automatic rejection: documentation may still
 carry non-obvious rationale, an operator workflow, a navigation map, a safety

@@ -97,8 +97,12 @@ knowledge without a numeric threshold:
    is an unwritten convention the compiler/linter/git does not enforce. Record
    it. Objective bar: acting on the insight requires **≥2 artifacts plus a
    convention not expressed or enforced by any single authoritative artifact**.
-   A shared constant, interface, generated contract, or focused test harness
-   counts as an artifact when it mechanically carries the relationship.
+   Before claiming this bar, name the artifact(s) that carry the convention: a
+   shared constant, interface, generated contract, focused test harness, or the
+   owning symbol's doc comment — including one created earlier in the same
+   session — each counts as a carrying artifact. When any single artifact
+   mechanically carries the relationship, automatic admission does not apply;
+   treat the candidate as derivable knowledge and score its residual value.
 2. **Misleading errors**: Error messages that point to the wrong location or
    cause.
 3. **Workarounds and quirks**: Project-specific behavior that differs from the
@@ -159,6 +163,7 @@ Every retained candidate needs explicit evidence before it can be proposed:
 | Behavior or constraint | Run the smallest relevant command, inspect source, or explain why direct execution is unsafe |
 | Existing AGENTS.md content | Read the target section and check for stale or duplicate entries |
 | Existing repository knowledge | Search root guidance and the relevant docs category for an equivalent authoritative entry |
+| Session-produced carriers | Inspect the diffs, commits, MR/PR bodies, and test comments the current session created; a candidate born from a change is usually already carried in place by that change |
 | Code comment target | Confirm the symbol or file exists and the comment attaches to the owning artifact — a doc comment on the item or a module doc at the top of the file, not a stray line comment far from it |
 | Non-derivability claim | Search source, git, and existing docs for the rule; authoritative maintainer context may establish that a convention is intentionally unwritten |
 | Mechanical enforcement | Inspect owning symbols, references, focused tests, linters, and scripts for a single artifact that already carries the relationship or external value |
@@ -241,6 +246,10 @@ Before editing any file, show all proposals in this format:
 **Why:** <one-line reason this helps future sessions>
 
 **Verification:** <path/symbol/command/behavior evidence>
+
+**Nearest-code alternative:** <for Hidden Knowledge, Rule, and Doc proposals:
+why the owning artifact or its module doc cannot carry this instead; omit for
+Code proposals, which are that alternative>
 
 **Admission:** <automatic — non-derivable | score N/12 with dimension summary>
 

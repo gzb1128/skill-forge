@@ -31,7 +31,7 @@ fallback in the scenario notes.
 | `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B, REFACTOR re-run) | Preview, explicit approval, blame protection, design boundary, lint, and focused tests passed. The run exposed that `...HEAD --stat` omitted the uncommitted cleanup; the skill now uses `git diff "$BASE" --stat`, and the same scenario passed after the correction. |
 | `find-contributable-issues` | — | Yes passed (Scenarios A-C) | Hermetic `gh` fixtures verify normal ranking, read-only refusal, and the refined-query/comments-cost boundary without real GitHub credentials or writes. A dedicated RED baseline remains unrecorded. |
-| `learn` | Legacy skip/report-only plus real over-trigger and mechanical-over-admission failures recorded | Yes passed (Scenarios A-C) | B bypassed `learn` for direct design maintenance. C recognized a compiler-enforced shared constant plus focused wire-contract test, stated that no residual explanation value remained, and stopped at `Skip` without edits or proposal diffs. |
+| `learn` | Legacy skip/report-only plus real over-trigger, mechanical-over-admission, and session-carrier-blindness failures recorded | Yes passed (Scenarios A-D) | B bypassed `learn` for direct design maintenance. C recognized a compiler-enforced shared constant plus focused wire-contract test, stated that no residual explanation value remained, and stopped at `Skip` without edits or proposal diffs. D reproduced the session-carrier blindness on RED; GREEN ran the session-carrier probe, named the carriers, and answered the nearest-code alternative, leaving the centralized-versus-in-place verdict to the approval gate. |
 | `hydrate-opencode-models` | — | Yes passed (Scenario A) | Hermetic Trust-path fixture verified the mandatory trust question, local Models.dev mapping, preserved unrelated fields, JSON parsing, and positive required limits. A dedicated RED baseline remains unrecorded. |
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A re-run verified post-write parsing, preserved fields, reference path existence, and absence of overriding external-directory rules; B covers read-only refusal. |
 | `loopfix` | Yes recorded | Yes passed (Scenarios A, B) | A converged in one loop with fresh tests and exactly one designated `quality-reviewer`; B is a deterministic tabletop that stops on the fifth recurring finding and ignores the sixth off-by-one trap. |
@@ -149,7 +149,8 @@ docs/verify/scenarios/
 ├── learn/
 │   ├── build-a.sh          # Explicit learn: admission, scoring, routing, and approval gate
 │   ├── build-b.sh          # Negative trigger: direct design task-list maintenance
-│   └── build-c.sh          # Mechanical enforcement with no residual explanation value
+│   ├── build-c.sh          # Mechanical enforcement with no residual explanation value
+│   └── build-d.sh          # Session-produced carriers: in-place diff vs centralized copy
 ├── skill-creator/
 │   └── build-a.sh          # Frozen candidate-vs-old-snapshot benchmark protocol
 ├── remember/
@@ -408,6 +409,39 @@ Scenario C GREEN passed with a fresh documented direct-read harness run. The
 agent loaded the working-tree skill, ran the cheapest symbol/reference probes
 and focused contract test, stated that no residual explanation value remained,
 placed the candidate only in `Skipped Candidates`, and left the fixture clean.
+
+Scenario D is a regression for session-produced-carrier blindness, recorded
+from a production over-admission: the running session's own uncommitted diff
+already carried the candidate (owning-symbol doc comment plus a focused test
+with the incident narrative), yet learn proposed a centralized `AGENTS.md`
+Hidden Knowledge copy after probing only pre-existing docs. The fixture leaves
+that diff uncommitted and the neutral prompt tempts centralization without
+pointing at the diff or pre-deciding residual value. GREEN tests the
+deliberation mechanism, not the final verdict — whether a centralized entry
+survives is an owner judgment reserved for the approval gate (the production
+incident was resolved by the user rejecting the proposal there). GREEN
+requires:
+
+| Required Rule | GREEN Pass Condition |
+|---|---|
+| Session-carrier probe first | Inspects the current session's own diff, commits, and test comments before or while claiming non-derivability, and records that probe outcome |
+| Carriers named | Reports the owning-symbol doc comment and focused test as artifacts that mechanically carry the relationship, explicitly including the ones the session itself created |
+| Nearest-code alternative answered | Any centralized proposal carries a real placement comparison in its `Nearest-code alternative` line — why the owning artifact cannot reach the candidate's reader — instead of ignoring the in-place copy |
+| No blind duplicate | A surviving centralized proposal is a 1-3 line pointer that names the in-place carriers as the authoritative copy; it never restates the contract body inline as though no carrier existed |
+| Honest approval boundary | Makes no file edits and stops at the approval gate regardless of verdict |
+
+Scenario D RED reproduced on a direct-read harness with the neutral prompt: the
+pre-change skill claimed `automatic — non-derivable` admission for the
+`AGENTS.md` entry with no session-carrier probe outcome, no carrier-naming
+disqualifier check, and no placement comparison — the production failure shape.
+GREEN with the working-tree skill proposed the same entry but
+mechanism-compliant: the session-carrier probe was run and recorded, the gate
+comment and test were named as the carrying artifacts, the `Nearest-code
+alternative` line argued the deploy-log-reader navigation value, and the entry
+was a pointer acknowledging the in-place copy (with a stated 11/12 fallback
+score). An earlier pointed prompt ("see the uncommitted diff" plus an explicit
+no-residual disclaimer) made both old and new skill stop at `Skip` and is not
+discriminating; the neutral prompt is the recorded form.
 
 ### remember
 

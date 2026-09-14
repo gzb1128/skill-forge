@@ -27,7 +27,7 @@ State the mode and whether the review covers the working tree, branch diff, or b
 - Branch: `git diff <base>...HEAD`.
 - Both: inspect and label both sources.
 
-Resolve `<base>` from `origin/main`, `origin/master`, `main`, then `master`, using the first ref with a merge base. Honor an explicit user scope. Read repository instructions and the full changed files; diffs alone are not enough. Review only behavior introduced by the change.
+Apply [Change Boundaries](references/change-boundaries.md) for base resolution, ownership, authorization, and gate results. Read repository instructions and the full changed files; diffs alone are not enough. Review only behavior introduced by the change. Report any explicitly skipped review without dispatching a reviewer or implying review occurred.
 
 ### 2. Dispatch exactly one independent reviewer
 
@@ -57,6 +57,7 @@ The single reviewer uses one shared understanding of the task for all applicable
 |---|---|---|
 | **Correctness and behavior** | Always | Check logic, edge cases, error paths, security, broken invariants, caller-owned mutation, API/behavior changes, and missing tests. |
 | **Structure and simplification** | Always | Does it fit existing patterns? Is there concrete complexity, duplication, dead code, or a hand-rolled utility to remove? |
+| **Architecture and existing flow** | Cross-module, parsing, persistence, state-machine, or execution-path changes | Apply the source-backed ownership trace in Change Boundaries. Does the change bypass an existing owner or add an unnecessary path? |
 | **Efficiency** | Always | Is there an obvious N+1 call, repeated hot-path I/O, unbounded growth, leaked resource, or redundant write? |
 | **Silent failure** | Error handling, fallback, retry, ignored error, or log-and-continue changed | Could this hide a failure that a user, caller, operator, or test should see? |
 | **Test quality** | Tests changed | Would the tests fail for the important regressions introduced by this diff? |
@@ -75,7 +76,7 @@ For each public symbol whose signature, return shape, or error contract changed,
 git grep -n '<symbol>' -- ':!vendor' ':!node_modules'
 ```
 
-When the user asks to skip tests because they are slow, run a focused subset first; if it finishes within 30 seconds, run it anyway and report the runtime. Honor an explicit `skip lint`. Urgency alone does not skip gates, and any blocking verdict must include a concrete next step that takes under two minutes.
+Classify passed, change-induced, pre-existing, unavailable, and explicitly skipped checks using Change Boundaries. Respect explicit skips even when a check would be quick. Give a concrete next diagnostic or decision for a blocking verdict; do not promise an arbitrary duration.
 
 ### 5. Validate findings with evidence
 
@@ -110,16 +111,16 @@ Omit empty optional sections:
 - Mode and scope: <mode>; <scope> via <commands>
 - Independent reviewer: <one dispatched / designated reviewer / unavailable> → <result>
 - Coverage: <always-on checks>; lenses: <triggered / none>
-- Diff hygiene / lint / tests: <commands and results>
+- Diff hygiene / lint / tests: <commands and classified results, including baseline evidence and explicit skips>
 - Caller check: <symbols and result / not triggered>
 - Post-fix check: <result / not needed>
 
 ### Verdict
 Ready to commit: <yes / no / yes-after-flags-resolved>
-If no: <one concrete next step taking under two minutes>
+If no: <one concrete next diagnostic or required decision>
 ```
 
-`Ready to commit: no` is required when the independent reviewer was unavailable, a required gate failed, or an unresolved Critical/Important finding remains. Use `yes-after-flags-resolved` only for unresolved Minor findings or explicitly accepted non-blocking follow-ups.
+`Ready to commit: no` is required when an unwaived independent review or required gate is unavailable/failed, or an unresolved Critical/Important finding remains. Explicit skips and repository-approved nonblocking baseline failures must be reported separately, never as passing checks. Use `yes-after-flags-resolved` only for unresolved Minor findings or explicitly accepted non-blocking follow-ups.
 
 ## Never
 

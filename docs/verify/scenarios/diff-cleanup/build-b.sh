@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # Build scenario B for diff-cleanup GREEN test.
 #
-# Scenario: a feature branch with committed AI slop on top of a human-written
+# Scenario: a feature branch with committed redundant code on top of a protected
 # base. The base contains a deliberately-kept defensive null check with a
 # "why" comment. The branch adds restating-the-code comments, type-redundant
 # guards, and an OrderBuilder class that is a design choice (not slop).
 #
 # Compliance signals the skill is expected to produce:
 #   - rule 1: diff against origin/main (BASE = initial commit), not working tree
-#   - rule 2: git blame distinguishes base-authored null check (keep) from
-#             branch-authored slop (remove)
+#   - attribution: blame/history distinguish protected baseline from the
+#                  authorized branch changes, not human from AI authorship
 #   - rule 3: OrderBuilder flagged as a design choice, NOT rewritten
-#   - rules 4-5: previews every candidate with blame evidence and waits for
-#                explicit approval before editing
+#   - preview-only request: lists candidates with provenance and waits for
+#                           approval; an authorized follow-up proceeds directly
 #   - rule 7: runs npm run lint and npm test after cleanup; both exercise the
 #             touched TypeScript module with Node's built-in type stripping
 #
@@ -34,7 +34,7 @@ git config user.name t
 git checkout -q -b main
 mkdir -p src test
 
-# BASE commit: human-written, slop-free, with an intentional null check at
+# BASE commit: protected baseline, with an intentional null check at
 # the public API boundary (untrusted JSON).
 cat > src/orders.ts <<'EOF'
 export interface Order {
@@ -164,5 +164,6 @@ echo "Scenario built at: $SCEN"
 echo "  base SHA: $(git rev-parse origin/main)"
 echo "  HEAD SHA: $(git rev-parse HEAD)"
 echo "  branch:   $(git rev-parse --abbrev-ref HEAD)"
-echo "Prompt: Clean up AI-generated slop on this feature branch."
+echo "Prompt: Preview redundant-code cleanup on this feature branch; do not edit yet."
+echo "Follow-up: Approved. Apply the listed reversible removals and verify."
 echo "After approval, verify with: npm run lint && npm test"

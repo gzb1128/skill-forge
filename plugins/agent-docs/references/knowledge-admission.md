@@ -99,9 +99,14 @@ gates, but it still needs correct placement. A niche library quirk may belong in
 Keep only prompt-resident knowledge that changes agent behavior frequently:
 
 - build, test, lint, codegen, and verification entry points;
-- a compact architecture and task-routing map;
+- a compact architecture and task-routing map that identifies the responsible
+  owners of relevant decisions, inputs, durable effects, and runtime state;
 - project-specific hard rules;
 - concise hidden dependencies, misleading failures, quirks, and ordering.
+
+For a recurring cross-module change, verify that the map routes the reader to
+the owner and current contract, not just a directory. Use a short flow, table, or
+link as needed; diagrams and extra layers are not mandatory.
 
 When knowledge has a long-form authoritative copy — a module doc or a
 `docs/design/` contract — the `AGENTS.md` entry is a 1-3 line summary plus

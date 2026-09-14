@@ -1,6 +1,11 @@
 # Skill Verification
 
-This directory documents how to run RED → GREEN → REFACTOR test cycles for each skill under `plugins/<plugin-name>/skills/`. The process strictly follows the `superpowers:writing-skills` iron law: **no skill without a failing test**.
+This directory documents RED → GREEN → REFACTOR verification for skills under
+`plugins/<plugin-name>/skills/`. Start with reproducible evidence of the gap and
+keep agent behavior separate from static contract or fixture failures. For an
+existing skill, a contradictory rule or failing command probe can justify a
+repair even when the old agent run succeeds; retain that success as a control
+and do not claim a measured behavioral improvement.
 
 Applicable scenarios:
 - Baseline measurement before adding a new skill
@@ -24,19 +29,19 @@ fallback in the scenario notes.
 
 | Skill | RED Baseline | GREEN Verified | Notes |
 |---|---|---|---|
-| `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A) | Minimal one-file plan, approval gate, applied payload, and no-`docs/` assertion passed |
-| `clean-commit` | — | — | Pre-existing; delegates to `quality-reviewer` |
+| `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A and change boundaries) | One-file approval flow retained; the ownership trial created only a source-backed 91-line AGENTS.md and kept unknown commands explicit. |
+| `clean-commit` | No dedicated failure recorded | Yes passed (change boundaries) | Named pending files only; one reviewer, lint, explicit test skip propagated to review, unrelated staging preserved, and local commit verified. |
 | `codex-subagent-strategy` | Yes recorded (Scenario A) | GREEN re-run pending (Scenario E) | A-D cover delegation preparation, self-contained handoff, fresh review, and context contracts; E requires a rejected Luna route to request explicit role-configuration approval without editing configuration. |
 | `codex-luna-agent-config` | RED/GREEN pending (Scenarios A-D) | — | A creates one standalone `luna_max` role after a real Luna route rejection plus explicit approval; B guards the missing-approval stop, while C and D guard declared and standalone role conflicts. |
 | `curate` | Legacy universal non-derivability contract recorded | Yes passed (Scenario A) | Docs defects, AGENTS.md scope guard, and retention of a high-value derivable runbook passed |
-| `diff-cleanup` | Yes recorded | Yes passed (Scenario B, REFACTOR re-run) | Preview, explicit approval, blame protection, design boundary, lint, and focused tests passed. The run exposed that `...HEAD --stat` omitted the uncommitted cleanup; the skill now uses `git diff "$BASE" --stat`, and the same scenario passed after the correction. |
+| `diff-cleanup` | Historical RED plus deterministic Git scope defects | Yes passed (Scenario B and change boundaries) | Branch plus staged/unstaged/untracked scope, prior authorization, index preservation, and clean-base failure classification passed. Old-snapshot behavior also passed; no comparative improvement claimed. |
 | `find-contributable-issues` | — | Yes passed (Scenarios A-C) | Hermetic `gh` fixtures verify normal ranking, read-only refusal, and the refined-query/comments-cost boundary without real GitHub credentials or writes. A dedicated RED baseline remains unrecorded. |
 | `learn` | Legacy skip/report-only plus real over-trigger, mechanical-over-admission, and session-carrier-blindness failures recorded | Yes passed (Scenarios A-D) | B bypassed `learn` for direct design maintenance. C recognized a compiler-enforced shared constant plus focused wire-contract test, stated that no residual explanation value remained, and stopped at `Skip` without edits or proposal diffs. D reproduced the session-carrier blindness on RED; GREEN ran the session-carrier probe, named the carriers, and answered the nearest-code alternative, leaving the centralized-versus-in-place verdict to the approval gate. |
 | `hydrate-opencode-models` | — | Yes passed (Scenario A) | Hermetic Trust-path fixture verified the mandatory trust question, local Models.dev mapping, preserved unrelated fields, JSON parsing, and positive required limits. A dedicated RED baseline remains unrecorded. |
 | `integrate-projects` | Yes recorded | Yes passed (Scenarios A, B) | A re-run verified post-write parsing, preserved fields, reference path existence, and absence of overriding external-directory rules; B covers read-only refusal. |
-| `loopfix` | Yes recorded | Yes passed (Scenarios A, B) | A converged in one loop with fresh tests and exactly one designated `quality-reviewer`; B is a deterministic tabletop that stops on the fifth recurring finding and ignores the sixth off-by-one trap. |
-| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C, D, E) | D fix mode removed only safe restating comments, retained an Important authorization finding, reconciled the justified fire-and-forget exception, ran direct gates, and returned `Ready to commit: no`. Its `loopfix` prompt routed out of the bounded procedure and stopped at loop count 0 because no authorization contract existed. |
-| `remember` | Legacy now-derivable deletion contract recorded | Yes passed (Scenario A) | Linked-doc contradiction, stable-reference rewrite, no-broad-scan bound, and retention of derivable high-value commands passed |
+| `loopfix` | Yes recorded | Yes passed (Scenarios A, B and change boundaries) | The ownership repair used the existing lifecycle, proved regression tests fail before the fix, and finished after one fresh clean review.  A converged in one loop with fresh tests and exactly one designated `quality-reviewer`; B is a deterministic tabletop that stops on the fifth recurring finding and ignores the sixth off-by-one trap. |
+| `quality-reviewer` | Historical RED; latest old-snapshot architecture run also passed | Yes passed (Scenarios A, C, D, E and change boundaries) | Ownership violation and valid-lifecycle control passed, with unavailable lint reported separately.  D fix mode removed only safe restating comments, retained an Important authorization finding, reconciled the justified fire-and-forget exception, ran direct gates, and returned `Ready to commit: no`. Its `loopfix` prompt routed out of the bounded procedure and stopped at loop count 0 because no authorization contract existed. |
+| `remember` | Legacy now-derivable deletion contract recorded | Yes passed (Scenario A and change boundaries) | Original knowledge-retention checks retained; the targeted-flow trial proposed concise owner routing without broad source audit or edits. |
 | `skill-creator` | Upstream behavior inspected | Partial: honest-failure path passed; full Scenario A inconclusive | The run froze 18 planned executions, completed and graded 8 valid runs (4 pairs), preserved 2 discarded infrastructure attempts, and prohibited promotion. It also exposed sparse-coverage, missing-metric, provenance, and viewer-path gaps in the bundled tools; regression tests now cover those corrections. The complete 18-run matrix and blind-comparison evidence remain unavailable. |
 
 > GREEN tests may use a fallback mode in which the subagent directly reads the
@@ -44,13 +49,22 @@ fallback in the scenario notes.
 > cache. The 2026-08-05 re-runs used this form because `make test-skills-status`
 > showed stale cache links. Reason: see "Critical Timing Constraint" below.
 
+## Cross-skill change boundaries
+
+See [Change-boundary verification](change-boundaries.md) for mixed committed and
+pending scope, authorization propagation, existing red baselines, architecture
+ownership, and a legitimate-lifecycle control. Its isolated builder is
+`docs/verify/scenarios/change-boundaries/build.py`; this suite supplements the
+historical scenarios below. In particular, cleanup now honors prior explicit
+authorization rather than requiring the historical Scenario B's second approval.
+
 ## Core Concepts
 
 | Phase | Meaning | Output |
 |---|---|---|
 | **RED** | Do not load the skill; let the subagent handle the target scenario and observe its natural failure | Failure behavior list + verbatim rationalizations used by the subagent |
-| **GREEN** | Write a minimal skill that only fixes the failures observed in RED; re-run the same scenario to verify compliance | Subagent report that passes compliance checks |
-| **REFACTOR** | Find new rationalizations the subagent used during GREEN, plug the gaps, and verify again | Bulletproof skill version |
+| **GREEN** | Apply the smallest evidence-backed repair; rerun the original scenario and check observable outcomes | Subagent report that passes compliance checks |
+| **REFACTOR** | Identify the missing decision, revise the smallest existing rule, and test original plus transfer scenarios | Evidence-bounded skill revision |
 
 ## Skill Discovery: Symlinks, Not PATH
 
@@ -181,7 +195,7 @@ When done, return a STRUCTURED REPORT with these exact sections:
 4. Verbatim rationalizations (phrases used to justify skipping or simplifying)
 ```
 
-The **most valuable part** of the subagent's response is the verbatim rationalizations — they expose loopholes that feed directly back into the REFACTOR phase.
+Record the actual edits, preserved state, commands, and findings alongside verbatim rationalizations. Explanations help diagnose a decision; they do not substitute for observable outcomes or automatically justify another rule.
 
 ### `quality-reviewer` role-split harness
 
@@ -211,10 +225,10 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | One independent reviewer | The one scenario Task acts as the designated reviewer and covers correctness/behavior, structure/simplification, efficiency, and triggered lenses without nested reviewers |
 | Direct mechanical gates | The harness/primary agent runs diff hygiene, lint, and tests directly rather than delegating them to Task agents |
 | Grep for callers | Report shows the `git grep` command + symbols checked + findings |
-| Verify skip excuses | When the user says "skip tests", the primary runs a focused subset and reports its runtime before deciding |
+| Explicit skips | Carries user-authorized skips through nested skills without running those checks; urgency alone does not waive them |
 | Review mode selection | "quality review" is report-only; "quality review and fix" edits only safe issues; "loopfix" delegates to `loopfix` |
 | Review scope declaration | Report states whether it reviewed working tree, branch diff (`main..HEAD` intent), or both |
-| Conditional lenses | The single reviewer covers triggered silent-failure / test-quality / skill-quality / comment-accuracy lenses and reports them to the primary |
+| Conditional lenses | The single reviewer covers triggered architecture / silent-failure / test-quality / skill-quality / comment-accuracy lenses and reports them to the primary |
 | Lens effectiveness | Scenario E reports the uncaught JSON rejection, masked request failure, truthiness-only test, and workflow-summary skill description instead of merely naming the three lenses |
 | Confidence scoring | Every reported finding carries a confidence score ≥ 80; ordinary lower-confidence notes are omitted |
 | False-positive suppression | Report does not include pre-existing issues, linter-catchable issues, or pedantic nitpicks (confirmed against branch diff/blame) |
@@ -223,7 +237,7 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Ready-to-commit verdict | Unresolved Important/Critical findings produce `Ready to commit: no`, even if tests pass |
 | Safe-fix boundary | Fix mode does not bless ambiguous Important behavior changes by adding tests |
 | Structured report | Report uses optional Fixed / Flagged / Reviewer disagreements sections plus Gates and Verdict |
-| No bare refusal | Any "no, don't commit" is followed by a concrete <2-minute next step |
+| No bare refusal | A blocked verdict names a concrete next diagnostic or required decision without inventing a duration |
 
 ### codex-subagent-strategy
 
@@ -271,12 +285,12 @@ and standalone roles. GREEN requires all of:
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
-| Branch-diff base | Diff runs against `merge-base HEAD origin/main`, not working tree alone |
-| Blame before remove | Every removed line confirmed branch-authored via `git blame` |
+| Scope and base | Uses the explicit/repository integration target; covers the requested committed, staged, unstaged, and untracked changes |
+| Attribution before removal | Uses blame/history plus pending diffs to establish scope; preserves baseline and unrelated content/staging |
 | Design vs style boundary | No redesigning; design concerns flagged, not applied |
 | Preview before applying | Removals listed grouped by file before any edit is made |
-| Approval gate | Explicit user confirmation before removals; "just do it" still summarized then confirmed |
-| Post-cleanup verification | Lint and focused tests run on touched paths after removals; load-bearing removals reverted |
+| Authorization | Preview-only requests stay read-only; explicit cleanup authorization is honored without a repeated question; ambiguous subsets remain pending |
+| Post-cleanup verification | Runs required unwaived checks, records baseline/blocked/skipped results, and reverts only load-bearing removals |
 | Never-touch respected | Why-comments, API-boundary guards, pre-branch lines, test code untouched |
 
 Pass = all yes; otherwise proceed to REFACTOR.
@@ -500,9 +514,19 @@ Scenario B reuses
 | Verification | Confirms the schema, generated path, and `make generate` entry exist before proposing promotion |
 | Report-only | Includes the targeted promotion in the Docs Health Report and makes no edit before approval |
 
-## REFACTOR: Turn Rationalizations Into Rules
+## REFACTOR: Repair Decisions and Test Transfer
 
-Each GREEN failure leaves the subagent's verbatim excuses. Add each one to the skill's Never / Stop conditions / "Verify before honoring" sections. After plugging each gap, re-run the same scenario until the subagent finds no new rationalization paths.
+Treat verbatim rationalizations as diagnostic evidence, not automatic new rules.
+Identify the missing decision or conflicting instruction first; revise or replace
+an existing rule before adding another Never/Stop clause. Re-run the original
+scenario and at least one different-shaped transfer case or negative control.
+A legitimate exception must remain allowed. Record both process compliance and
+outcomes (correct owner, preserved scope, avoided unnecessary path), as well as
+failures and inconclusive runs. Do not tune the prompt to reveal the planted bug
+or claim improvement when the old skill also passes. A baseline snapshot run may
+supplement no-skill RED when testing a regression in an existing skill. If no
+agent failure is reproduced, record that limit and the separate evidence for
+the repair instead of relabeling a successful baseline as RED.
 
 When writing new rules, follow the `writing-skills` CSO rules:
 - Description fields contain **trigger conditions** only — do not summarize workflows
@@ -558,7 +582,7 @@ bash docs/verify/scenarios/diff-cleanup/build-b.sh
 bash docs/verify/scenarios/diff-cleanup/build-b.sh   # Reset scenario
 #    (Invoke via Task in opencode session, CONSTRAINTS changed to "must load")
 
-# 6. If new rationalizations are found, go to REFACTOR; otherwise done
+# 6. Investigate outcome gaps or conflicting decisions; rerun a transfer control
 
 # 7. Cleanup (when development is complete and testing is no longer needed)
 make test-skills-unlink

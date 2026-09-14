@@ -5,13 +5,13 @@ description: Review, stage, and commit local changes. Use only when the user exp
 
 # Clean Commit
 
-Run the `quality-reviewer` skill on the current diff, then commit with a message that explains business impact.
+Apply [Change Boundaries](references/change-boundaries.md), run `quality-reviewer` on the intended commit, then commit with a message that explains business impact. Carry the user's scope, fix authorization, and explicit skip flags into the delegated workflow.
 
 ## Workflow
 
 1. **Inspect changes** — `git status`, `git diff`, `git log --oneline -10`
 2. **Run quality gates** — load `quality-reviewer` and follow its full procedure (one independent reviewer, integrated checks, diff hygiene, lint, tests, caller check). Its `Verdict` line tells you whether you may proceed.
-3. **Fix anything that fails.** Do NOT commit on failed gates unless the user explicitly says "skip <gate>" or "just commit".
+3. **Resolve current-scope failures.** Use reviewer fix mode for safe fixes implied by the commit request; do not silently change ambiguous contracts or fix unrelated baseline failures. After edits, refresh affected checks and the focused review before using its verdict. Apply the shared gate policy; do not treat a known baseline failure as a passing suite.
 4. **Stage only intended files** — never `git add .` blindly. Inspect each path.
 5. **Compose the commit message** (see rules below).
 6. **Commit** — `git commit -m "<message>"`.

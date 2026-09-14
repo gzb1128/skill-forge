@@ -26,6 +26,7 @@
 | `plugins/agent-docs/references/` | Single-source shared policy; `make sync-references` fans it out into each consuming skill's `references/` (drift-gated by `make validate`) |
 | `plugins/agent-docs/templates/` | Minimal `AGENTS.md` payload copied by `bootstrap-agent-docs` |
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
+| `plugins/code-quality/references/` | Shared change scope, ownership, authorization, and verification policy; synced into consuming skills |
 | `plugins/skill-creator/` | Skill creation plugin: `skill-creator` |
 | `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects` |
 | `plugins/codex-strategy/` | Codex orchestration plugin: `codex-subagent-strategy`, `codex-luna-agent-config` |

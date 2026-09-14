@@ -15,6 +15,8 @@ Completion is an evidence-backed judgment by the main agent, not a hook, state f
 
 **Iteration budget.** If the loop reaches **5 iterations** on the same goal without converging — the same class of issue keeps recurring, or fixes are not reducing the reviewer's findings — stop, report the stall, and ask the user. A loop that disagrees with its reviewer forever is a signal to surface the conflict, not to grind. When you stop, summarize: how many iterations ran, what the recurring issue is, what you have tried, and why you cannot resolve it without a human decision.
 
+Apply [Change Boundaries](references/change-boundaries.md) for scope, ownership, authorization, and verification classification.
+
 ## Completion Criteria
 
 Before the first fix, define a short checklist for this run with all five fields:
@@ -31,7 +33,7 @@ If the checklist cannot be satisfied without a human decision, report the blocke
 
 ## Workflow
 
-1. Re-read the approved design, plan, or current user goal. Define the scope boundary and fill all five Completion Criteria fields before fixing.
+1. Re-read the approved design, plan, or current user goal. Define the scope boundary and fill all five Completion Criteria fields before fixing. For changes that trigger the architecture check, trace the existing flow and first unmet requirement before choosing the implementation path.
 2. Implement or repair the next in-scope slice yourself.
 3. Dispatch exactly one reviewer subagent per iteration, scoped to the goal, diff, tests, and risk areas. Explicitly identify it as the designated reviewer and require it to load `quality-reviewer`, use the integrated rubric and triggered lenses, validate findings with evidence and confidence ≥ 80, and return concise candidates without spawning nested reviewers. The main agent owns direct mechanical gates and the final report. This keeps the same review bar inside and outside the loop without multiplying identical context.
 4. Report the review result in the conversation: findings, accepted fixes, rejected findings, deferred audit items, and next action.
@@ -46,7 +48,8 @@ If the checklist cannot be satisfied without a human decision, report the blocke
 | Bug, regression, missing required test, broken requirement | Fix now, verify, review again |
 | Ambiguous detail with local precedent | Choose the conservative local pattern, report decision |
 | Reviewer is wrong or speculative | Reject with code/test evidence |
-| Broad architecture, migration, contract, security, data, or product impact | Post a nonblocking note, defer unless it blocks safe completion |
+| Ownership/contract violation introduced by the current change | Resolve within the approved goal; do not defer it merely because it spans modules. Ask only if the contract itself needs an unapproved decision. |
+| Broader architecture, migration, contract, security, data, or product work outside the current change | Defer unless it blocks safe completion |
 | Unrelated cleanup or neighboring-package polish | Defer to final audit |
 
 Broad or unrelated items do not stop loopfix by default. Keep working on the current goal. Only stop if the current goal cannot be completed safely without a human decision.

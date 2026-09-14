@@ -16,7 +16,11 @@ Keep it concise, verified, and useful across repeated tasks.
 
 ## Architecture
 
-<!-- TODO: 1-3 sentences describing what this project IS and the main components.
+<!-- TODO: Briefly describe the project and its main components. For recurring
+     cross-module work, trace one verified entry flow and identify who owns
+     inputs, business decisions, durable effects, and runtime state as applicable.
+     Link the existing module docs or living contract; do not invent layers.
+     A small responsibility table or diagram is useful when it prevents wrong-layer edits.
      Example:
      Three components, one repo:
      - **api-server** (`cmd/api/main.go`) — HTTP API server
@@ -57,11 +61,12 @@ Keep it concise, verified, and useful across repeated tasks.
 
 ## Development Workflow
 
-1. Make changes
-2. Run `{{LINT_COMMAND}}` on affected package — fix lint errors <!-- TODO -->
-3. Run `{{TEST_COMMAND}}` on affected package first <!-- TODO -->
-4. Update existing knowledge surfaces when their verified guidance changed
-5. Commit with a message that explains why the change matters
+1. Locate the owning entry flow and existing contract before changing behavior
+2. Make changes within that responsibility boundary
+3. Run `{{LINT_COMMAND}}` on affected package — fix in-scope lint errors <!-- TODO -->
+4. Run `{{TEST_COMMAND}}` on affected package first <!-- TODO -->
+5. Update existing knowledge surfaces when their verified guidance changed
+6. Commit with a message that explains why the change matters
 
 ## Sub-Package Rules
 

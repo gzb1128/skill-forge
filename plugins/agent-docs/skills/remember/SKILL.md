@@ -75,7 +75,7 @@ Audit every relevant `AGENTS.md` memory surface, not only `## Hidden Knowledge`.
 | Surface | Checks |
 |---------|--------|
 | `Quick Reference` | Commands/workflows exist, placeholders are removed, commands are current or explicitly marked as examples |
-| `Architecture` | Gives agents a clear entry map, key directories, and module relationships without becoming a copied source-code encyclopedia |
+| `Architecture` | Routes a recurring change to the correct owner, using verified entrypoints, responsibilities, and contract links; a component list alone may not explain where decisions or side effects belong |
 | `Key Patterns` | Captures project-specific patterns that are still true and valuable enough for prompt space, whether non-derivable or expensive to rediscover |
 | `Golden Rules` | Still hard rules, not duplicated from `docs/rules/`, not better represented as links |
 | `Hidden Knowledge` | Non-derivable gotchas, quirks, critical ordering, or misleading failures; verified, not stale, not duplicated, correctly placed |
@@ -118,8 +118,14 @@ Before proposing a cleanup, verify it:
 | Now-derivable hidden knowledge | Cite the code, docs, git history, or AGENTS.md main-body section that now covers it, then assess whether it remains valuable in another surface |
 | Entry better placed as a code comment | Confirm the owning symbol or file exists, the knowledge is scoped to it, and its existing doc comments do not already cover it |
 | Potentially low-value derivable entry | Show the shared-policy score and the lower-cost source or document that would replace it |
+| Architecture routing gap | For one named or representative recurring task, follow the cited entrypoint into the relevant owners and contract; show the missing decision boundary, not merely a missing diagram |
 | Memory assertion backed by a linked doc | Open that one linked doc and confirm it still supports the assertion |
 | Explicit docs promotion candidate | Cite the named entry, verify it changes recurring agent behavior, score its prompt value, and confirm it is absent from the nearest `AGENTS.md` |
+
+Architecture verification is bounded to that one flow and its directly relevant
+owners; it is not permission to audit the source tree, run the business operation,
+or rewrite code. Prefer a concise pointer or responsibility summary over copying
+the contract. A missing diagram is not itself a defect.
 
 If a finding cannot be verified, label it `Needs user input` instead of treating
 it as fact.

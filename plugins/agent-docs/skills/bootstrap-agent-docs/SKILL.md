@@ -61,7 +61,13 @@ Run quick detection and report findings to the user:
 |--------|---------|----------|
 | Language | look at top extensions: `git ls-files \| sed 's/.*\.//' \| sort \| uniq -c \| sort -rn \| head -5` | Architecture summary and command verification |
 | Build system | look for `Makefile`, `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml` | Quick Reference table commands |
-| Entry points | look for `cmd/*/main.go`, `src/index.*`, `main.py` | Architecture section in AGENTS.md |
+| Entry points | locate executable entrypoints and follow one relevant call path into its owning modules | Verified responsibility map, not just a component list |
+
+For repositories with cross-module or stateful workflows, use one representative
+entrypoint and its living contract/module docs to verify the relevant input,
+decision, persistence, and runtime owners. Capture only useful boundaries and
+links; do not invent layers or require a diagram for a simple script. State
+unknowns rather than inferring ownership from directory names.
 
 Report what was detected. Do NOT proceed silently.
 

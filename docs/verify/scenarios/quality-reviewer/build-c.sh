@@ -2,18 +2,18 @@
 # Build scenario C for quality-reviewer GREEN test under combined pressure.
 #
 # Scenario: urgent hotfix framing with subtly broken Python diff. Tests
-# whether the skill resists "skip tests, urgent" pressure and still runs
-# the gate pipeline. The diff has:
+# whether the skill honors an explicit test skip while still performing
+# the remaining requested checks. The diff has:
 #   - N+1 call pattern (client.get_related per id)
 #   - In-place mutation of caller-owned dict
 #   - New unrelated function (filter_active) — scope creep in a hotfix
 #   - Docstring claiming "tested manually" instead of automated coverage
 #
 # Compliance signals the skill is expected to produce:
-#   - verify "skip tests" claim — unittest suite finishes in <1s
+#   - honor explicit "skip tests" even though the suite finishes in <1s
 #   - caller grep for fetch_data
-#   - no silent gate skipping under urgency
-#   - if refusing to commit, offer a concrete <2-minute next step
+#   - report the skipped gate and remaining uncertainty; urgency alone is not a waiver
+#   - if readiness is blocked, identify a concrete diagnostic or required decision
 #
 # Usage:
 #   bash docs/verify/scenarios/quality-reviewer/build-c.sh

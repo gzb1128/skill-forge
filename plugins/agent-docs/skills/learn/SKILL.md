@@ -47,16 +47,11 @@ trigger this skill on their own.
 
 ## Admission Model
 
-Non-derivability is sufficient, not necessary:
-
-- Verified, durable, non-duplicative knowledge that cannot be derived from the
-  repository is admitted automatically and routed to the right surface.
-- Derivable knowledge may still be admitted when its value score justifies the
-  target's maintenance or prompt cost.
-
-`Hidden Knowledge` remains the strict destination for non-derivable gotchas.
-High-value derivable commands, maps, rules, and workflows belong in their
-purpose-specific surfaces instead of being mislabeled as hidden knowledge.
+Apply the shared policy to every candidate: explain its future use, the value
+missing from existing carriers, and the appropriate surface. Neither difficult
+reconstruction nor a numerical score establishes admission. `Hidden Knowledge`
+labels useful non-derivable gotchas; commands, maps, and workflows belong in their
+purpose-specific surfaces even when they were difficult to discover.
 
 ## Step 1: Extract candidate insights
 
@@ -71,14 +66,14 @@ Do not write anything yet. First classify each candidate.
 
 | Classification | Destination | Rule |
 |----------------|-------------|------|
-| `Hidden Knowledge` | Nearest relevant `AGENTS.md` under `## Hidden Knowledge` | Automatically admitted non-derivable gotcha that is concise and important enough to change recurring agent behavior |
+| `Hidden Knowledge` | Nearest relevant `AGENTS.md` under `## Hidden Knowledge` | Verified non-derivable gotcha with explicit future value that is concise and important enough to change recurring agent behavior |
 | `Quick Reference` | Root `AGENTS.md` Quick Reference table | High-value common build, test, lint, run, codegen, clean, or verification commands |
-| `Rule` | Nearest `AGENTS.md` `Golden Rules`/`Key Patterns`, or `docs/rules/` plus its index | Put concise, recurring, usually 9+ prompt-value rules in `AGENTS.md`; put narrower or longer rules in pull-based docs |
+| `Rule` | Nearest `AGENTS.md` `Golden Rules`/`Key Patterns`, or `docs/rules/` plus its index | Put concise, recurring, behavior-changing rules in `AGENTS.md`; put narrower or longer rules in pull-based docs |
 | `Doc` | Appropriate `docs/` category plus its index | High-value design, troubleshoot, runbook, codemap, verification, or library knowledge, including non-derivable knowledge that does not justify prompt space |
 | `Code` | Doc comment or module doc on the owning symbol/file, plus an optional one-line pointer in the nearest `AGENTS.md` | Verified knowledge about a specific function, type, module, or file's behavior or invariant that fits a concise comment; prefer a self-documenting API shape or mechanical enforcement when feasible |
-| `Skip` | No write | Fails a hard gate, falls below the destination threshold, is one-off/generic, or is mechanically enforceable with no durable explanation value left |
+| `Skip` | No write | Lacks required evidence or authority, has no identifiable future value, is one-off/generic, or is mechanically enforceable with no durable explanation value left |
 
-Before retaining any classification, run the rejection and residual-value pass
+Before retaining any classification, perform the relevant evidence checks
 in Step 3. Prefer an enforcement change when the session makes it natural. If
 source or automation already carries the complete relationship and a targeted
 lookup leaves no durable rationale, workflow, navigation, safety, or
@@ -86,51 +81,19 @@ compatibility value, classify it as `Skip`; do not propose a comment that only
 narrates the enforcement. High-value derivable knowledge may still be admitted
 when it has independent value after that check.
 
-## Non-derivable candidates
+## Candidate evidence
 
-The following verified candidates are automatically admitted as repository
-knowledge without a numeric threshold:
+Hidden dependencies, misleading errors, local quirks, and critical ordering are
+useful leads, not automatically admitted categories. For a coupling claim,
+identify the convention and the affected artifacts, then check whether a shared
+constant, interface, generated contract, focused test, or existing explanation
+already carries it. Include artifacts created earlier in this session when the
+candidate came from the current change. Do not label a relationship hidden merely
+because understanding it involves multiple files.
 
-1. **Hidden dependencies (coupling conventions)**: Files or modules that must be
-   changed together but are not obviously connected. These look derivable — a
-   `diff` can show two files currently match — but the "must stay in sync" rule
-   is an unwritten convention the compiler/linter/git does not enforce. Record
-   it. Objective bar: acting on the insight requires **≥2 artifacts plus a
-   convention not expressed or enforced by any single authoritative artifact**.
-   Before claiming this bar, name the artifact(s) that carry the convention: a
-   shared constant, interface, generated contract, focused test harness, or the
-   owning symbol's doc comment — including one created earlier in the same
-   session — each counts as a carrying artifact. When any single artifact
-   mechanically carries the relationship, automatic admission does not apply;
-   treat the candidate as derivable knowledge and score its residual value.
-2. **Misleading errors**: Error messages that point to the wrong location or
-   cause.
-3. **Workarounds and quirks**: Project-specific behavior that differs from the
-   standard pattern.
-4. **Critical ordering**: Operations that must happen in a specific sequence,
-   especially cross-artifact ordering (e.g. SQL migration before code) that no
-   single file states.
-
-Route them after admission. A concise cross-cutting trap may belong in
-`AGENTS.md` Hidden Knowledge, while a niche library quirk or longer operational
-constraint belongs in the relevant docs category. A quirk scoped to one
-function, type, or file belongs in that artifact's doc comment (`Code`)
-instead of Hidden Knowledge. Automatic admission does not mean automatic
-prompt residency.
-
-## High-value derivable candidates
-
-Do not discard a candidate merely because source inspection could reconstruct
-it. Score and route candidates such as:
-
-- commands and expected results used across many tasks;
-- architecture entry maps that prevent repeated broad searches;
-- deterministic runbooks and rollback sequences;
-- verification contracts whose reconstruction is slow or error-prone;
-- project-specific rules that prevent costly mistakes.
-
-Use the shared policy's normal guidance: usually 9+ for concise `AGENTS.md`
-content and 7+ for pull-based docs.
+Commands, architecture maps, runbooks, and verification procedures can remain
+valuable even when derivable. Explain the avoided mistake or reconstruction cost,
+then choose the audience's appropriate surface rather than a numeric threshold.
 
 ## Skip criteria
 
@@ -140,8 +103,7 @@ Skip candidates that are:
 - Recent-change narration already captured by git with no durable workflow,
   decision, navigation, or safety value.
 - Debugging solutions where the fix is now in code and the commit message should
-  carry the context, unless the resulting diagnosis remains recurrent and scores
-  high enough for troubleshoot documentation.
+  carry the context, unless the resulting diagnosis still helps diagnose a future incident.
 - Already present in `AGENTS.md`, `docs/rules/`, or README.
 - Standard language or framework behavior.
 - Non-obvious commands that belong in Quick Reference, not Hidden Knowledge.
@@ -152,7 +114,7 @@ Skip candidates that are:
   contracts, verification gates, or rollback boundaries belong in a design.
 - Unverified claims.
 
-## Step 3: Verify and score each retained candidate
+## Step 3: Verify and justify each retained candidate
 
 Every retained candidate needs explicit evidence before it can be proposed:
 
@@ -169,21 +131,17 @@ Every retained candidate needs explicit evidence before it can be proposed:
 | Mechanical enforcement | Inspect owning symbols, references, focused tests, linters, and scripts for a single artifact that already carries the relationship or external value |
 | Residual explanation value | State what rationale, workflow, navigation, safety, or compatibility value remains after existing enforcement and the cheapest targeted reconstruction probe |
 
-**Required rejection pass.** Run the cheapest relevant probe before automatic
-admission or scoring. Record the probe and one of these outcomes for every
-candidate:
+Choose the cheapest relevant checks from the table according to the candidate's
+origin and uncertainty; it is not a checklist to exhaust. For session-derived
+candidates, inspect relevant new diffs, tests, or change records before claiming
+that no carrier exists. For an alleged invariant, examine the owning code and
+its enforcement; for a documentation gap, check the likely authoritative entry.
+Reuse adequate verified session evidence instead of repeating a complete search.
 
-- `Skip`: source or automation carries the complete relationship, one targeted
-  lookup reconstructs it, and no durable explanation value remains.
-- `Retain as derivable`: enforcement exists or reconstruction is possible, but
-  the candidate still provides independently valuable rationale, workflow,
-  navigation, safety, or compatibility guidance; score that residual value.
-- `Automatic admission — non-derivable`: no authoritative artifact expresses
-  or enforces the verified convention, error interpretation, quirk, or order.
-
-Do not require all probes to fail before admitting high-value derivable
-knowledge. The pass chooses the cheapest adequate surface and removes redundant
-narration; it does not replace the admission model.
+Record whether the evidence supports `Retain`, `Skip`, or `Unverified`, together
+with the future task, residual value, and proposed placement. Stop investigating
+when those judgments are supported or the remaining gap cannot be resolved
+within scope. Do not invent a failure or require all probes to return empty.
 
 **Stable-reference rule.** When proposed knowledge points to source, prefer
 package paths, files, symbols, headings, and named commands over line numbers.
@@ -194,13 +152,6 @@ numbers only when a tool requires them.
 If verification fails, classify the candidate as `Skip` and explain the failed
 check. If verification cannot be performed safely, report it as unverified and
 do not propose a write.
-
-After verification and the rejection pass, record either:
-
-- `Automatic admission — non-derivable`, or
-- the six-dimension value score and destination threshold from the shared
-  policy, including the residual value that is being scored, or
-- `Skip`, with the enforcing artifact or cheap reconstruction evidence.
 
 ## Step 4: Choose the target
 
@@ -213,7 +164,8 @@ Choose the nearest `AGENTS.md` to the affected scope:
 | Affects a complex module | `<package>/<module>/AGENTS.md`, only if sub-package criteria are met |
 
 For `Hidden Knowledge`, append to or create a `## Hidden Knowledge` section near
-the end of the target `AGENTS.md`. Keep each insight to 1-3 lines.
+the end of the target `AGENTS.md`. Keep each insight concise and link longer
+authoritative explanations.
 
 For `Quick Reference`, propose a row update in the root `AGENTS.md` table.
 
@@ -226,8 +178,8 @@ For `Code`, the target is the owning artifact itself: a doc comment on the
 function, type, or module the knowledge describes, or a module doc section at
 the top of the owning file for larger invariants. Prefer the nearest artifact
 over any centralized surface. When the knowledge is too large for a comment,
-write the module doc and add a one-line pointer plus a sync-guard reminder to
-the nearest `AGENTS.md` in the same proposal.
+propose the module doc; add a short pointer to the nearest `AGENTS.md` only
+when readers need that routing before opening the artifact.
 
 For a docs-bound `Rule` or `Doc`, choose the category from the Documentation
 Structure Reference. Create the category and `INDEX.md` only with the first
@@ -251,7 +203,7 @@ Before editing any file, show all proposals in this format:
 why the owning artifact or its module doc cannot carry this instead; omit for
 Code proposals, which are that alternative>
 
-**Admission:** <automatic — non-derivable | score N/12 with dimension summary>
+**Admission:** <future task, residual value beyond existing carriers, and why this surface>
 
 **Action:** <add/update/skip/report-only>
 

@@ -25,10 +25,19 @@ is not installed in the current runtime, read
 `plugins/skill-creator/skills/skill-creator/SKILL.md` directly and record that
 fallback in the scenario notes.
 
+## Admission policy update
+
+[Knowledge admission verification](knowledge-admission.md) records the focused
+checks for value-based admission and workflow-owned procedures. Earlier scenario
+results below remain historical; they are not full reruns of the revised skills.
+
 ## Current Status
 
 | Skill | RED Baseline | GREEN Verified | Notes |
 |---|---|---|---|
+| `setup-coding-rules` | A-E baseline passed; no failure induced | A-F passed via direct skill read | [Setup verification](setup-coding-rules.md): repeated no-op, semantic coverage, local policy, dirty-work preservation, minimal entry and selected subsets; isolated package smoke passed. No comparative improvement claimed. |
+| `why` | Full W1-W5 pending; old draft H2 passed | Focused H2 passed; full W1-W5 pending | [Code design checks](code-design.md): bounded historical explanation retained; automatic selection unverified. |
+| `architect` | Full A1-A8 pending; old draft H1/H3 passed | Focused H1/H3 passed; full A1-A8 pending | [Code design checks](code-design.md): conditional current-flow tracing and simple-context handling retained; no comparative gain or installed-selection claim. |
 | `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A and change boundaries) | One-file approval flow retained; the ownership trial created only a source-backed 91-line AGENTS.md and kept unknown commands explicit. |
 | `clean-commit` | No dedicated failure recorded | Yes passed (change boundaries) | Named pending files only; one reviewer, lint, explicit test skip propagated to review, unrelated staging preserved, and local commit verified. |
 | `codex-subagent-strategy` | Yes recorded (Scenario A) | GREEN re-run pending (Scenario E) | A-D cover delegation preparation, self-contained handoff, fresh review, and context contracts; E requires a rejected Luna route to request explicit role-configuration approval without editing configuration. |
@@ -42,7 +51,7 @@ fallback in the scenario notes.
 | `loopfix` | Yes recorded | Yes passed (Scenarios A, B and change boundaries) | The ownership repair used the existing lifecycle, proved regression tests fail before the fix, and finished after one fresh clean review.  A converged in one loop with fresh tests and exactly one designated `quality-reviewer`; B is a deterministic tabletop that stops on the fifth recurring finding and ignores the sixth off-by-one trap. |
 | `quality-reviewer` | Historical RED; latest old-snapshot architecture run also passed | Yes passed (Scenarios A, C, D, E and change boundaries) | Ownership violation and valid-lifecycle control passed, with unavailable lint reported separately.  D fix mode removed only safe restating comments, retained an Important authorization finding, reconciled the justified fire-and-forget exception, ran direct gates, and returned `Ready to commit: no`. Its `loopfix` prompt routed out of the bounded procedure and stopped at loop count 0 because no authorization contract existed. |
 | `remember` | Legacy now-derivable deletion contract recorded | Yes passed (Scenario A and change boundaries) | Original knowledge-retention checks retained; the targeted-flow trial proposed concise owner routing without broad source audit or edits. |
-| `skill-creator` | Upstream behavior inspected | Partial: honest-failure path passed; full Scenario A inconclusive | The run froze 18 planned executions, completed and graded 8 valid runs (4 pairs), preserved 2 discarded infrastructure attempts, and prohibited promotion. It also exposed sparse-coverage, missing-metric, provenance, and viewer-path gaps in the bundled tools; regression tests now cover those corrections. The complete 18-run matrix and blind-comparison evidence remain unavailable. |
+| `skill-creator` | Upstream behavior inspected | Partial: honest-failure path and focused creator-fusion probes passed; full Scenario A inconclusive | The run froze 18 planned executions, completed and graded 8 valid runs (4 pairs), preserved 2 discarded infrastructure attempts, and prohibited promotion. It also exposed sparse-coverage, missing-metric, provenance, and viewer-path gaps in the bundled tools; regression tests now cover those corrections. The complete 18-run matrix and blind-comparison evidence remain unavailable. [Creator fusion](skill-creator-fusion.md) records the separate conditional-method and baseline-honesty probes. |
 
 > GREEN tests may use a fallback mode in which the subagent directly reads the
 > working-tree `plugins/<plugin>/skills/<name>/SKILL.md` instead of the installed
@@ -55,14 +64,15 @@ See [Change-boundary verification](change-boundaries.md) for mixed committed and
 pending scope, authorization propagation, existing red baselines, architecture
 ownership, and a legitimate-lifecycle control. Its isolated builder is
 `docs/verify/scenarios/change-boundaries/build.py`; this suite supplements the
-historical scenarios below. In particular, cleanup now honors prior explicit
+historical scenarios below. Its name is retained after splitting the installed
+mixed reference into workflow-owned safeguards and narrow shared procedures. The 2026-09-18 section records fresh cleanup, mixed-index commit, architecture/control, and loopfix checks after the split. In particular, cleanup now honors prior explicit
 authorization rather than requiring the historical Scenario B's second approval.
 
 ## Core Concepts
 
 | Phase | Meaning | Output |
 |---|---|---|
-| **RED** | Do not load the skill; let the subagent handle the target scenario and observe its natural failure | Failure behavior list + verbatim rationalizations used by the subagent |
+| **RED** | Measure the task without the new skill, or with a frozen old version; retain successes and failures | Observed outcomes and artifacts; success is a valid baseline |
 | **GREEN** | Apply the smallest evidence-backed repair; rerun the original scenario and check observable outcomes | Subagent report that passes compliance checks |
 | **REFACTOR** | Identify the missing decision, revise the smallest existing rule, and test original plus transfer scenarios | Evidence-bounded skill revision |
 
@@ -375,14 +385,16 @@ Pass = all yes; otherwise proceed to REFACTOR.
 ### learn
 
 Scenario A supplies seven session candidates after explicitly invoking
-`/agent-docs:learn`. GREEN requires all of:
+`/agent-docs:learn`. Its current expectations follow the
+[admission refactor](knowledge-admission.md); historical recorded outcomes do not
+establish a rerun under this policy. GREEN requires all of:
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
-| Automatic admission | Admits the maintainer-confirmed, non-derivable release ordering after hard-gate verification without requiring a numeric threshold |
-| High-value derivable command | Scores and proposes `make verify` for Quick Reference instead of skipping it because Makefile is readable |
-| High-value derivable doc | Scores and proposes a release runbook plus its first category `INDEX.md` instead of returning a destination-only suggestion |
-| High-value prompt rule | Scores and proposes the derivable `make release` safety invariant under `AGENTS.md` Golden Rules or Key Patterns rather than forcing every rule into `docs/rules/` |
+| Useful non-derivable knowledge | Proposes the maintainer-confirmed release ordering because it prevents a future operational error; identifies its residual value without a numeric threshold |
+| High-value derivable command | Justifies and proposes `make verify` for Quick Reference instead of skipping it because Makefile is readable |
+| High-value derivable doc | Justifies and proposes a release runbook plus its first category `INDEX.md` instead of returning a destination-only suggestion |
+| High-value prompt rule | Justifies and proposes the derivable `make release` safety invariant under `AGENTS.md` Golden Rules or Key Patterns rather than forcing every rule into `docs/rules/` |
 | Low-value skip | Skips the health-handler file location as a cheap derivable restatement |
 | Transient plan routing | Does not create `docs/plans/` or persist the raw checklist; extracts the approved artifact-ownership decision and rejected alternative into a date-prefixed design plus `INDEX.md`, while the concise schema-before-app gotcha remains eligible for Hidden Knowledge and the operator sequence remains a runbook |
 | File-scoped residual value | Routes the unenforced, maintainer-confirmed rollback/deploy concurrency constraint to a concise `Code` proposal on `scripts/release.sh`; it does not confuse this with Scenario C's mechanically complete relationship |

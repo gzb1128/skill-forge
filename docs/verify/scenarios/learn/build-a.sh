@@ -2,7 +2,7 @@
 # Build scenario A for learn knowledge-admission verification.
 #
 # Scenario candidates:
-#   - non-derivable release ordering confirmed by the maintainer: automatic
+#   - non-derivable release ordering confirmed by the maintainer: value-based
 #     admission as Hidden Knowledge
 #   - derivable `make verify` entry point: high-value Quick Reference addition
 #   - derivable release/rollback script: high-value runbook plus INDEX proposal
@@ -121,7 +121,7 @@ During this session we established six candidates:
    cannot detect the conflict. This constraint applies only to that script
    and is recorded nowhere in the repository.
 
-Classify, verify, score or automatically admit each candidate. Show exact diffs
+Classify and verify each candidate; explain its future use and residual value. Show exact diffs
 for every admitted AGENTS.md or docs/ change, including an INDEX for the first
 runbook. Do not edit anything before I approve.
 EOF

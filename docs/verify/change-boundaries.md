@@ -1,7 +1,10 @@
 # Change-boundary skill verification
 
 This suite exercises `agent-docs` and `code-quality` together at their shared
-boundaries. It supplements the original per-skill scenarios. Fixture tests prove
+boundaries. The 2026-09-18 split removes the installed mixed reference; this
+suite retains its historical name and now checks the owning skills and their
+narrow Git/check-result references. It supplements the original per-skill
+scenarios. Fixture tests prove
 the planted code and Git states; only agent runs verify skill behavior.
 
 ## Build and mechanical checks
@@ -81,3 +84,56 @@ the mixed-state candidate trial above supplies the cleanup behavior evidence.
 The modified historical reviewer C fixture also built and its declared test
 command passed (one test). This builder check was separate from the candidate
 commit trial, where the explicit test skip was honored.
+
+
+## Responsibility split checks (2026-09-18)
+
+The installed mixed reference and its four copies were removed. Git inventory
+and base resolution now live in `git-change-scope.md`; check classification and
+baseline comparison live in `verification-results.md`. Architecture review,
+cleanup limits, commit staging, and loop convergence belong to their respective
+skills. Setup's existing early-rule families remain the adoption source, with
+no new requirement that a quality workflow run setup first.
+
+Fresh isolated fixtures were built with the existing commands above. Evaluators
+read the candidate skills directly from the working tree, without evaluation
+documents, expected answers, prior findings, or a setup step. Independent reviewer
+roles and primary roles were kept distinct. This was focused regression coverage,
+not a fresh paired baseline experiment or a full benchmark. The old source was
+preserved before editing, and historical outcomes above are not relabeled as new
+baseline trials.
+
+| Trial | Observed result |
+|---|---|
+| Cleanup | Removed five redundant comments across two feature commits and pending staged/unstaged/untracked work. Preserved notes and the complete original index. Lint and focused test passed; full-suite failure matched clean main and was reported as permitted nonblocking baseline failure, not a pass. No repeated approval. |
+| Commit with unrelated staged work | One independent reviewer found no issues; lint and exact candidate checks passed. Only flow.py, extra.py, and new.py were committed locally. Both index and working-tree notes blobs were preserved, leaving `MM notes.txt`. Explicitly skipped tests never ran; `.test-runs` remained absent. No push or hook bypass. |
+| Architecture reviewer | Found the API completion shortcut bypassing admission, durable workflow/audit, controller state, and idempotency; a local probe demonstrated the failure. No edits or nested review. |
+| Architecture control reviewer | No candidate findings for the valid implementation that reuses admission/controller ownership. No new abstraction or diagram demanded; no edits or nested review. |
+| Loopfix | One iteration removed the API shortcut through existing admission/controller ownership. Three test methods passed; the original branch API failed the new lifecycle/retry regression checks. One fresh designated reviewer after the final change found no unresolved issue. Only API and tests changed; no commit or push. |
+
+The loopfix trial used the existing loopfix prompt above on a fresh architecture
+fixture. Its completion criteria, direct gates, regression control, and fresh
+review were retained after the split; this single convergent run does not retest
+the five-iteration stall boundary.
+
+The commit trial strengthens the existing `commit` fixture without changing its
+prompt. After building a fresh fixture, write `other task staged edit\n` to
+notes.txt and stage only that file, then write `other task staged and pending
+edit\n` to its working copy. Capture `git ls-files --stage` and the file contents
+before execution; afterward compare the notes index entry and working bytes and
+inspect the exact committed file list. The cleanup trial compares the complete
+index as well as unrelated notes. These checks were independently inspected by
+the parent after the agents finished.
+
+Mechanical verification: the existing seven fixture tests, `make validate`,
+reference drift checking, documentation links, and `git diff --check` passed.
+Isolated local-marketplace installs of code-quality and agent-docs matched all
+35 source files byte-for-byte, including the new self-contained references;
+no installed change-boundaries file remained. Normal user plugin configuration
+was not changed. The missing-version warnings follow the repository SHA policy.
+
+These runs establish retained behavior under explicit skill loading, not a
+measured improvement, automatic selection, remote publication, or a new setup
+behavior result. Review-role probes do not by themselves establish a full
+primary-agent readiness verdict. Existing setup behavior evidence remains in
+[Setup verification](setup-coding-rules.md).

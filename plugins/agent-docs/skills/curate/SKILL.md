@@ -25,7 +25,7 @@ This is the complement to `/agent-docs:remember`:
 - `/agent-docs:curate` audits the `docs/` knowledge base (pull-based).
 
 The economics differ and so do the rubrics. `AGENTS.md` pays per prompt line, so
-`remember` uses a high value threshold. `docs/` is
+`remember` requires a reason for early visibility. `docs/` is
 read on demand and may legitimately be longer or more detailed, so `curate`
 judges **navigability, link integrity, structure, and drift** — not brevity for
 its own sake. Derivability alone never makes useful documentation invalid.
@@ -93,7 +93,7 @@ an existing repo rule — cite the rule when raising a finding.
 | `Link Integrity` | Internal doc→doc and doc→source links resolve; no dangling `](./missing.md)`; source links point at paths that still exist | progressive disclosure (implicit) |
 | `Naming` | Files use lowercase-hyphen naming; designs use a date prefix when chronology matters; no ambiguous `-v2` suffix | [Documentation Structure Reference](references/doc-structure.md) §Naming |
 | `Depth ∝ Surface` | Detail matches workflow/interface complexity and retrieval value rather than a uniform line target | [Documentation Structure Reference](references/doc-structure.md) §Maps, Not Encyclopedias |
-| `Knowledge Value` | Non-derivable knowledge is admitted automatically; derivable docs remain when impact, recurrence, discovery cost, actionability, durability, and scope justify maintenance | [Knowledge Admission Policy](references/knowledge-admission.md) §Admission Rule and §Value Score |
+| `Knowledge Value` | Identify future readers, residual value beyond existing carriers, and a maintainable authoritative home; derivability alone decides neither admission nor deletion | [Knowledge Admission Policy](references/knowledge-admission.md) §Admission and residual value |
 | `Doc↔Source Drift` | Claims about source still match current symbols, paths, and behavior; prefer stable symbol/package references over line numbers. Frozen decision records are exempt — a landed record that no longer matches source needs a superseding record, not a rewrite; living contracts are not exempt | [Documentation Structure Reference](references/doc-structure.md) §Stable References and §Design Docs Are Point-in-Time Records |
 
 ## Step 3: Verify findings
@@ -107,10 +107,15 @@ Before proposing a cleanup, verify it:
 | Encyclopedia codemap | Count code-block lines or copied config size; cite the line range |
 | Missing INDEX | Confirm no `INDEX.md` in that category directory |
 | Naming violation | Show the actual filename vs. the required pattern |
-| Derivable doc proposed for deletion | Cite the source/git/doc that covers the same ground, score its remaining value, and identify the cheaper replacement surface |
+| Derivable doc proposed for deletion | Cite the source/git/doc that covers the same ground, explain its remaining value, and identify the cheaper replacement surface |
 | Duplicate across docs | Cite both doc locations |
 | AGENTS.md promotion candidate | Cite the exact doc entry, open only the nearest target `AGENTS.md`, and confirm the rule is recurring, behavior-changing, and not already present |
 
+Select checks that can resolve the specific finding. Before proposing deletion,
+verify the claimed replacement or loss of future use, including remaining
+operational, historical, or compatibility value. Prefer relocation when another
+surface fits the audience. Do not remove frozen records merely because current
+code has evolved, or retain useless facts solely because they cannot be recreated.
 If a finding cannot be verified, label it `Needs user input` instead of treating
 it as fact.
 
@@ -124,7 +129,7 @@ every unrelated edit; bumping the number only fixes it until the next edit.
 | Action | Use when |
 |--------|----------|
 | `Promotions` | A doc belongs in a different docs category, or a concise recurring behavior rule belongs in the nearest `AGENTS.md` |
-| `Deletions` | Content fails a hard gate, is a useless placeholder, or is derivable and scores too low for its maintenance cost; valid non-derivable content must be retained or rerouted |
+| `Deletions` | Verified content is stale, redundant, a useless placeholder, or lacks future value within repository retention rules; relocate useful misplaced knowledge |
 | `Rewrites` | Content is true but encyclopedia-style, mis-linked, mis-named, or drifted |
 | `Duplicates` | The same guidance appears in two docs within `docs/` |
 | `Conflicts` | Two docs contradict each other and need user judgment |

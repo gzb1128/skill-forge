@@ -6,11 +6,35 @@
 
 1. **Project-facing content is in English** — `README.md`, `AGENTS.md`, `docs/`, commit messages, code comments, plugin metadata, Makefile help text, GitHub description/topics. Exception: intentionally localized end-user content.
 
+## License Notices
+
+Maintain license texts and third-party attribution once in the repository-root
+`LICENSE`, with the affected paths and upstream sources identified. Do not add
+per-plugin or per-skill license copies. Preserve applicable upstream terms and
+identify local adaptations; the project's MIT license does not relicense imported
+Apache-2.0 material.
+
+## Plugin Naming and Scope
+
+Name plugins for a recognizable work context and responsibility, such as
+`code-design`, `code-quality`, or `opencode-customize`. Use established terms
+and lowercase kebab-case. A reader should infer when the plugin is useful.
+Group skills by the work they help complete, not a vague benefit such as
+"better engineering", the upstream bundle, or an agent persona. Names need
+not follow a universal two-word pattern.
+
+Plugin descriptions state the shared use case; skill descriptions distinguish
+specific triggers and nearby non-triggers. Adding a plugin does not establish
+an automatic workflow chain. Share references where useful while keeping skills
+independently usable. Split a plugin when its use cases or installation needs
+diverge, not merely because its skill count grows.
+
 ## Current Plugins
 
 | Plugin | Purpose | Skills |
 |---|---|---|
-| `agent-docs` | Agent-First documentation scaffolding and knowledge management | `bootstrap-agent-docs`, `learn`, `remember`, `curate` |
+| `agent-docs` | Agent-First documentation scaffolding and knowledge management | `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `remember`, `curate` |
+| `code-design` | Investigate code-design rationale and shape APIs, types, and module boundaries | `why`, `architect` |
 | `code-quality` | Code review, commit gates, diff cleanup, and autonomous fix loops | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Skill creation, upstream skill migration, behavioral evals, and trigger tuning | `skill-creator` |
 | `opencode-customize` | OpenCode configuration customization, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
@@ -22,11 +46,12 @@
 | Path | Purpose |
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`skill-forge`) |
-| `plugins/agent-docs/` | Repository knowledge plugin: `bootstrap-agent-docs`, `learn`, `remember`, `curate` |
+| `plugins/agent-docs/` | Repository knowledge plugin: `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `remember`, `curate` |
 | `plugins/agent-docs/references/` | Single-source shared policy; `make sync-references` fans it out into each consuming skill's `references/` (drift-gated by `make validate`) |
 | `plugins/agent-docs/templates/` | Minimal `AGENTS.md` payload copied by `bootstrap-agent-docs` |
+| `plugins/code-design/` | Code-design investigation and design skills; plugin-owned references are synced into each consumer |
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
-| `plugins/code-quality/references/` | Shared change scope, ownership, authorization, and verification policy; synced into consuming skills |
+| `plugins/code-quality/references/` | Shared Git scope and verification-result procedures; workflow-specific safeguards live in each skill |
 | `plugins/skill-creator/` | Skill creation plugin: `skill-creator` |
 | `plugins/opencode-customize/` | OpenCode customization plugin: `hydrate-opencode-models`, `integrate-projects` |
 | `plugins/codex-strategy/` | Codex orchestration plugin: `codex-subagent-strategy`, `codex-luna-agent-config` |
@@ -51,7 +76,7 @@
 
 ## Plugin Marketplace
 
-This repo IS the marketplace. `.claude-plugin/marketplace.json` lists six plugins: `agent-docs`, `code-quality`, `skill-creator`, `opencode-customize`, `codex-strategy`, and `github-contrib`.
+This repo IS the marketplace. `.claude-plugin/marketplace.json` lists seven plugins: `agent-docs`, `code-design`, `code-quality`, `skill-creator`, `opencode-customize`, `codex-strategy`, and `github-contrib`.
 
 ### Versioning: git commit SHA, not semver
 
@@ -75,6 +100,7 @@ done
 # 3. Smoke-test install from the local working tree
 claude plugin marketplace add "$(pwd)"
 claude plugin install agent-docs@skill-forge
+claude plugin install code-design@skill-forge
 claude plugin install code-quality@skill-forge
 claude plugin install skill-creator@skill-forge
 claude plugin install opencode-customize@skill-forge

@@ -1,7 +1,6 @@
 # Trace the Current Code Flow
 
-Adapted from pstack's `how` investigation and explanation prompts. Use when a
-missing connection in the current execution path affects a rationale or design
+Use when a missing connection in the current execution path affects a rationale or design
 decision. If reliable context already establishes that connection, reuse it;
 a small local question does not need a subsystem walkthrough. This reference
 does not expand a skill's trigger or authorize implementation.

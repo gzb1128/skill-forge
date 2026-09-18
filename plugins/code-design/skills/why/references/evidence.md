@@ -1,7 +1,5 @@
 # Evidence and Current Constraints
 
-Adapted from pstack's `why` epistemics for code investigation and design.
-
 ## Separate claims by their support
 
 | Support | Meaning | How to report it |

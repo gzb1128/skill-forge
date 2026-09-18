@@ -6,13 +6,38 @@
 
 1. **Project-facing content is in English** — `README.md`, `AGENTS.md`, `docs/`, commit messages, code comments, plugin metadata, Makefile help text, GitHub description/topics. Exception: intentionally localized end-user content.
 
-## License Notices
+## License and Upstream Attribution
 
 Maintain license texts and third-party attribution once in the repository-root
 `LICENSE`, with the affected paths and upstream sources identified. Do not add
 per-plugin or per-skill license copies. Preserve applicable upstream terms and
 identify local adaptations; the project's MIT license does not relicense imported
 Apache-2.0 material.
+
+Put each skill's source links, upstream revision, authorship, adaptation summary,
+and applicable license identification in that skill's `README.md`. Keep full
+license texts centralized in the root `LICENSE`. Do not place provenance banners,
+license notices, or links that require reading attribution in `SKILL.md` or its
+runtime references; those surfaces carry task instructions. Skill READMEs are
+maintainer documentation, not part of normal skill loading. A workflow explicitly
+about importing resources may consult source/license metadata when necessary for
+that task; this does not justify loading the skill's own provenance by default.
+
+## Skill Runtime Content
+
+Only information needed to select or execute the skill belongs in its runtime
+surfaces: catalog metadata, `SKILL.md`, linked references, executable helpers,
+and task assets. Each instruction or resource must support a concrete task
+decision, action, output, or verification. Keep conditional material behind a
+relevant task condition rather than loading it by default.
+
+Provenance, license attribution, changelogs, maintenance notes, and development
+history belong in maintainer documentation such as the skill's `README.md`,
+not in runtime instructions or their reference chain. Do not link or require
+those documents from `SKILL.md` merely to advertise their existence. A README
+being physically present beside the skill does not make it an execution resource.
+When maintenance or migration is itself the requested task, consult the metadata
+needed for that task without loading the skill's own history by default.
 
 ## Plugin Naming and Scope
 

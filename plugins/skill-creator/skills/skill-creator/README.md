@@ -1,4 +1,4 @@
-# Upstream Sources
+# Skill Creator — Sources and License
 
 The existing creator and evaluation tooling derive from Anthropic's
 [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator).
@@ -14,3 +14,5 @@ Upstream attribution: OpenAI Codex, Copyright 2025 OpenAI.
 This is a locally modified integration, not an unmodified upstream distribution.
 It retains Skill Forge's migration, repository validation, and comparative
 evaluation tools without requiring either upstream creator at runtime.
+
+This README is maintainer-facing provenance, not a runtime dependency.

@@ -6,8 +6,7 @@ description: Investigate why existing code is designed this way using history an
 # Why
 
 Recover the reasons behind an existing code design and distinguish them from
-what the code happens to do today. This is a Skill Forge adaptation of pstack's
-`why`; licensing and upstream notices are maintained in the Skill Forge repository-root `LICENSE`.
+what the code happens to do today.
 
 ## Scope
 

@@ -1,7 +1,6 @@
 # Design Checks
 
-Adapted from pstack's caller-first sketches and design red flags. Use only the
-questions relevant to the decision. These are prompts for evidence, not a score
+Use only the questions relevant to the decision. These are prompts for evidence, not a score
 or a required report template.
 
 ## Ownership and useful interfaces

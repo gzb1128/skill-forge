@@ -6,8 +6,7 @@ description: Design APIs, types, and module boundaries from caller needs and exi
 # Architect
 
 Make the design decisions needed for a code change, with enough evidence and
-concrete usage to evaluate them. This is a Skill Forge adaptation of pstack's
-`architect`; licensing and upstream notices are maintained in the Skill Forge repository-root `LICENSE`.
+concrete usage to evaluate them.
 
 ## Establish the requested outcome
 

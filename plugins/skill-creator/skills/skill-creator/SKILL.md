@@ -6,12 +6,6 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 
 # Skill Creator
 
-This Skill Forge adaptation originates from Anthropic's Apache-2.0
-`skill-creator`. Its design guidance also adapts OpenAI Codex's Apache-2.0
-skill-creator; see [Upstream Sources](references/upstream-sources.md).
-Follow the target repository's license placement convention; retain upstream
-terms, attribution, and modification notices when adapting resources.
-
 Use this skill to create or improve skills as durable agent runtime assets, not
 as one-off prompt text. Prefer the local repository's plugin and verification
 conventions over upstream defaults whenever they conflict.
@@ -55,9 +49,11 @@ report scaffold, or artifact set without a concrete task requirement.
 
 Keep discovery precise and detail conditional. Names and descriptions are
 catalog context; the body loads on selection; references load only when needed.
-State each instruction once. Keep essential constraints and useful routing in
-the body, and move substantial mode-specific procedures to references. A short
-skill needs neither a router nor extra resource directories.
+State each instruction once. Every runtime instruction or resource must support
+a task decision, action, output, or verification. Keep maintainer documentation
+out of the execution reference chain. Keep essential constraints and useful
+routing in the body, and move substantial mode-specific procedures to conditional
+references. A short skill needs neither a router nor extra resource directories.
 
 Improve from demonstrated gaps. Preserve useful examples and non-obvious
 constraints, but test whether a failure came from missing guidance, a bad
@@ -77,9 +73,8 @@ read [Runtime Compatibility](references/runtime-compatibility.md). Source plugin
 format does not establish which runtime executes the exposed skill.
 
 For an upstream adaptation, read [Upstream Migration](references/upstream-migration.md).
-Preserve applicable license terms and attribution, and identify derivative changes. Do not copy an
-upstream skill merely because it exists, and do not require the upstream creator
-to be installed to use this one.
+Do not copy a skill merely because it exists, or require another creator to be
+installed to use this one.
 
 ## Creating Or Updating A Skill
 

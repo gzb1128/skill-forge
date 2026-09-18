@@ -5,7 +5,9 @@ Read when adapting or importing upstream skills.
 When adapting an upstream skill:
 
 1. Read the upstream `SKILL.md`, plugin manifest, license, and any directly
-   referenced resources.
+   referenced resources. When copying or adapting them, preserve applicable
+   terms, attribution, and modification notices using the target repository's
+   placement convention; keep maintainer-only notices out of runtime instructions.
 2. Compare it with local skills and repo conventions before deciding what to
    copy.
 3. Classify the migration:

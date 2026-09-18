@@ -6,9 +6,6 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 
 # Skill Creator
 
-This Skill Forge adaptation is modified from Anthropic's Apache-2.0
-`skill-creator`. Keep the bundled license files with copied upstream resources.
-
 Use this skill to create or improve skills as durable agent runtime assets, not
 as one-off prompt text. Prefer the local repository's plugin and verification
 conventions over upstream defaults whenever they conflict.
@@ -28,68 +25,56 @@ In `skill-forge`, plugin directories use `.claude-plugin/plugin.json`, not
 `.codex-plugin/plugin.json`. Plugins intentionally omit `version`; Claude Code
 resolves installed versions to git commit SHAs.
 
-## Skill Forge Defaults
+## Design Principles
 
-- Keep project-facing content in English.
-- Do not migrate an official skill just because it exists upstream. Migrate only
-  when there is a planned local enhancement, stricter boundary, or repo-specific
-  workflow.
-- Treat local skills as enhanced variants of upstream ideas. Preserve useful
-  upstream mechanics, but replace assumptions that conflict with this repo.
-- Preserve licenses for copied upstream files and make derivative edits obvious.
-- Budget by progressive-disclosure layer: skill name and description are
-  catalog metadata, the main `SKILL.md` loads after selection, and bundled
-  resources load only when the selected workflow needs them.
-- Optimize the context loaded at each layer, not line count. Keep metadata
-  discriminating, keep the main body focused on the core workflow and routing,
-  and state each instruction once.
-- Keep explicit routing, concrete workflow, required outputs, gotchas, and
-  examples that encode a product requirement or correct a measured gap.
-- Move optional schemas, long rubrics, scripts, templates, examples, and
-  domain/framework variants into named bundled resources so only the selected
-  material is loaded.
-- Start from a working prompt and tool set. Remove one instruction, example, or
-  tool group at a time; expose only tools the workflow needs; then rerun the
-  same representative evals and compare quality, context growth, tokens, and
-  cost.
-- Prefer concrete workflow instructions over broad principles.
-- Use `python3` in commands. Do not assume a `python` shim exists.
-- Do not treat this skill's `quick_validate.py` as the final schema authority
-  for Claude Code plugins. It is a fast SKILL.md sanity check; `make validate`
-  and `claude plugin validate` are authoritative for this repo.
+Assume the model can already perform general reasoning and coding. Add guidance
+when it supplies missing knowledge, establishes a real contract, or improves an
+observable result. Do not repeat generic advice merely to make a skill complete.
 
-## Upstream Migration Workflow
+Match the strength of an instruction to the task:
 
-When adapting an upstream skill:
+- For open-ended work, provide the desired result and decision criteria. Leave
+  investigation depth, implementation approach, and method selection to the agent.
+- For a useful default method, explain when it applies, when existing evidence
+  permits skipping work, and what new evidence should cause reconsideration.
+- Require fixed steps only when deviation threatens a specific correctness,
+  permission, or operational invariant. Explain the relevant condition; a past
+  example or preferred style alone does not establish a universal requirement.
 
-1. Read the upstream `SKILL.md`, plugin manifest, license, and any directly
-   referenced resources.
-2. Compare it with local skills and repo conventions before deciding what to
-   copy.
-3. Classify the migration:
-   - `Reference only`: no local change; document the decision if needed.
-   - `Adapted derivative`: copy useful resources and rewrite instructions for
-     local conventions.
-   - `New local workflow`: keep only the idea, then write a fresh Skill Forge
-     skill.
-4. Remove or rewrite runtime assumptions that do not hold locally:
-   - `CLAUDE.md`-specific memory guidance becomes `AGENTS.md` guidance when the
-     target is agent docs.
-   - `python` commands become `python3`.
-   - Claude Code `claude -p` description optimization is optional and requires
-     the CLI to be available.
-   - Browser viewer launch is optional; use static HTML or conversation review
-     when a display is unavailable.
-   - `.skill` packaging is optional and should not replace plugin publication
-     unless the user asks for standalone packaging.
-5. Update marketplace and docs when adding a plugin or changing the public
-   catalog:
-   - `.claude-plugin/marketplace.json`
-   - root `README.md`
-   - root `AGENTS.md`
-   - `docs/verify/README.md`
-6. Run validation and record any missing behavioral evals as explicit pending
-   verification, not as implied coverage.
+Preserve the user's scope and existing authorization. A skill must not add
+unrequested work, routine approval gates, or mandatory calls to other skills.
+Dependencies belong only where the task actually needs them and the runtime
+provides them. Do not prescribe a model roster, agent count, alternative count,
+report scaffold, or artifact set without a concrete task requirement.
+
+Keep discovery precise and detail conditional. Names and descriptions are
+catalog context; the body loads on selection; references load only when needed.
+State each instruction once. Every runtime instruction or resource must support
+a task decision, action, output, or verification. Keep maintainer documentation
+out of the execution reference chain. Keep essential constraints and useful
+routing in the body, and move substantial mode-specific procedures to conditional
+references. A short skill needs neither a router nor extra resource directories.
+
+Improve from demonstrated gaps. Preserve useful examples and non-obvious
+constraints, but test whether a failure came from missing guidance, a bad
+assumption, an unsuitable method, or the evaluation itself before adding a rule.
+When simplifying, remove one instruction or resource group at a time and compare
+representative outcomes and cost; shorter text alone is not success.
+
+## Repository And Runtime Context
+
+Follow the target repository's instructions for language, source ownership,
+naming, metadata budgets, shared references, and publication. Read its relevant
+rules rather than copying them into every skill. For Skill Forge, `make validate`
+is authoritative beyond the bundled quick validator; use `python3` in commands.
+
+Before changing platform-specific metadata, scripts, discovery, or packaging,
+read [Runtime Compatibility](references/runtime-compatibility.md). Source plugin
+format does not establish which runtime executes the exposed skill.
+
+For an upstream adaptation, read [Upstream Migration](references/upstream-migration.md).
+Do not copy a skill merely because it exists, or require another creator to be
+installed to use this one.
 
 ## Creating Or Updating A Skill
 
@@ -135,18 +120,13 @@ Use these resource patterns:
 Frontmatter must include `name` and `description`. The description is the
 triggering surface, so include both the capability and concrete contexts.
 
-For Skill Forge Claude plugin skills, these additional fields are allowed when
-useful:
+Use only metadata supported by the target runtime; consult the runtime reference
+when changing invocation policy. Keep the description focused on the capability
+and discriminating trigger context rather than detailed procedures.
 
-- `allowed-tools`
-- `disable-model-invocation`
-- `argument-hint`
-- `metadata`
-- `license`
-- `compatibility`
-
-The body should explain how to execute the workflow, what to verify, and when
-to stop or ask the user. Avoid hiding trigger conditions only in the body.
+The body should state the desired outcome, essential context, constraints,
+useful methods, and completion conditions. Distinguish requirements from defaults
+and examples. A focused update needs no full scaffold or fresh initialization.
 
 ## Evaluation Workflow
 
@@ -174,19 +154,31 @@ directory unless the command shows an explicit absolute path.
 Use when a skill adds required behavior, refusal boundaries, report formats,
 tool order, verification gates, or failure-mode handling.
 
-1. Create or reuse a scenario under `docs/verify/scenarios/<skill-name>/`.
-2. Run RED without loading the skill and capture natural failure behavior.
-3. Run GREEN with the skill available and check every required behavior.
-4. Feed any verbatim skip rationalizations back into the skill.
-5. Re-run until the behavior is stable, or record the unresolved gap in
-   `docs/verify/README.md`.
+1. Define realistic prompts and observable expectations before execution; create
+   or reuse isolated scenarios under `docs/verify/scenarios/<skill-name>/`.
+2. Measure a baseline without the new skill, or with an immutable old version
+   for a revision. Record success as well as failure; do not manufacture RED.
+3. Run the candidate on equivalent inputs with fresh context. Supply the task
+   and raw artifacts, not expected answers, prior conclusions, or a proposed fix.
+   Use independent evaluators when available and authorized.
+4. Inspect actual outputs and side effects. A skipped step may be appropriate;
+   diagnose its effect before changing instructions. Repair the smallest missing
+   decision and check the original case plus a transfer case. Do not append
+   verbatim rationalizations as universal prohibitions.
+5. Preserve unsuccessful runs and record unresolved gaps. Both configurations
+   passing establishes retained behavior, not comparative improvement. Direct
+   skill reads establish behavior under loading, not automatic discovery.
 
-Follow the repo's `docs/verify/README.md` over generic upstream instructions
-when the two differ.
+Follow the repo's `docs/verify/README.md` for scenario conventions. Evaluate
+observable outcomes rather than matching wording, headings, or compliance with
+an unnecessary procedure. Use fresh scratch workspaces, preserve unrelated work,
+and keep experiments within authorized tools, resources, and side effects.
 
 ### Full Skill-Creator Benchmark
 
-Use for substantial new skills, broad rewrites, or disputed quality questions.
+Use when a substantial change or disputed quality claim needs comparative
+evidence beyond focused behavioral checks. Ordinary edits do not require a full
+benchmark. State explicitly when only focused checks were run.
 
 Before creating benchmark artifacts, read
 [Full Skill-Creator Benchmark](references/benchmark.md) and
@@ -216,7 +208,8 @@ python3 -m scripts.run_loop \
 Use `300` for Skill Forge. For another repository, pass its documented
 metadata budget or omit the option to use the 1024-character format limit.
 Use the best held-out score, not the training score alone, before changing the
-description.
+description. These scripts exercise Claude Code selection; do not generalize
+their results to Codex or OpenCode discovery.
 
 ## Reporting
 

@@ -1,0 +1,7 @@
+{
+  "name": "code-design",
+  "description": "Code design tools — investigate existing design rationale and shape APIs, types, and module boundaries for code changes",
+  "author": {
+    "name": "Skill Forge Team"
+  }
+}

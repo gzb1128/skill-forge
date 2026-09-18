@@ -1,7 +1,7 @@
 # Full Skill-Creator Benchmark
 
-Use this protocol for substantial new skills, broad rewrites, or disputed
-quality questions.
+Use this protocol when substantial changes or disputed quality claims need
+comparative evidence beyond focused checks. It is not a gate for every edit.
 
 This is a candidate-versus-baseline experiment, not a showcase. Use it only
 when both configurations can receive the same task, inputs, tools, model, and

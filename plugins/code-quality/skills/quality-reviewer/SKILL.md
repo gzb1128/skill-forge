@@ -27,7 +27,13 @@ State the mode and whether the review covers the working tree, branch diff, or b
 - Branch: `git diff <base>...HEAD`.
 - Both: inspect and label both sources.
 
-Apply [Change Boundaries](references/change-boundaries.md) for base resolution, ownership, authorization, and gate results. Read repository instructions and the full changed files; diffs alone are not enough. Review only behavior introduced by the change. Report any explicitly skipped review without dispatching a reviewer or implying review occurred.
+Resolve the intended diff with [Git Change Scope](references/git-change-scope.md). Read repository instructions and the full changed files; diffs alone are not enough. Review only behavior introduced by the change. Report any explicitly skipped review without dispatching a reviewer or implying review occurred.
+
+Honor existing scope, fix authorization, report-only mode, and explicit skips
+through delegation. A preview is not a second approval gate for an already
+authorized safe fix. Ask only about unresolved ownership, a product/design
+decision, or work outside the authorized scope. No repository setup is required
+to apply these review boundaries.
 
 ### 2. Dispatch exactly one independent reviewer
 
@@ -57,7 +63,7 @@ The single reviewer uses one shared understanding of the task for all applicable
 |---|---|---|
 | **Correctness and behavior** | Always | Check logic, edge cases, error paths, security, broken invariants, caller-owned mutation, API/behavior changes, and missing tests. |
 | **Structure and simplification** | Always | Does it fit existing patterns? Is there concrete complexity, duplication, dead code, or a hand-rolled utility to remove? |
-| **Architecture and existing flow** | Cross-module, parsing, persistence, state-machine, or execution-path changes | Apply the source-backed ownership trace in Change Boundaries. Does the change bypass an existing owner or add an unnecessary path? |
+| **Architecture and existing flow** | Cross-module, parsing, persistence, state-machine, or execution-path changes | Use the ownership check below. Does the change bypass an existing owner or add an unnecessary path? |
 | **Efficiency** | Always | Is there an obvious N+1 call, repeated hot-path I/O, unbounded growth, leaked resource, or redundant write? |
 | **Silent failure** | Error handling, fallback, retry, ignored error, or log-and-continue changed | Could this hide a failure that a user, caller, operator, or test should see? |
 | **Test quality** | Tests changed | Would the tests fail for the important regressions introduced by this diff? |
@@ -65,6 +71,25 @@ The single reviewer uses one shared understanding of the task for all applicable
 | **Comment accuracy** | Comments or docstrings changed | Do they still match the code, signature, and behavior? |
 
 Focus on bugs and behavior. Flag structure or performance only when there is concrete impact; do not report taste, hypothetical problems, or micro-optimizations. These checks are questions inside one review, never reasons to launch more agents.
+
+### Ownership check
+
+For the triggered architecture lens, trace the real entry through the owners
+relevant to the changed behavior, using source symbols and living contracts:
+
+- What already works, and where does the requested outcome first fail?
+- Who owns input interpretation, business decisions, durable effects, and state
+  transitions on this path?
+- Does a new branch, cross-layer flag, parameter, or completion shortcut express
+  a missing capability or bypass an owner that already handles it?
+- What happens to admission, identity, failure, retry, and recovery where relevant?
+
+A concrete ownership violation introduced by the change is an in-scope finding,
+not optional polish. Cite the violated contract or bypassed behavior. Do not
+require a new diagram or refactor because another design is nicer. An actual
+change of responsibility needs authorized scope and matching contract updates.
+Routine wording and local mechanical edits need no architecture investigation;
+review does not require proof that `architect` or `why` ran.
 
 ### 4. Run gates directly
 
@@ -76,7 +101,7 @@ For each public symbol whose signature, return shape, or error contract changed,
 git grep -n '<symbol>' -- ':!vendor' ':!node_modules'
 ```
 
-Classify passed, change-induced, pre-existing, unavailable, and explicitly skipped checks using Change Boundaries. Respect explicit skips even when a check would be quick. Give a concrete next diagnostic or decision for a blocking verdict; do not promise an arbitrary duration.
+Classify checks using [Verification Results](references/verification-results.md). Respect explicit skips even when a check would be quick. Give a concrete next diagnostic or decision for a blocking verdict; do not promise an arbitrary duration.
 
 ### 5. Validate findings with evidence
 

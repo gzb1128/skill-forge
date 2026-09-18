@@ -5,9 +5,10 @@ description: Clean an existing diff of AI-generated bloat, redundant comments, n
 
 # Diff Cleanup
 
-Remove low-value code and prose within the user's chosen design. Apply
-[Change Boundaries](references/change-boundaries.md) for scope/base resolution,
-change ownership, authorization, and verification results.
+Remove low-value code and prose within the user's chosen design. Resolve the
+intended diff with [Git Change Scope](references/git-change-scope.md) and report
+checks using [Verification Results](references/verification-results.md). These
+cleanup boundaries apply even when no repository-rule setup has been performed.
 
 ## Scope and Attribution
 
@@ -47,7 +48,7 @@ report the decision needed and continue independent authorized cleanup.
 
 ## Procedure
 
-1. Resolve scope/base and inventory all intended changes using Change Boundaries.
+1. Resolve scope/base and inventory all intended changes using Git Change Scope.
 2. Read the full candidate files and identify removals with provenance evidence.
 3. Preview candidates grouped by file: location, category, ownership evidence,
    and why behavior is unchanged. In report-only mode, stop at the preview.

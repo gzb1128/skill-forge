@@ -1,6 +1,6 @@
 # Repository Knowledge Lifecycle
 
-**Status:** Approved
+**Status:** Approved; admission and scoring rules superseded by [Knowledge Admission](2026-09-18-knowledge-admission-design.md)
 **Date:** 2026-08-03
 
 ## Problem

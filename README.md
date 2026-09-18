@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`skill-forge` is a Claude Code plugin marketplace for forging agent runtime environments. It distills reusable skills into plugins covering repository knowledge, code quality, commit discipline, autonomous fix loops, OpenCode configuration, and Codex subagent routing.
+`skill-forge` is a Claude Code plugin marketplace for forging agent runtime environments. It distills reusable skills into plugins covering repository knowledge, code design, code quality, commit discipline, autonomous fix loops, OpenCode configuration, and Codex subagent routing.
 
 **Core idea:** Human at the helm. Agents execute. The repo is the agent's runtime — knowledge, rules, and workflows must be shaped into forms agents can reliably read, judge, and execute.
 
@@ -16,6 +16,7 @@ claude plugin marketplace add gzb1128/skill-forge
 
 # 2. Install the plugins you need
 claude plugin install agent-docs@skill-forge
+claude plugin install code-design@skill-forge
 claude plugin install code-quality@skill-forge
 claude plugin install skill-creator@skill-forge
 claude plugin install opencode-customize@skill-forge
@@ -24,6 +25,9 @@ claude plugin install github-contrib@skill-forge
 
 # 3. In your target repo, ask your agent:
 #    "bootstrap agent docs"       -> create a minimal AGENTS.md entry point
+#    "set up repository coding rules" -> adapt pre-edit rules to this repository
+#    "why was this boundary added" -> investigate code-design rationale
+#    "design this API"             -> caller-first interface and ownership design
 #    "review my changes"          -> quality review on local diff
 #    "commit this"                -> gated commit with impact message
 #    "loopfix"                    -> autonomous review-fix loop
@@ -39,7 +43,8 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 
 | Plugin | Purpose | Skills |
 |---|---|---|
-| `agent-docs` | Bootstrap and maintain valuable repository knowledge with focused capture and audit workflows | `bootstrap-agent-docs`, `learn`, `remember`, `curate` |
+| `agent-docs` | Bootstrap and maintain valuable repository knowledge with focused capture and audit workflows | `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `remember`, `curate` |
+| `code-design` | Investigate code-design rationale and shape APIs, types, and module boundaries | `why`, `architect` |
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
 | `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
@@ -53,11 +58,28 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 | Skill | Type | Purpose |
 |---|---|---|
 | `bootstrap-agent-docs` | model-invoked | Create a minimal root `AGENTS.md` with verified commands and architecture routing |
-| `learn` | manual skill (`/agent-docs:learn`) | Retrospectively score, route, and propose newly discovered session knowledge — never a substitute for direct documentation maintenance |
+| `setup-coding-rules` | manual skill (`/agent-docs:setup-coding-rules`) | Explicitly adapt pre-edit coding rules to existing or minimal repository entry points, preserving local policy and semantic coverage |
+| `learn` | manual skill (`/agent-docs:learn`) | Retrospectively evaluate, route, and propose newly discovered session knowledge — never a substitute for direct documentation maintenance |
 | `remember` | manual skill (`/agent-docs:remember`) | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
 | `curate` | manual skill (`/agent-docs:curate`) | Audit the `docs/` knowledge base for stale links, encyclopedia bloat, naming drift, and missing indexes — the docs counterpart to `/agent-docs:remember` |
 
 The minimal `AGENTS.md` template used by `bootstrap-agent-docs` lives at `plugins/agent-docs/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone is needed.
+
+### `code-design`
+
+| Skill | Type | Purpose |
+|---|---|---|
+| `why` | model-invoked | Investigate code-design rationale and historical constraints; distinguish evidence from inference |
+| `architect` | model-invoked | Shape APIs, types, and module boundaries when a code change has unresolved structural tradeoffs |
+
+Conditional methods: current-path tracing is a shared, on-demand reference, not
+a separate `how` skill. Full behavior and installed-selection verification remain
+pending; see [verification](docs/verify/code-design.md) for focused checks. Each
+skill is independently usable and also accepts explicit invocation. Ordinary coding is
+not a blanket trigger. Design-only requests remain design-only; authorized
+implementation continues without an extra gate. No fixed model roster or
+mandatory multi-agent workflow. See [Code Design](plugins/code-design/README.md)
+for examples and upstream provenance.
 
 ### `code-quality`
 
@@ -113,19 +135,36 @@ repository. When explicitly invoked for retrospective capture,
 first admitted document needs that surface. Explicit requests to create or
 update documentation are handled directly without invoking `learn`.
 
+## Set Up Repository Coding Rules
+
+Run `/agent-docs:setup-coding-rules` when you want coding constraints visible
+before edits, without requiring a review or design skill invocation first.
+For example: "Set up scope protection and honest verification rules in this
+repo. Apply them directly." The skill checks existing semantic coverage and
+adapts only the selected rules; a second run can be a no-op. Use "assess only"
+for a report without edits.
+
+The target repository owns the resulting rules. Setup preserves local policy,
+uses repository-relative contract links, and reports unresolved conflicts.
+It does not install hooks, modify personal configuration, or copy the complete
+code-quality workflow. `bootstrap-agent-docs` still creates a minimal entry for
+an uninitialized repository; `remember` audits existing knowledge; `learn`
+captures session discoveries. Plugin installation alone never runs setup.
+
 ## Practices
 
 | Practice | Meaning |
 |----------|---------|
+| **Scenario-based plugin names** | Plugin names identify a work context and responsibility; individual skill descriptions define precise triggers. Packaging does not dictate execution order. |
 | **Repo as record system** | Knowledge agents can't see doesn't exist. Critical constraints must not live only in chat logs or external docs. |
 | **Progressive disclosure** | `AGENTS.md` provides the entry navigation, `docs/codemaps/*.md` points to components, source code carries the details. |
 | **Lean prompt surfaces** | State prompt-resident rules once, expose only task-relevant tools, and keep examples only when they encode a requirement or fix a measured gap. Validate removals against the same representative tasks. |
 | **INDEX with the first doc** | A category containing useful documents normally has an `INDEX.md` with routing context; absent categories need no placeholders. |
-| **Value-based admission** | Non-derivable knowledge is automatically admitted; derivable knowledge is also recorded when impact, recurrence, discovery cost, actionability, durability, and scope justify the surface cost. |
+| **Value-based admission** | Persist knowledge with identifiable future use and residual value beyond existing carriers; choose the least costly authoritative surface. Neither derivability nor a numeric score decides admission. |
 | **Maps, not encyclopedias** | Codemaps maintain concept-to-path tables only — they link to source, never copy code. |
 | **Durable designs, transient task plans** | `YYYY-MM-DD-<topic>-design.md` records lasting decisions and delivery boundaries; step-by-step agent plans stay in the task session. |
 
-Full rationale: [Repository Knowledge Lifecycle](docs/design/2026-08-03-repository-knowledge-lifecycle-design.md).
+Rationale: [Knowledge Admission](docs/design/2026-09-18-knowledge-admission-design.md) and the earlier [Repository Knowledge Lifecycle](docs/design/2026-08-03-repository-knowledge-lifecycle-design.md).
 
 ## Development
 
@@ -142,4 +181,6 @@ make test-skills-unlink
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+Original Skill Forge material is MIT-licensed. Third-party material retains its
+applicable MIT or Apache-2.0 terms. All license texts, scope mappings, and upstream
+attributions are maintained in the repository-root [LICENSE](LICENSE).

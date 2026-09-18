@@ -15,7 +15,22 @@ Completion is an evidence-backed judgment by the main agent, not a hook, state f
 
 **Iteration budget.** If the loop reaches **5 iterations** on the same goal without converging — the same class of issue keeps recurring, or fixes are not reducing the reviewer's findings — stop, report the stall, and ask the user. A loop that disagrees with its reviewer forever is a signal to surface the conflict, not to grind. When you stop, summarize: how many iterations ran, what the recurring issue is, what you have tried, and why you cannot resolve it without a human decision.
 
-Apply [Change Boundaries](references/change-boundaries.md) for scope, ownership, authorization, and verification classification.
+Resolve the run's diff with [Git Change Scope](references/git-change-scope.md).
+Carry the approved scope and explicit skip instructions into every reviewer pass;
+classify checks with [Verification Results](references/verification-results.md).
+Existing fix authorization remains valid: previews do not require renewed
+approval. Ask only for unresolved ownership, a design/product decision, or work
+outside that scope. Preserve unrelated work, including staging. These boundaries
+do not depend on prior repository-rule setup.
+
+Before a cross-module, parsing, persistence, state-machine, or execution-path fix,
+trace the relevant entry and existing owners. Identify what already works, where
+the requirement first fails, and who owns the affected interpretation, business
+decision, durable effect, or state transition. Test whether a new flag, parameter,
+or completion shortcut would bypass that owner; account for admission, identity,
+failure, retry, and recovery where relevant. If the model cannot express the
+requirement, name the concrete gap and update contracts within authorized scope.
+Reuse adequate context; routine local edits need no architecture exercise.
 
 ## Completion Criteria
 
@@ -29,11 +44,13 @@ Before the first fix, define a short checklist for this run with all five fields
 | Review condition | What the reviewer should check after the latest meaningful change |
 | Stop boundary | What kinds of broad, speculative, or unrelated findings will be deferred |
 
+An unwaived required check that fails or is unavailable blocks completion. Report permitted baseline failures and explicit skips separately from passes; never waive them merely to converge.
+
 If the checklist cannot be satisfied without a human decision, report the blocker and stop. If it is satisfied with fresh evidence, stop; do not loop just because another runtime could force another iteration.
 
 ## Workflow
 
-1. Re-read the approved design, plan, or current user goal. Define the scope boundary and fill all five Completion Criteria fields before fixing. For changes that trigger the architecture check, trace the existing flow and first unmet requirement before choosing the implementation path.
+1. Re-read the approved design, plan, or current user goal. Define the scope boundary and fill all five Completion Criteria fields before fixing. Use the pre-fix ownership check above when its trigger applies.
 2. Implement or repair the next in-scope slice yourself.
 3. Dispatch exactly one reviewer subagent per iteration, scoped to the goal, diff, tests, and risk areas. Explicitly identify it as the designated reviewer and require it to load `quality-reviewer`, use the integrated rubric and triggered lenses, validate findings with evidence and confidence ≥ 80, and return concise candidates without spawning nested reviewers. The main agent owns direct mechanical gates and the final report. This keeps the same review bar inside and outside the loop without multiplying identical context.
 4. Report the review result in the conversation: findings, accepted fixes, rejected findings, deferred audit items, and next action.

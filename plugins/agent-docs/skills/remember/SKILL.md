@@ -84,8 +84,7 @@ Audit every relevant `AGENTS.md` memory surface, not only `## Hidden Knowledge`.
 ## Step 3: Classify issues by quality dimension
 
 Use these dimensions to explain every finding. Do not produce an overall score
-for an `AGENTS.md` file. Use the shared candidate value score only when deciding
-whether a specific entry earns prompt space.
+for an `AGENTS.md` file. Explain which future task benefits and why the current surface earns its cost.
 
 | Dimension | Meaning |
 |-----------|---------|
@@ -97,7 +96,7 @@ whether a specific entry earns prompt space.
 | `Actionability` | A future agent can follow the instruction directly with concrete commands, paths, or decision rules |
 | `Signal` | The content is worth prompt space and helps future agents act better |
 | `Placement` | The content lives at the right `AGENTS.md` level and section, or in the owning code artifact's doc comment when the knowledge is scoped to a single symbol |
-| `Non-Derivability` | Hidden knowledge cannot now be inferred from code, git, or existing docs; this is an automatic-admission signal, not a universal requirement for every surface |
+| `Non-Derivability` | Hidden knowledge cannot now be inferred from code, git, or existing docs; this affects reconstruction cost, not automatic retention or a universal requirement |
 | `Knowledge Value` | Derivable content still earns prompt space when impact, recurrence, discovery cost, actionability, durability, and scope justify it |
 | `Duplication` | The same guidance is not repeated across layers or docs |
 
@@ -117,25 +116,30 @@ Before proposing a cleanup, verify it:
 | Duplicate content | Cite both locations |
 | Now-derivable hidden knowledge | Cite the code, docs, git history, or AGENTS.md main-body section that now covers it, then assess whether it remains valuable in another surface |
 | Entry better placed as a code comment | Confirm the owning symbol or file exists, the knowledge is scoped to it, and its existing doc comments do not already cover it |
-| Potentially low-value derivable entry | Show the shared-policy score and the lower-cost source or document that would replace it |
+| Potentially low-value derivable entry | Identify the future use and residual value, and cite any lower-cost adequate replacement |
 | Architecture routing gap | For one named or representative recurring task, follow the cited entrypoint into the relevant owners and contract; show the missing decision boundary, not merely a missing diagram |
 | Memory assertion backed by a linked doc | Open that one linked doc and confirm it still supports the assertion |
-| Explicit docs promotion candidate | Cite the named entry, verify it changes recurring agent behavior, score its prompt value, and confirm it is absent from the nearest `AGENTS.md` |
+| Explicit docs promotion candidate | Cite the named entry, verify it changes recurring agent behavior, explain why it needs early visibility, and confirm it is absent from the nearest `AGENTS.md` |
 
 Architecture verification is bounded to that one flow and its directly relevant
 owners; it is not permission to audit the source tree, run the business operation,
 or rewrite code. Prefer a concise pointer or responsibility summary over copying
 the contract. A missing diagram is not itself a defect.
 
-If a finding cannot be verified, label it `Needs user input` instead of treating
-it as fact.
+Choose checks for the finding under review rather than running every probe.
+For removal, verify the claimed replacement or loss of future use; difficulty
+rediscovering a fact is neither a retention mandate nor a reason to discard it.
+Keep useful build commands, maps, and rationale even when derivable. Propose a
+relocation when the value remains but the entry no longer needs early visibility.
+If value or verification is unresolved, label it `Needs user input` instead of
+treating uncertainty as a deletion finding.
 
 **Scope guard — linked docs are a verification method, not an audit target.**
 Open only the specific doc a memory assertion links to, confirm it still supports
 that assertion, and stop. Do **not** enumerate `docs/`, score doc quality, or
 traverse cross-links; doc-level quality (including redundancy) is owned by a
 separate audit, not `/agent-docs:remember`. The economics differ — `AGENTS.md`
-is prompt-resident and uses the highest value threshold, while `docs/` is
+is prompt-resident and needs a stronger justification for early visibility, while `docs/` is
 pull-based and may legitimately be longer or more detailed. The only question
 here is whether the linked doc still backs the memory claim that cites it.
 
@@ -144,7 +148,7 @@ here is whether the linked doc still backs the memory claim that cites it.
 | Action | Use when |
 |--------|----------|
 | `Promotions` | Lower-level guidance affects multiple packages, belongs in a higher-level `AGENTS.md`, or an explicitly named docs rule earns prompt space in the nearest `AGENTS.md` |
-| `Deletions` | Content fails a hard gate, or derivable content scores too low for prompt-resident memory; derivability alone is insufficient, and valid non-derivable content must be retained or rerouted |
+| `Deletions` | Verified content is stale, redundant, or lacks future value after checking its audience and retention requirements; relocate useful misplaced knowledge instead of deleting it |
 | `Relocations to code` | A prompt-resident entry is scoped to a single code artifact and fits a concise doc comment or module doc on it; scope and conciseness trigger this, never derivability alone. Keep a one-line pointer in `AGENTS.md` only when agents must know before opening the file |
 | `Rewrites` | Content is true but unclear, too verbose, misplaced within the same file, or missing verification context |
 | `Duplicates` | Exact or overlapping guidance appears in multiple places |

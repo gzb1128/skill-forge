@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "agent-docs",
-      "description": "Repository knowledge tools for minimal AGENTS.md bootstrap, value-based capture, and focused AGENTS.md and docs audits",
+      "description": "Repository knowledge tools for minimal AGENTS.md bootstrap, explicit coding-rule setup, value-based capture, and focused instruction and docs audits",
       "author": {
         "name": "Skill Forge Team"
       },
@@ -18,6 +18,20 @@
         "source": "git-subdir",
         "url": "gzb1128/skill-forge",
         "path": "plugins/agent-docs"
+      },
+      "homepage": "https://github.com/gzb1128/skill-forge"
+    },
+    {
+      "name": "code-design",
+      "description": "Code design tools — investigate existing design rationale and shape APIs, types, and module boundaries for code changes",
+      "author": {
+        "name": "Skill Forge Team"
+      },
+      "category": "productivity",
+      "source": {
+        "source": "git-subdir",
+        "url": "gzb1128/skill-forge",
+        "path": "plugins/code-design"
       },
       "homepage": "https://github.com/gzb1128/skill-forge"
     },

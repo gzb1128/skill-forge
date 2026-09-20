@@ -34,7 +34,7 @@ SOFTWARE.
 ---------------
 
 Source: https://github.com/cursor/plugins/tree/e31650eea443aaea1e84cc15d88c13f40080b275/pstack
-Local scope: plugins/code-design/skills/why, skills/architect, and the related
+Local scope: plugins/code-design/skills/investigate-design-rationale, skills/architect, and the related
 code-design references, including the adapted how investigation method.
 Skill Forge modifies the upstream instructions for conditional investigation,
 repository ownership, authorization, and verification. These are local

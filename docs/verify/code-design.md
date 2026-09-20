@@ -15,7 +15,7 @@ passing behavior is a retention control, not evidence of improvement. The cases
 below specify expected behavior; the full W/A fixture suite and agent runs remain
 pending. The focused H cases below exercise only the current-path integration.
 
-## Why
+## Investigate Design Rationale
 
 | Case | Fixture and prompt | Required evidence |
 |---|---|---|

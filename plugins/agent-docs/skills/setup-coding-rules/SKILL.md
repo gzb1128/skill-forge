@@ -78,7 +78,7 @@ whether extra explanatory material merits a new durable surface. Do not create
 a separate policy file merely to hold these short rules.
 
 Keep installed-cache paths, personal absolute paths, plugin workflow internals,
-model assignments, and mandatory why/architect/reviewer calls out of repository
+model assignments, and mandatory investigate-design-rationale/architect/reviewer calls out of repository
 rules. Do not install review, cleanup, commit, or fix-loop procedures as coding rules. Target text must stand alone
 or resolve through repository-relative links after the plugin is uninstalled.
 

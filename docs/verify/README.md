@@ -36,7 +36,7 @@ results below remain historical; they are not full reruns of the revised skills.
 | Skill | RED Baseline | GREEN Verified | Notes |
 |---|---|---|---|
 | `setup-coding-rules` | A-E baseline passed; no failure induced | A-F passed via direct skill read | [Setup verification](setup-coding-rules.md): repeated no-op, semantic coverage, local policy, dirty-work preservation, minimal entry and selected subsets; isolated package smoke passed. No comparative improvement claimed. |
-| `why` | Full W1-W5 pending; old draft H2 passed | Focused H2 passed; full W1-W5 pending | [Code design checks](code-design.md): bounded historical explanation retained; automatic selection unverified. |
+| `investigate-design-rationale` | Full W1-W5 pending; old draft H2 passed | Focused H2 passed; full W1-W5 pending | [Code design checks](code-design.md): bounded historical explanation retained; automatic selection unverified. |
 | `architect` | Full A1-A8 pending; old draft H1/H3 passed | Focused H1/H3 passed; full A1-A8 pending | [Code design checks](code-design.md): conditional current-flow tracing and simple-context handling retained; no comparative gain or installed-selection claim. |
 | `bootstrap-agent-docs` | Legacy payload recorded | Yes passed (Scenario A and change boundaries) | One-file approval flow retained; the ownership trial created only a source-backed 91-line AGENTS.md and kept unknown commands explicit. |
 | `clean-commit` | No dedicated failure recorded | Yes passed (change boundaries) | Named pending files only; one reviewer, lint, explicit test skip propagated to review, unrelated staging preserved, and local commit verified. |

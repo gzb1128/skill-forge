@@ -40,7 +40,7 @@ usable when exposed outside the plugin directory.
 | setup-coding-rules | Explicit initial setup or update of selected pre-edit coding expectations |
 | remember / curate | Audit existing instruction / documentation surfaces |
 | learn | Retrospectively capture new session knowledge |
-| why / architect | Investigate missing rationale or resolve design choices; never mandatory for compliance with the early rule |
+| investigate-design-rationale / architect | Investigate missing rationale or resolve design choices; never mandatory for compliance with the early rule |
 | code-quality | Assess concrete changes and run its workflow-specific gates |
 
 Setup groups scope/work preservation, ownership, authorization, and verification

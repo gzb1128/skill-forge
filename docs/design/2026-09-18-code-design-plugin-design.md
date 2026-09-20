@@ -46,7 +46,7 @@ This change preserves it rather than creating another creator variant.
 | Content | Strength and placement | Agent discretion |
 |---|---|---|
 | Authorization, repository contracts, evidence honesty | Requirements in existing skill scope and local rules | Methods cannot override these constraints |
-| Historical investigation (`why`) | Default path when rationale is missing | Sources, depth, delegation, and when evidence suffices |
+| Historical investigation (`investigate-design-rationale`) | Default path when rationale is missing | Sources, depth, delegation, and when evidence suffices |
 | Current execution tracing (`how`) | `code-flow.md`, loaded by either skill only for a material path/owner gap | Entry-specific depth, output shape, and reuse of adequate context |
 | Caller-first design and experiments (`architect`) | Default methods for unresolved structural decisions | Real alternatives, sketch depth, experiment, and reconsideration |
 | Implementation methods and playbooks | No new payload in this round; evaluate individual methods against a concrete need | No fixed implementation sequence introduced |
@@ -112,7 +112,7 @@ choices. Do not move universal obligations exclusively into its body or require
 its invocation to satisfy them. If existing repository instructions already cover
 the obligations, setup makes no additions.
 
-`why` is an investigation procedure for missing rationale. The pre-change rule
+`investigate-design-rationale` is an investigation procedure for missing rationale. The pre-change rule
 is an expectation that applies even without invoking that procedure. Existing
 context can satisfy it. `architect` deepens the analysis only when a design
 choice is unresolved. Review checks the resulting change without requiring

@@ -8,7 +8,7 @@ verification and remaining coverage are recorded in the repository's
 
 | Skill | Use when | Result |
 |---|---|---|
-| `why` | A code-design decision or historical constraint needs explanation | Cited rationale, current constraints, and explicit uncertainty |
+| `investigate-design-rationale` | A code-design decision or historical constraint needs explanation | Cited rationale, current constraints, and explicit uncertainty |
 | `architect` | A requested code change has unresolved interface or ownership decisions | Caller usage, design shape, tradeoffs, and verification boundaries |
 
 Both skills are model-invoked for their specific trigger contexts and can be
@@ -19,7 +19,7 @@ changes; `agent-docs` continues to govern durable knowledge placement.
 
 ## Conditional methods
 
-`why` uses historical investigation when rationale is missing; `architect` uses
+`investigate-design-rationale` uses historical investigation when rationale is missing; `architect` uses
 caller examples and experiments when a structural decision is unresolved. Both
 can load `references/code-flow.md` when a missing current-path connection affects
 their task. It adapts pstack's `how` as supporting knowledge, not a third skill:

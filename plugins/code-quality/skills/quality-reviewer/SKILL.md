@@ -89,7 +89,7 @@ not optional polish. Cite the violated contract or bypassed behavior. Do not
 require a new diagram or refactor because another design is nicer. An actual
 change of responsibility needs authorized scope and matching contract updates.
 Routine wording and local mechanical edits need no architecture investigation;
-review does not require proof that `architect` or `why` ran.
+review does not require proof that `architect` or `investigate-design-rationale` ran.
 
 ### 4. Run gates directly
 

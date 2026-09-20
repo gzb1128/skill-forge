@@ -34,7 +34,7 @@ observation into a new domain rule without evidence and authority.
 Early rules define constraints that must be considered before edits. Detailed
 Git base selection, independent reviewer dispatch, readiness verdict formats,
 knowledge scoring, or investigator orchestration remain in their workflows.
-Neither `why` nor `architect` must run to satisfy the early ownership rule.
+Neither `investigate-design-rationale` nor `architect` must run to satisfy the early ownership rule.
 Existing evidence and an ordinary source read can be sufficient.
 
 A plugin reference is not automatically visible in the target repository. A

@@ -1,9 +1,9 @@
 ---
-name: why
+name: investigate-design-rationale
 description: Investigate why existing code is designed this way using history and recorded decisions. Use for design-rationale questions or unclear historical constraints before changing code; not runtime walkthroughs or general incident diagnosis.
 ---
 
-# Why
+# Investigate Design Rationale
 
 Recover the reasons behind an existing code design and distinguish them from
 what the code happens to do today.

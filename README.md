@@ -44,7 +44,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 | Plugin | Purpose | Skills |
 |---|---|---|
 | `agent-docs` | Bootstrap and maintain valuable repository knowledge with focused capture and audit workflows | `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `remember`, `curate` |
-| `code-design` | Investigate code-design rationale and shape APIs, types, and module boundaries | `why`, `architect` |
+| `code-design` | Investigate code-design rationale and shape APIs, types, and module boundaries | `investigate-design-rationale`, `architect` |
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
 | `opencode-customize` | Customize OpenCode configuration, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |
@@ -69,7 +69,7 @@ The minimal `AGENTS.md` template used by `bootstrap-agent-docs` lives at `plugin
 
 | Skill | Type | Purpose |
 |---|---|---|
-| `why` | model-invoked | Investigate code-design rationale and historical constraints; distinguish evidence from inference |
+| `investigate-design-rationale` | model-invoked | Investigate code-design rationale and historical constraints; distinguish evidence from inference |
 | `architect` | model-invoked | Shape APIs, types, and module boundaries when a code change has unresolved structural tradeoffs |
 
 Conditional methods: current-path tracing is a shared, on-demand reference, not

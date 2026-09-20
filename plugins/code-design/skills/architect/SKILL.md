@@ -38,7 +38,7 @@ when reliable context already answers it. Apply the repository's actual structur
 a small utility does not need an invented planning or admission layer.
 
 Resolve a missing historical constraint with focused investigation using
-[Evidence and Current Constraints](references/evidence.md). A separate `why`
+[Evidence and Current Constraints](references/evidence.md). A separate `investigate-design-rationale`
 invocation is optional; adequate existing evidence needs no new workflow.
 
 ## Shape the design from its callers

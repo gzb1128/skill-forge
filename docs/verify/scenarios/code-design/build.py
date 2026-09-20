@@ -94,7 +94,7 @@ def build(label):
     write(root, 'prompts.json', json.dumps([
         {'id': 'H1', 'skill': 'architect', 'repo': str(flow),
          'request': 'Explain how submit reaches execute, then propose where to skip disabled endpoints while preserving the audit input. Assess only; do not edit. What input will retry send if the source changes, and how does readiness work?'},
-        {'id': 'H2', 'skill': 'why', 'repo': str(history),
+        {'id': 'H2', 'skill': 'investigate-design-rationale', 'repo': str(history),
          'request': 'Why does retry use accepted_payload instead of the latest source? Explain from the available record; do not edit.'},
         {'id': 'H3', 'skill': 'architect', 'repo': None,
          'request': 'Design only, answer here. The complete current Python utility is def label(value): return value.strip(). Add an optional prefix argument defaulting to the empty string; prepend it after stripping value. All callers are controlled together. There is no persistence, async work, external call, or other repository context. Show the signature and one use; do not create files.'}

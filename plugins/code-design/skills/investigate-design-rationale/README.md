@@ -1,4 +1,4 @@
-# Why — Sources and License
+# Investigate Design Rationale — Sources and License
 
 Adapted from Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/e31650eea443aaea1e84cc15d88c13f40080b275/pstack)
 (snapshot `e31650eea443aaea1e84cc15d88c13f40080b275`, inspected 2026-09-18).

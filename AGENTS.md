@@ -59,7 +59,7 @@ diverge, not merely because its skill count grows.
 | Plugin | Purpose | Skills |
 |---|---|---|
 | `agent-docs` | Agent-First documentation scaffolding and knowledge management | `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `remember`, `curate` |
-| `code-design` | Investigate code-design rationale and shape APIs, types, and module boundaries | `why`, `architect` |
+| `code-design` | Investigate code-design rationale and shape APIs, types, and module boundaries | `investigate-design-rationale`, `architect` |
 | `code-quality` | Code review, commit gates, diff cleanup, and autonomous fix loops | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Skill creation, upstream skill migration, behavioral evals, and trigger tuning | `skill-creator` |
 | `opencode-customize` | OpenCode configuration customization, including model metadata hydration and external project references | `hydrate-opencode-models`, `integrate-projects` |

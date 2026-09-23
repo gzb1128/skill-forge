@@ -3,160 +3,75 @@ name: bootstrap-agent-docs
 description: Bootstrap a repository that lacks AGENTS.md with a minimal, verified command and architecture entry point. Use for explicit bootstrap, init, or scaffold agent-docs requests.
 ---
 
-# Bootstrap Agent-First Documentation
+# Bootstrap Agent Documentation
 
-## Overview
+Create a minimal root `AGENTS.md` with useful commands, package responsibilities,
+and necessary local constraints. Read the shared
+[Authorization](references/authorization.md),
+[Knowledge Admission](references/knowledge-admission.md), and
+[Documentation Structure](references/doc-structure.md) references. Installing the
+plugin does not initialize a repository.
 
-Create a minimal project `AGENTS.md` that helps agents build, test, and orient in
-the repository. Do not scaffold a generic `docs/` knowledge base: documentation
-categories should be created on demand after useful knowledge is identified.
+## Scope
 
-**Core principle:** Bootstrap structure, not generic knowledge. Ongoing knowledge
-capture and cleanup belong to `learn`, `remember`, and `curate`.
+Use for an explicit bootstrap/init request when the repository lacks a usable
+agent entry point. Resolve the target from the request and session context; ask
+only if ambiguous. Confirm the repository root and inspect existing instruction
+files and tracked, staged, unstaged, and untracked work.
 
-Read the plugin-owned
-[Knowledge Admission Policy](references/knowledge-admission.md) and
-[Documentation Structure Reference](references/doc-structure.md). Use
-them to choose the small amount of high-value entry-point content, but do not
-copy either reference into the target repository or invoke `learn`.
+If a project `AGENTS.md` already exists, preserve it and explain the needed
+maintenance. An explicit repair request can use curation's existing-entry scope;
+do not overwrite or merge it through bootstrap. Creating a specific document,
+session capture, and coding-rule adoption retain their own task boundaries.
 
-**Template source:** This skill ships its template tree alongside itself in the plugin. The templates live at `${CLAUDE_PLUGIN_ROOT}/templates/` once the plugin is installed. Bind it once at the start of the run:
+Bootstrap creates only root `AGENTS.md`. Do not create overflow documents,
+placeholder indexes, or empty documentation categories. Existing authoritative
+local documents may be linked.
 
-```bash
-TEMPLATE_DIR="${CLAUDE_PLUGIN_ROOT}/templates"
-[ -d "$TEMPLATE_DIR" ] || { echo "Template dir not found at $TEMPLATE_DIR — plugin may be corrupted"; exit 1; }
-```
+## Packaged Template
 
-`${CLAUDE_PLUGIN_ROOT}` is set by Claude Code automatically when this plugin is enabled. If you are running this skill outside of a plugin install (e.g., from a cloned source tree), set `CLAUDE_PLUGIN_ROOT` to the path containing `templates/`.
+Read [the bundled template](assets/templates/AGENTS.md) relative to this skill's
+loaded directory, not the target repository's working directory. Both plugin and
+standalone skill distributions include `assets/templates/AGENTS.md` inside this
+skill. No plugin-root environment variable or source checkout is required.
 
-## When to Use
+Resolve the absolute directory containing the loaded `SKILL.md` using the
+runtime-provided skill path. If that location or its asset is unavailable,
+report the missing package resource instead of guessing a path or downloading
+another template. The template is a starting point; adapt it before writing the
+result so unfinished placeholders are never presented as usable commands.
 
-**Use when:**
-- Initializing a repo that has no project `AGENTS.md`
-- Creating a minimal agent entry point with verified project commands and
-  architecture
-- The user explicitly asks to "apply our doc practices" or "bootstrap agent docs"
+## Inspect and Adapt
 
-**Do NOT use when:**
-- The repo already has a working project `AGENTS.md` (use `remember` to audit it)
-- The user wants to capture session knowledge (use `learn`)
-- The user wants to audit or reorganize `docs/` (use `curate`)
-- The user wants to create a specific document (create only that admitted doc
-  and its category index if needed)
+- Read the build manifests and command definitions. Distinguish a command's
+  existence from successful execution; run only relevant safe local checks.
+- Follow a relevant registered entry and its wiring when needed to establish
+  responsibilities. Describe components and flows at package granularity;
+  preserve exact normative paths under the Source References exceptions.
+- Keep high-impact rules that need early visibility and route longer explanations
+  to existing contracts. Do not invent project conventions or mandatory layers.
+- Replace applicable template fields with verified facts. Omit irrelevant rows
+  and sections. Describe important unknown commands in prose; do not leave
+  `{{...}}`, TODO hints, or fabricated executable commands in the result.
+- Keep the entry proportionate to recurring tasks without a fixed line target.
 
-## Process
+Summarize the detected facts and intended one-file result. A preview request
+stops here with a concrete proposal; an explicit bootstrap request proceeds
+under existing authorization without another routine approval.
 
-### Step 1: Verify Target Repo
+## Apply and Verify
 
-- Confirm the user's target directory (do NOT assume current working directory).
-- Check it is a git repo (`git rev-parse --show-toplevel`). If not, ask the user to confirm.
-- Check for an existing project `AGENTS.md`. If present, stop and recommend
-  `remember`; do not replace or merge it through bootstrap.
+Create the adapted root entry only if it is still absent. Recheck immediately
+before writing and use exclusive file creation so concurrent work is preserved.
+Do not copy the template tree blindly or overwrite another entry that appeared
+while inspecting the repository.
 
-### Step 2: Scan Repo Characteristics
+Reopen the result, verify local links, inspect remaining placeholders, and compare
+Git status with the initial inventory. Bootstrap must add only root `AGENTS.md`
+and preserve existing work and staging. Report created paths, checks actually
+run, and unresolved facts. Do not claim command execution, installed discovery,
+or a complete repository knowledge base from a successful template write.
 
-Run quick detection and report findings to the user:
-
-| Signal | Command | Used for |
-|--------|---------|----------|
-| Language | look at top extensions: `git ls-files \| sed 's/.*\.//' \| sort \| uniq -c \| sort -rn \| head -5` | Architecture summary and command verification |
-| Build system | look for `Makefile`, `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml` | Quick Reference table commands |
-| Entry points | locate executable entrypoints and follow one relevant call path into its owning modules | Verified responsibility map, not just a component list |
-
-For repositories with cross-module or stateful workflows, use one representative
-entrypoint and its living contract/module docs to verify the relevant input,
-decision, persistence, and runtime owners. Capture only useful boundaries and
-links; do not invent layers or require a diagram for a simple script. State
-unknowns rather than inferring ownership from directory names.
-
-Report what was detected. Do NOT proceed silently.
-
-### Step 3: Confirm Scaffolding Plan
-
-Before writing, summarize the one file that will be created:
-
-```
-Will create in <target>:
-- AGENTS.md (root table of contents)
-```
-
-Explicitly state that no `docs/` categories, policy documents, or placeholder
-indexes will be created.
-
-Get user approval before creating files.
-If the user declines, do not write files; report the remaining next steps and
-stop.
-
-### Step 4: Copy Template Tree
-
-Source: `$TEMPLATE_DIR` (resolved in Overview — `${CLAUDE_PLUGIN_ROOT}/templates/`).
-
-Both strategies below use `--ignore-existing` so the target's `.gitignore`, `AGENTS.md`, or any pre-existing file is never overwritten.
-
-**Fresh repo (no project AGENTS.md):**
-```bash
-rsync -av --ignore-existing "$TEMPLATE_DIR/" <target>/
-```
-
-After copy, run `cd <target> && git status` and confirm that bootstrap created
-only `AGENTS.md`. If any `docs/` files appear, stop: the plugin payload is stale.
-
-### Step 5: Adapt Root AGENTS.md
-
-The copied `AGENTS.md` contains two kinds of placeholders:
-
-- **`{{NAME}}`** — single values to replace (e.g., `{{PROJECT_NAME}}`, `{{BUILD_COMMAND}}`). Replace with detected values, or leave the placeholder if you can't determine it.
-- **`<!-- TODO: ... -->`** — prose hints for sections the human needs to flesh out. Leave the comment in place until the human fills the section in. Delete the comment only when its row/section is confirmed N/A.
-
-Search both with:
-```bash
-grep -n '{{' <target>/AGENTS.md
-grep -n 'TODO:' <target>/AGENTS.md
-```
-
-For values you cannot detect from the repo scan, leave the `{{...}}` placeholder untouched — the user will fill it in.
-
-**Critical:** Target root `AGENTS.md` at ~100 lines. Move additional detail into
-`docs/` instead of growing it into an encyclopedia.
-
-### Step 6: Next-Steps Checklist
-
-Print this for the user (the agent is done; the user/agent iterates from here):
-
-```
-Bootstrap complete. Next steps for you/the agent:
-
-1. Fill placeholders in AGENTS.md (search for "TODO:" markers)
-2. Use the agent-docs manual skills for ongoing knowledge maintenance:
-   /agent-docs:learn
-   /agent-docs:remember
-   /agent-docs:curate
-   If this repo was scaffolded without the plugin installed, install it first:
-   claude plugin marketplace add gzb1128/skill-forge
-   claude plugin install agent-docs@skill-forge
-3. Create a docs category only when admitted knowledge needs it; add its
-   INDEX.md with the first document
-4. Commit the entry point: `git add AGENTS.md && git commit -m "docs: add agent entry point"`
-```
-
-## Golden Rules (enforce while scaffolding)
-
-1. **Root `AGENTS.md` is a table of contents, not an encyclopedia.**
-2. **Verified project facts only.** Detect commands and entry points; keep
-   placeholders when evidence is unavailable.
-3. **No generic docs payload.** Knowledge policy stays in the plugin.
-4. **Create docs on demand.** Empty category indexes are not a baseline.
-
-## Anti-Patterns (do NOT do)
-
-- **One giant `AGENTS.md`** — kills agent context, contains stale rules, can't be verified mechanically
-- **Copying plugin governance rules into the target repo** — they drift from the
-  installed skills
-- **Pre-creating empty docs categories or placeholder indexes** — structure
-  without admitted knowledge becomes noise
-
-## Red Flags — Stop and Reconsider
-
-- About to create anything other than root `AGENTS.md` → STOP; it is outside
-  bootstrap's boundary
-- An existing project `AGENTS.md` is present → STOP and use `remember`
+For subsequent work, `curate` maintains existing repository knowledge, `learn`
+captures explicit session insights, and `setup-coding-rules` adopts selected
+pre-edit rules. These are independent task choices, not a required sequence.

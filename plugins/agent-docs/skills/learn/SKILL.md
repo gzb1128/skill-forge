@@ -1,6 +1,6 @@
 ---
 name: learn
-description: Extract and propose durable repository knowledge discovered in the current session. Use only when the user explicitly invokes /agent-docs:learn or asks to save a newly discovered insight; not for direct documentation maintenance.
+description: Extract and preserve durable repository knowledge discovered in the current session, following the requested proposal or apply mode. Use only for explicit session capture or saving a newly discovered insight; not direct documentation maintenance.
 disable-model-invocation: true
 argument-hint: [optional-context]
 allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
@@ -11,17 +11,18 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 > Do not add hooks, background tasks, auto-trigger behavior, runtime storage,
 > vector databases, MCP integration, or external memory systems.
 
-Review what happened in this session and produce verified, reviewable knowledge
-proposals for the appropriate `AGENTS.md` or `docs/` surface using the exact-diff
-workflow below.
+Review what happened in this session and verify useful knowledge for the
+appropriate repository surface. Follow the requested proposal or apply mode in
+[Authorization](references/authorization.md). A bare invocation proposes; an
+explicit request to save insights permits the corresponding writes.
 
 Before classifying candidates, read and apply the shared
 [Knowledge Admission Policy](references/knowledge-admission.md). This
-skill produces new knowledge proposals; the policy is shared with `remember`
-and `curate` rather than owned by this workflow.
+skill captures new session knowledge; the policy is shared with `curate`
+rather than owned by this workflow.
 
-When a candidate belongs under `docs/`, also read the
-[Documentation Structure Reference](references/doc-structure.md).
+Read the [Documentation Structure Reference](references/doc-structure.md) for
+source granularity and carrier rules, including candidates placed in `AGENTS.md`.
 
 ## Invocation Boundary
 
@@ -69,7 +70,7 @@ Do not write anything yet. First classify each candidate.
 | `Hidden Knowledge` | Nearest relevant `AGENTS.md` under `## Hidden Knowledge` | Verified non-derivable gotcha with explicit future value that is concise and important enough to change recurring agent behavior |
 | `Quick Reference` | Root `AGENTS.md` Quick Reference table | High-value common build, test, lint, run, codegen, clean, or verification commands |
 | `Rule` | Nearest `AGENTS.md` `Golden Rules`/`Key Patterns`, or `docs/rules/` plus its index | Put concise, recurring, behavior-changing rules in `AGENTS.md`; put narrower or longer rules in pull-based docs |
-| `Doc` | Appropriate `docs/` category plus its index | High-value design, troubleshoot, runbook, codemap, verification, or library knowledge, including non-derivable knowledge that does not justify prompt space |
+| `Doc` | Appropriate existing document or justified `docs/` category plus its index | High-value design, troubleshoot, runbook, architecture, verification, or library knowledge, including non-derivable knowledge that does not justify prompt space |
 | `Code` | Doc comment or module doc on the owning symbol/file, plus an optional one-line pointer in the nearest `AGENTS.md` | Verified knowledge about a specific function, type, module, or file's behavior or invariant that fits a concise comment; prefer a self-documenting API shape or mechanical enforcement when feasible |
 | `Skip` | No write | Lacks required evidence or authority, has no identifiable future value, is one-off/generic, or is mechanically enforceable with no durable explanation value left |
 
@@ -143,11 +144,10 @@ with the future task, residual value, and proposed placement. Stop investigating
 when those judgments are supported or the remaining gap cannot be resolved
 within scope. Do not invent a failure or require all probes to return empty.
 
-**Stable-reference rule.** When proposed knowledge points to source, prefer
-package paths, files, symbols, headings, and named commands over line numbers.
-Do not carry a session's `file.go:42` citation into durable documentation when
-the referenced symbol or command can identify the same concept. Use line
-numbers only when a tool requires them.
+Apply the shared Source References contract: navigation stops at packages;
+exact normative paths and operational inputs/outputs remain precise. Do not
+persist a search-result file map or private-symbol directory. Evidence may name
+exact artifacts without becoming a maintained navigation table.
 
 If verification fails, classify the candidate as `Skip` and explain the failed
 check. If verification cannot be performed safely, report it as unverified and
@@ -172,7 +172,7 @@ For `Quick Reference`, propose a row update in the root `AGENTS.md` table.
 For `Rule`, use the nearest `AGENTS.md` `Golden Rules` or `Key Patterns` section
 when the rule is concise, recurring, and earns prompt space. Otherwise use
 `docs/rules/`. Create a missing AGENTS.md section only as part of the approved
-proposal.
+change.
 
 For `Code`, the target is the owning artifact itself: a doc comment on the
 function, type, or module the knowledge describes, or a module doc section at
@@ -186,9 +186,12 @@ Structure Reference. Create the category and `INDEX.md` only with the first
 admitted document; never scaffold empty categories. Prefer updating an
 existing authoritative document over creating a duplicate.
 
-## Step 5: Show proposed changes first
+## Step 5: Prepare reviewable changes
 
-Before editing any file, show all proposals in this format:
+For proposal mode, show exact diffs and stop at the requested checkpoint. In
+apply mode, briefly explain the admitted changes, apply them under existing
+authorization, and report the resulting diff. Use the following detail when
+needed to make an admission or placement decision reviewable:
 
 ````markdown
 ## Learn Proposals
@@ -226,15 +229,16 @@ carry the now-binding invariants. Use `report-only` only when a destination
 conflict or missing authoritative context requires user judgment.
 ````
 
-## Step 6: Approval gate and apply
+## Step 6: Apply within authorization
 
-Stop after showing the exact proposed changes, even if the user asks to apply
-quickly. After explicit approval:
+Follow the shared authorization rules; do not add a second approval gate to an
+explicit save/apply request. Preserve a requested proposal-only checkpoint and
+report unresolved placement or authority decisions. When writes are authorized:
 
-1. Apply only the proposals the user approved.
+1. Apply only admitted knowledge within the requested or approved scope.
 2. Preserve unrelated content and keep `AGENTS.md` additions concise.
 3. Do not perform general cleanup from `/agent-docs:learn`; use
-   `/agent-docs:remember` for `AGENTS.md` and `/agent-docs:curate` for `docs/`.
+   `/agent-docs:curate` for maintenance of existing repository knowledge.
 4. Re-open every edited file and verify the final text and index links.
 5. Report what changed, where it changed, which candidates were skipped, and
    any remaining report-only suggestions.

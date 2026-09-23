@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Build a shared targeted-promotion fixture for remember and curate.
+# Build a shared targeted-promotion fixture for unified curate.
 #
 # Suggested prompts:
-#   /agent-docs:remember Evaluate only the generated-code rule in
+#   /agent-docs:curate Evaluate only the generated-code rule in
 #   docs/codemaps/api.md for promotion into the nearest AGENTS.md.
 #
-#   /agent-docs:curate docs/codemaps/api.md
+#   /agent-docs:curate Repair the generated-code rule routing across
+#   docs/codemaps/api.md and the applicable package AGENTS.md. Apply directly.
 
 set -euo pipefail
 

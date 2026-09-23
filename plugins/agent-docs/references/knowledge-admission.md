@@ -1,7 +1,7 @@
 # Knowledge Admission Policy
 
 Shared criteria for deciding whether knowledge merits persistence and where it
-belongs. `learn`, `remember`, `curate`, `bootstrap-agent-docs`, and
+belongs. `learn`, `curate`, `bootstrap-agent-docs`, and
 `setup-coding-rules` apply these criteria within their own scopes and workflows.
 This reference does not trigger a workflow, authorize edits, or prescribe an
 investigation sequence.

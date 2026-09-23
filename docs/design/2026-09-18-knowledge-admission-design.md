@@ -1,6 +1,6 @@
 # Knowledge Admission and Workflow Ownership
 
-**Status:** Approved and implemented; focused validation recorded separately
+**Status:** Approved and implemented; focused validation recorded separately; workflow scope, authorization, and source navigation superseded by [Documentation Consolidation](2026-09-23-agent-docs-consolidation-design.md)
 **Date:** 2026-09-18
 
 ## Decision

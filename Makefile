@@ -12,8 +12,12 @@ PLUGIN_DIRS := $(wildcard $(CURDIR)/plugins/*)
 SKILLS_SRC_DIRS := $(wildcard $(CURDIR)/plugins/*/skills)
 SKILLS_DST := $(HOME)/.agents/skills
 SKILL_VALIDATOR := $(CURDIR)/plugins/skill-creator/skills/skill-creator/scripts/quick_validate.py
+BOOTSTRAP_TEMPLATE_SRC := $(CURDIR)/plugins/agent-docs/templates
+BOOTSTRAP_TEMPLATE_DST := $(CURDIR)/plugins/agent-docs/skills/bootstrap-agent-docs/assets/templates
+# Keep this target available for explicit cleanup of links created before retirement.
+RETIRED_SKILL_DIRS := $(CURDIR)/plugins/agent-docs/skills/remember
 
-.PHONY: help validate check-skills check-references sync-references test-skills-link test-skills-unlink test-skills-status
+.PHONY: help validate check-skills check-references sync-references sync-templates check-templates test-skills-link test-skills-unlink test-skills-status
 
 help:
 	@echo "Targets:"
@@ -21,11 +25,13 @@ help:
 	@echo "  check-skills          validate every SKILL.md, including the description budget"
 	@echo "  sync-references       fan plugin-level references/ into consuming skill dirs"
 	@echo "  check-references      fail on reference fan-out drift (chained into validate)"
+	@echo "  sync-templates        copy the bootstrap template into its standalone skill"
+	@echo "  check-templates       fail on missing, changed, or extra template assets"
 	@echo "  test-skills-link      symlink every skill into ~/.agents/skills/ (for GREEN tests)"
 	@echo "  test-skills-unlink    remove those symlinks"
 	@echo "  test-skills-status    show which symlinks currently exist"
 
-validate: check-skills check-references
+validate: check-skills check-references check-templates
 	claude plugin validate .
 	@for plugin in $(PLUGIN_DIRS); do \
 		if [ -d "$$plugin/.claude-plugin" ]; then \
@@ -42,6 +48,15 @@ check-skills:
 		done; \
 	done; \
 	exit $$status
+
+sync-templates:
+	@mkdir -p "$(BOOTSTRAP_TEMPLATE_DST)"
+	@cp -R "$(BOOTSTRAP_TEMPLATE_SRC)/." "$(BOOTSTRAP_TEMPLATE_DST)/"
+
+# Do not silently remove obsolete payload files; expose them for explicit review.
+check-templates:
+	@diff -qr "$(BOOTSTRAP_TEMPLATE_SRC)" "$(BOOTSTRAP_TEMPLATE_DST)" || { \
+		echo "Template drift: run make sync-templates and review extra assets"; exit 1; }
 
 # Fan the plugin-level shared references/ directory out into every skill that
 # links references/<file> from its SKILL.md. Skills must be self-contained:
@@ -116,11 +131,16 @@ check-references:
 # before subagents can see the new skills in <available_skills>.
 # See docs/verify/README.md "Critical Timing Constraint" section.
 test-skills-link:
-	@mkdir -p $(SKILLS_DST)
+	@mkdir -p "$(SKILLS_DST)"
 	@for src_dir in $(SKILLS_SRC_DIRS); do \
 		for name in $$(ls "$$src_dir" 2>/dev/null); do \
 			src="$$src_dir/$$name"; \
 			dst="$(SKILLS_DST)/$$name"; \
+			[ -f "$$src/SKILL.md" ] || continue; \
+			if [ -L "$$dst" ] && [ "$$(readlink "$$dst")" != "$$src" ]; then \
+				echo "SKIP $$name: link belongs to another source (inspect explicitly)"; \
+				continue; \
+			fi; \
 			if [ -e "$$dst" ] && [ ! -L "$$dst" ]; then \
 				echo "SKIP $$name: $$dst exists and is NOT a symlink (refusing to overwrite real content)"; \
 				continue; \
@@ -134,13 +154,12 @@ test-skills-link:
 	@echo "registry picks up the new entries before dispatching test subagents."
 
 test-skills-unlink:
-	@for src_dir in $(SKILLS_SRC_DIRS); do \
-		for name in $$(ls "$$src_dir" 2>/dev/null); do \
-			dst="$(SKILLS_DST)/$$name"; \
-			if [ -L "$$dst" ]; then \
-				rm "$$dst" && echo "UNLINK $$name"; \
-			fi; \
-		done; \
+	@for src in $(foreach dir,$(SKILLS_SRC_DIRS),$(wildcard $(dir)/*)) $(RETIRED_SKILL_DIRS); do \
+		name=$$(basename "$$src"); \
+		dst="$(SKILLS_DST)/$$name"; \
+		if [ -L "$$dst" ] && [ "$$(readlink "$$dst")" = "$$src" ]; then \
+			rm "$$dst" && echo "UNLINK $$name"; \
+		fi; \
 	done
 
 test-skills-status:
@@ -160,4 +179,17 @@ test-skills-status:
 				echo "MISS  $$name (run 'make test-skills-link')"; \
 			fi; \
 		done; \
+	done
+	@for src in $(RETIRED_SKILL_DIRS); do \
+		name=$$(basename "$$src"); \
+		dst="$(SKILLS_DST)/$$name"; \
+		if [ -L "$$dst" ]; then \
+			if [ "$$(readlink "$$dst")" = "$$src" ]; then \
+				echo "RETIRED $$name -> $$src (make test-skills-unlink removes this repo's links)"; \
+			else \
+				echo "OTHER $$name -> $$(readlink "$$dst") (preserved)"; \
+			fi; \
+		elif [ -e "$$dst" ]; then \
+			echo "REAL  $$name (retired name; manual installation preserved)"; \
+		fi; \
 	done

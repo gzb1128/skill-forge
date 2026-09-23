@@ -54,7 +54,8 @@ git commit -q -m "initial"
 echo "Scenario built at: $SCEN"
 cat <<EOF
 Prompt 1:
-/agent-docs:bootstrap-agent-docs $SCEN
+/agent-docs:bootstrap-agent-docs Propose the exact root AGENTS.md for $SCEN.
+Do not write until I approve.
 
 Expected first response: detected facts + a one-file AGENTS.md plan; no writes
 before approval.

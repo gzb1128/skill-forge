@@ -1,6 +1,6 @@
 # Repository Knowledge Lifecycle
 
-**Status:** Approved; admission and scoring rules superseded by [Knowledge Admission](2026-09-18-knowledge-admission-design.md)
+**Status:** Approved; admission and scoring rules superseded by [Knowledge Admission](2026-09-18-knowledge-admission-design.md); workflow scope, authorization, and source navigation superseded by [Documentation Consolidation](2026-09-23-agent-docs-consolidation-design.md)
 **Date:** 2026-08-03
 
 ## Problem

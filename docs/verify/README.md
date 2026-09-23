@@ -31,7 +31,14 @@ fallback in the scenario notes.
 checks for value-based admission and workflow-owned procedures. Earlier scenario
 results below remain historical; they are not full reruns of the revised skills.
 
-## Current Status
+## Current agent-docs maintenance validation
+
+See [Agent-docs consolidation](agent-docs-consolidation.md) for the current
+workflow, template distribution, authorization, and focused paired evidence.
+The `remember` workflow has moved into `curate`; its fixture directory is retained
+to preserve the instruction-audit cases.
+
+## Historical Status Before Consolidation
 
 | Skill | RED Baseline | GREEN Verified | Notes |
 |---|---|---|---|
@@ -90,7 +97,11 @@ For OpenCode subagents to discover them, **symlinks must be created before testi
 make test-skills-link
 ```
 
-This command creates a symlink at `~/.agents/skills/<name>` for each skill under every plugin's `skills/` directory. The source is always the skill directory in this repo, so any edits to `SKILL.md` are immediately testable.
+This command creates links from `~/.agents/skills/<name>` to this repository's
+skill directories when the destination is free or already belongs to this
+checkout. Other-source links and real directories are reported and preserved;
+inspect `make test-skills-status` to confirm which source a test will load.
+Use `SKILLS_DST=<temporary-directory>` for isolated link-management checks.
 
 After testing, run `make test-skills-unlink` to remove the symlinks and avoid polluting your home directory.
 
@@ -169,9 +180,9 @@ docs/verify/scenarios/
 │   ├── build-d.sh          # Review modes + branch/working-tree scope
 │   └── build-e.sh          # Single reviewer + conditional lenses
 ├── bootstrap-agent-docs/
-│   └── build-a.sh          # Minimal one-file bootstrap + approval gate
+│   └── build-a.sh          # Minimal one-file bootstrap + requested preview checkpoint
 ├── learn/
-│   ├── build-a.sh          # Explicit learn: admission, scoring, routing, and approval gate
+│   ├── build-a.sh          # Explicit learn: admission, routing, and requested proposal checkpoint
 │   ├── build-b.sh          # Negative trigger: direct design task-list maintenance
 │   ├── build-c.sh          # Mechanical enforcement with no residual explanation value
 │   └── build-d.sh          # Session-produced carriers: in-place diff vs centralized copy
@@ -369,14 +380,14 @@ distinct release-plan evals. GREEN requires all of:
 
 ### bootstrap-agent-docs
 
-Scenario A starts with a verified Go repository and no project `AGENTS.md` and
-uses an approval follow-up in the same task. GREEN requires all of:
+Scenario A starts with a verified Go repository and no project `AGENTS.md`. Its
+prompt explicitly requests a proposal first, then an approval follow-up. GREEN requires all of:
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
-| Repository scan | Detects the Makefile commands and `cmd/widget/main.go` entry point before proposing content |
+| Repository scan | Detects the Makefile commands and `cmd/widget/` responsibility before proposing content |
 | Minimal plan | Proposes exactly root `AGENTS.md`; explicitly says no docs categories, policies, or placeholder indexes will be created |
-| Approval gate | Does not write any file before explicit approval |
+| Requested checkpoint | Does not write before the approval explicitly requested by this fixture |
 | Existing knowledge boundary | Uses detected repository facts directly and does not invoke `learn` |
 | Applied payload | After approval, `git status --short` contains only `?? AGENTS.md`, root `AGENTS.md` exists, and no `docs/` path exists |
 
@@ -469,14 +480,17 @@ score). An earlier pointed prompt ("see the uncommitted diff" plus an explicit
 no-residual disclaimer) made both old and new skill stop at `Skip` and is not
 discriminating; the neutral prompt is the recorded form.
 
-### remember
+### Curate: retained instruction-audit cases
+
+The existing `scenarios/remember/` path is a historical fixture location. Invoke
+`curate` with the targeted instruction-audit prompt now printed by the builder.
 
 Scenario A plants two memory-health problems and a scope bound. GREEN requires all of:
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
 | Linked-doc support check | Opens `docs/render.md` (the doc the Hidden Knowledge assertion cites) and flags the lazy-vs-eager contradiction as a `Conflict` or `Rewrite` — not `No Action Needed` |
-| Stable-reference rewrite | Flags `src/engine.go:42` as drifted (the `Render` symbol exists but at a different line) and proposes a `Rewrite` to symbol form (e.g. `Render method in src/engine.go`), NOT merely bumping `:42` to the new number |
+| Stable-reference rewrite | Flags `src/engine.go:42` as drifted (the `Render` symbol exists but at a different line) and proposes package responsibility routing, retaining precise contract names when needed, without another file/private-symbol index |
 | No broad-scan of docs/ | Does not enumerate, open, or score the decoy docs (`docs/other.md`, `docs/design/2026-01-01-init.md`, `docs/extra/notes.md`); report mentions only the one linked doc |
 | Valid entries left alone | Leaves derivable but high-value `make build` and `go test ./...` entries as `No Action Needed` |
 | Report-only before approval | Presents the `Memory Health Report` and does not edit files before explicit user approval |
@@ -490,9 +504,9 @@ of:
 | Required Rule | GREEN Pass Condition |
 |---|---|
 | Targeted scope | Reads the named codemap entry and nearest `internal/api/AGENTS.md`; does not audit all AGENTS.md files or enumerate unrelated docs |
-| Correct authority | Proposes moving the generated-code behavior rule into `internal/api/AGENTS.md`, while leaving the concept-to-source table in the codemap |
+| Correct authority | Proposes moving the generated-code behavior rule into `internal/api/AGENTS.md`, while replacing its redundant file inventory with package responsibilities |
 | Prompt-value gate | Verifies the schema/generation path and explains why the recurring behavior-changing rule earns prompt space |
-| Workflow boundary | Does not invoke `learn` or turn the request into a general `curate` audit |
+| Workflow boundary | Does not invoke `learn` or broaden the requested topic into a repository-wide audit |
 | Approval gate | Reports the exact proposed promotion without editing before approval |
 
 ### curate
@@ -502,13 +516,13 @@ Scenario A plants five docs/ problems plus an AGENTS.md scope-guard bait. GREEN 
 | Required Rule | GREEN Pass Condition |
 |---|---|
 | Category priority | Reports an ordered category-review priority with evidence-based rationale; does not sort mechanically by path, size, or age |
-| Maps-not-Encyclopedias | Flags `docs/codemaps/engine.md` for a >20-line copied function body; proposes a `Rewrite` to a concept→file table, citing the maps-not-encyclopedias rule |
+| Maps-not-Encyclopedias | Flags `docs/codemaps/engine.md` for a >20-line copied function body; proposes a package-level description of responsibility and data flow, preserving useful rationale |
 | Link Integrity | Flags the `](./missing.md)` dangling link in `docs/codemaps/engine.md` |
 | Naming | Flags `docs/design/engine-fast-path-design.md` for missing the `YYYY-MM-DD-` prefix because the fixture explicitly says architecture decisions are browsed chronologically |
-| Doc↔Source Drift | Flags the `src/engine.go:42` citation (Render is at a different line) and proposes a `Rewrite` to symbol form, NOT just bumping the number |
+| Doc↔Source Drift | Flags the `src/engine.go:42` citation (Render is at a different line) and proposes package responsibility routing, without inventing another file/private-symbol index |
 | INDEX Health | Flags `docs/runbooks/` for having content but no `INDEX.md` |
-| Scope guard | Does NOT open, score, or propose edits to `AGENTS.md` (even though it has a stale `engine.go:99`); reports it as out of scope |
-| Knowledge value | Retains `docs/runbooks/deploy.md` even though `scripts/release.sh` makes it derivable; flags only the missing category INDEX |
+| Scope guard | May read applicable instructions, but does not audit or edit unrelated entries: the fixture explicitly limits the audit to docs/ |
+| Knowledge value | Retains `docs/runbooks/deploy.md` even though its commands are derivable; flags the missing category INDEX and distinguishes a rollback request from evidence of completed recovery |
 | Existing plans left alone | Does not flag or migrate `docs/plans/` merely because the category exists; the user did not request removal and the historical plan contains a durable non-derivable ordering constraint |
 | Valid entries left alone | Leaves `docs/design/2026-06-01-...md` and `docs/codemaps/INDEX.md` as `No Action Needed` |
 | Report-only before approval | Presents the `Docs Health Report` and does not edit files before explicit user approval |
@@ -517,14 +531,14 @@ Pass = all yes; otherwise proceed to REFACTOR.
 
 Scenario B reuses
 `docs/verify/scenarios/knowledge-promotion/build-a.sh` with
-`/agent-docs:curate docs/codemaps/api.md`. GREEN requires all of:
+the explicit apply prompt printed by the builder. GREEN requires all of:
 
 | Required Rule | GREEN Pass Condition |
 |---|---|
-| Authority placement | Flags only the generated-code behavior rule as an `AGENTS.md` promotion candidate and keeps the navigation table in the codemap |
+| Authority placement | Promotes the generated-code rule into the applicable instruction entry and removes redundant file inventory while retaining useful architecture |
 | Bounded AGENTS read | Opens only the nearest `internal/api/AGENTS.md` needed to verify the target and duplication; does not audit its unrelated entries or `internal/other/AGENTS.md` |
 | Verification | Confirms the schema, generated path, and `make generate` entry exist before proposing promotion |
-| Report-only | Includes the targeted promotion in the Docs Health Report and makes no edit before approval |
+| Authorized completion | Applies the coherent scoped repair without another approval; exact schema and generated-output rule paths remain intact |
 
 ## REFACTOR: Repair Decisions and Test Transfer
 

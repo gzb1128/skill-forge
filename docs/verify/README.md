@@ -35,6 +35,8 @@ results below remain historical; they are not full reruns of the revised skills.
 
 See [Agent-docs consolidation](agent-docs-consolidation.md) for the current
 workflow, template distribution, authorization, and focused paired evidence.
+See [Architecture coverage](architecture-coverage.md) for the subsequent default
+coverage requirement, proportional bootstrap output, and its separate trials.
 The `remember` workflow has moved into `curate`; its fixture directory is retained
 to preserve the instruction-audit cases.
 
@@ -148,6 +150,8 @@ Current scripts:
 
 ```text
 docs/verify/scenarios/
+├── architecture-coverage/
+│   └── build.py            # Default coverage, existing-home reuse, scope, and adjacent workflows
 ├── codex-subagent-strategy/
 │   ├── build-a.sh          # Three worker routes plus native-selection boundaries
 │   ├── build-b.sh          # Explicit user opt-out forces full inheritance
@@ -180,7 +184,7 @@ docs/verify/scenarios/
 │   ├── build-d.sh          # Review modes + branch/working-tree scope
 │   └── build-e.sh          # Single reviewer + conditional lenses
 ├── bootstrap-agent-docs/
-│   └── build-a.sh          # Minimal one-file bootstrap + requested preview checkpoint
+│   └── build-a.sh          # Explicit one-file scope + requested preview checkpoint
 ├── learn/
 │   ├── build-a.sh          # Explicit learn: admission, routing, and requested proposal checkpoint
 │   ├── build-b.sh          # Negative trigger: direct design task-list maintenance

@@ -57,15 +57,23 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 
 | Skill | Type | Purpose |
 |---|---|---|
-| `bootstrap-agent-docs` | model-invoked | Create a minimal root `AGENTS.md` with verified commands and architecture routing |
+| `bootstrap-agent-docs` | model-invoked | Create a concise root `AGENTS.md` with verified commands and useful architecture coverage; add missing architecture docs when needed |
 | `setup-coding-rules` | manual skill (`/agent-docs:setup-coding-rules`) | Explicitly adapt pre-edit coding rules to existing or minimal repository entry points, preserving local policy and semantic coverage |
 | `learn` | manual skill (`/agent-docs:learn`) | Capture verified session knowledge in the requested proposal or apply mode; direct documentation maintenance remains a separate task |
-| `curate` | manual skill (`/agent-docs:curate`) | Assess or repair knowledge by topic across `AGENTS.md`, architecture, contracts, rules, and indexes |
+| `curate` | manual skill (`/agent-docs:curate`) | Assess or repair knowledge by topic, including missing core-flow explanations and drift across instructions, architecture, contracts, rules, and indexes |
 
-The bootstrap template has one editable source in `plugins/agent-docs/templates/`.
-`make sync-templates` copies it into the bootstrap skill at
-`assets/templates/AGENTS.md`; plugin and standalone skill distributions both carry
-that asset. Runtime lookup is relative to the loaded skill directory.
+Bootstrap templates have one editable source in `plugins/agent-docs/templates/`.
+`make sync-templates` copies them into the bootstrap skill's `assets/templates/`,
+including the root entry and architecture overview/index. Plugin and standalone
+skill distributions carry the same assets; runtime lookup is skill-relative.
+
+Architecture coverage is a default, with `docs/architecture/` as the default home
+for new current-system descriptions. Reuse adequate existing docs at their own
+location; a simple tool may need only its root entry. Documentation describes
+responsibilities, data handoffs, and state authority at package granularity, with
+links to existing contracts. Missing important explanations are audit findings;
+missing directories alone are not. Bootstrap establishes initial coverage,
+curate maintains it, and learn captures explicitly requested session discoveries.
 
 `remember` is retired. Use `curate` for instruction audits and rule promotion as
 well as docs maintenance. Existing cached versions remain unchanged until updated.
@@ -131,19 +139,26 @@ installers expose installed skills through `~/.agents/skills/<skill>`.
 ## What `agent-docs` Scaffolds
 
 When you ask Claude to "bootstrap agent docs" in a target repo, the plugin
-creates one project entry point under that authorization. A requested preview
-shows the concrete proposal without writing:
+creates a concise project entry point and establishes architecture coverage
+under that authorization. A requested preview shows the concrete proposal
+without writing. For a system needing separate architecture explanation, the
+default output is:
 
 ```text
 your-repo/
-└── AGENTS.md                          # concise commands, architecture, routing, and project rules
+├── AGENTS.md                          # concise commands, architecture routing, and project rules
+└── docs/architecture/
+    ├── INDEX.md                       # navigation to useful architecture topics
+    └── overview.md                    # verified components, core flows, and ownership
 ```
 
-It does not pre-create `docs/` categories or copy plugin policy into the target
-repository. When explicitly invoked for retrospective capture,
-`/agent-docs:learn` creates a category and its `INDEX.md` on demand when the
-first admitted document needs that surface. Explicit requests to create or
-update documentation are handled directly without invoking `learn`.
+A simple tool may need only `AGENTS.md`; adequate existing architecture documents
+are reused at their established locations. Extra topics and categories are added
+only with useful content, without copying plugin policy or an empty template tree.
+`curate` maintains existing knowledge and checks missing core-flow explanations.
+When explicitly invoked for retrospective capture, `learn` updates the appropriate
+knowledge surface. Direct requests to create or update documentation do not
+require invoking `learn`.
 
 ## Set Up Repository Coding Rules
 
@@ -157,8 +172,8 @@ for a report without edits.
 The target repository owns the resulting rules. Setup preserves local policy,
 uses repository-relative contract links, and reports unresolved conflicts.
 It does not install hooks, modify personal configuration, or copy the complete
-code-quality workflow. `bootstrap-agent-docs` still creates a minimal entry for
-an uninitialized repository; `curate` maintains existing knowledge; `learn`
+code-quality workflow. `bootstrap-agent-docs` initializes an entry and appropriate
+architecture coverage; `curate` maintains existing knowledge; `learn`
 captures session discoveries. Plugin installation alone never runs setup.
 
 ## Practices

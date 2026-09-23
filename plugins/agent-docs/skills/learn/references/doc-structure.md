@@ -1,9 +1,8 @@
 # Documentation Structure Reference
 
-This plugin-owned reference defines the generic structure used by `learn` and
-checked by `curate`. `bootstrap-agent-docs` reads it to avoid pre-creating docs
-categories. Project-specific rules belong in the target repository rather than
-being copied from this file.
+This plugin-owned reference defines knowledge placement and architecture coverage
+for bootstrap, capture, and curation. Project-specific rules belong in the target
+repository rather than being copied from this file.
 
 ## Create Documentation On Demand
 
@@ -15,6 +14,7 @@ Common categories include:
 
 | Category | Purpose |
 |---|---|
+| `docs/architecture/` | Current components, core flows, responsibility boundaries, and data/state ownership |
 | `docs/rules/` | Project-specific conventions and hard boundaries |
 | `docs/design/` | Durable decisions, alternatives, constraints, sequencing dependencies, verification boundaries, rollback, and rationale |
 | `docs/runbooks/` | Deterministic operational procedures |
@@ -22,13 +22,21 @@ Common categories include:
 | `docs/troubleshoot/` | Symptom-to-cause diagnosis |
 | `docs/lib/` | Project-relevant third-party behavior and usage |
 
-An absent category is not a defect. A category containing documents should
+An absent directory alone is not a defect. A category containing documents should
 normally have an `INDEX.md`.
 
-Use an existing architecture overview or living document when it adequately
-explains the system. A separate architecture category, including `docs/codemaps/`,
-is optional. Existing codemap filenames may remain; maintain their useful
-architecture content under the contract below without a directory-wide rename.
+Architecture coverage is a default requirement. Use `docs/architecture/` for new
+current-system descriptions, with an overview and additional topics only as
+needed. Reuse adequate existing architecture docs wherever they live and route
+readers to them; do not duplicate or relocate them solely to match the default
+path. A small tool's root `AGENTS.md` may provide sufficient coverage. Missing
+important responsibility or data-flow explanations are gaps even when no
+architecture directory exists and all existing links resolve.
+
+Existing codemap filenames can remain when their architecture content is useful.
+Evaluate mixed codemaps by content: preserve responsibilities and rationale in an
+adequate receiving document before removing redundant implementation inventories.
+Do not make a directory-wide rename a prerequisite for improvement.
 
 ## Do Not Create Agent Execution Plan Docs
 
@@ -89,11 +97,30 @@ also land as doc comments on the owning symbols.
 
 ## Architecture and Responsibilities
 
-Record components, data flow, inputs and outputs, responsibility boundaries,
-data authority, dependencies, state ownership, recovery, compatibility, and
-rationale when they help a future task. Name the responsible packages and link
-existing contracts. Scale detail to the system; a small script needs no invented
-layers. Do not copy implementation bodies, configuration dumps, or source trees.
+Explain the main runtime components and core workflows sufficiently for a future
+agent to choose the responsible layer before editing. Check coverage against
+registered entries, actual wiring, and relevant configuration, rather than only
+the list of existing documents. Scale investigation to the requested scope;
+targeted work does not require a repository-wide survey.
+
+For each important flow, cover the applicable questions:
+
+- What starts the flow, and what result or externally visible effect ends it?
+- Which packages own inputs, decisions, transformations, persistence, and execution?
+  What work must remain outside each owner's responsibility?
+- What data crosses each handoff? Which source is authoritative, when does data
+  become immutable, and where may consumers read dynamic state?
+- Which dependencies are synchronous, asynchronous, or external? Who owns state
+  transitions, failure, retry, and recovery?
+- Which compatibility paths remain active, and which contracts explain their
+  constraints and rationale?
+
+These are coverage questions, not mandatory headings or invented layers. A
+component diagram or flow should label responsibility and meaningful handoff
+data; a directory tree or bare sequence of package names is insufficient. Keep
+unknown boundaries explicit and distinguish source/configuration evidence from
+verified deployment behavior. Do not copy implementation bodies, configuration
+dumps, or source trees.
 
 Route knowledge by authority:
 
@@ -102,7 +129,16 @@ Route knowledge by authority:
 - durable contracts, constraints, alternatives, and rationale belong in
   `docs/design/`;
 - operational procedures belong in `docs/runbooks/`;
-- architecture descriptions connect those surfaces to responsible packages.
+- current architecture descriptions connect those surfaces to responsible
+  packages, maintaining current structure and flows without copying canonical
+  state machines, schemas, or compatibility matrices.
+
+Root `AGENTS.md` supplies a short system summary, architecture routing, and early
+cross-module guards. Module instructions carry local pre-edit constraints. Keep
+existing living canonical contracts authoritative at their established location;
+an implementation/contract conflict needs diagnosis, not silent contract repair.
+Update architecture when responsibilities, handoff data, dependencies, or state
+authority change. Keep proposals separate from the implemented current state.
 
 Depth should scale with navigation value and workflow complexity rather than an
 arbitrary global line limit.

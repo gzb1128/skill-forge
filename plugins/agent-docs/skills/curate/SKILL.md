@@ -41,20 +41,27 @@ first. With multiple packages, choose their common applicable scope. Ask when
 that scope cannot be established. Do not assume nested instructions load
 implicitly.
 
-For a repository-wide audit, inventory instruction entries and existing docs
-categories before deep reads. Prioritize recurring constraints, living contracts,
-operational and verification procedures, then architecture/navigation. Increase
-priority for explicit scope, authority, known drift, and heavily used routes.
-Read archives only when relevant. Age, length, or missing categories alone do
-not establish a defect. Exclude personal configuration and external memories;
-other repository instruction files are relevant only within the requested scope.
+For a repository-wide audit, identify main runtime components and core workflows
+alongside the instruction and docs inventory. Check whether existing knowledge
+explains their responsibilities, data handoffs, and state authority using the
+shared architecture coverage questions. Include missing explanations as findings;
+valid links and an absent architecture directory do not establish completeness.
+Reuse adequate existing coverage wherever it lives. Report which flows were
+checked and important gaps or unverified boundaries; do not claim full coverage
+from a sample. A targeted audit applies this check only to its affected flow.
+
+Prioritize by authority, task impact, known drift, and heavily used routes; do not
+defer architecture by default behind prose or link cleanup. Read archives only
+when relevant. Age, length, or missing directories alone do not establish a
+defect. Exclude personal configuration and external memories; other repository
+instruction files are relevant only within the requested scope.
 
 ## Check Each Carrier for Its Purpose
 
 | Carrier | Questions |
 |---|---|
 | Root/module instructions | Are commands current and safe to copy? Which constraints need early visibility? Is the responsible package clear? Is a long explanation better linked? |
-| Architecture | Are component purposes, data flow, owners, dependencies, and boundaries correct? Does navigation stop at packages while preserving normative exact paths? |
+| Architecture | Are important flows covered, including ones with no existing document? Are purposes, data handoffs, authority, owners, and boundaries correct? Can an agent choose the responsible layer? Does navigation stop at packages while preserving normative exact paths? |
 | Living contracts/rules | Is required behavior clear? Are implementation and verification states distinguished? Are callers using the stated contract? |
 | Decision records | Is the historical decision preserved with an appropriate status or superseding pointer? Current source divergence alone is not drift in a frozen record. |
 | Runbooks/verification | Are prerequisites, effects, runnable commands, and evidence limits correct? A dry-run is not proof of execution behavior. |

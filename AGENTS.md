@@ -172,7 +172,7 @@ claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
   caches through `~/.agents/skills/<skill>`. Evaluate runtime-specific behavior
   at the `SKILL.md` surface; do not require the containing plugin to execute in
   Claude Code.
-- **Bootstrap templates travel with the skill.** Resolve `assets/templates/AGENTS.md` relative to the loaded bootstrap skill directory. Plugin and standalone skill installs use the same asset; `make check-templates` rejects copy drift. The plugin-level `templates/` directory remains the only editable source.
+- **Bootstrap templates travel with the skill.** Resolve the root entry and architecture overview/index under `assets/templates/` relative to the loaded bootstrap skill directory. Plugin and standalone skill installs use the same assets; `make check-templates` rejects copy drift. The plugin-level `templates/` directory remains the only editable source.
 - **Plugin install only copies content inside the plugin directory.** Paths outside `plugins/<name>/` are invisible to installed plugins. Never write `../../something` in a skill; pack everything the skill needs into its plugin directory.
 - **Marketplace source uses the `git-subdir.url` field.** The current Claude Code schema requires `git-subdir` sources to use `url`, not the legacy `repo` field.
 

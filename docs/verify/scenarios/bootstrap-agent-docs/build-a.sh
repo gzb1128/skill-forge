@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Build scenario A for minimal bootstrap verification.
+# Build scenario A for explicit one-file scope and preview verification.
 #
 # GREEN requires two turns: inspect and propose only root AGENTS.md, then after
-# approval apply the plan and prove that no docs/ payload was created.
+# approval apply the plan and prove that no docs/ payload was created. This is
+# the user's explicit output scope, not a universal bootstrap output limit.
 
 set -euo pipefail
 

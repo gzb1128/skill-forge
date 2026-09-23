@@ -28,7 +28,11 @@ class PackagingTest(unittest.TestCase):
         )
 
     def test_template_survives_plugin_and_standalone_copy(self):
-        expected = (PLUGIN / "templates/AGENTS.md").read_bytes()
+        source = PLUGIN / "templates"
+        expected = {path.relative_to(source): path.read_bytes()
+                    for path in source.rglob("*") if path.is_file()}
+        self.assertIn(Path("architecture/overview.md"), expected)
+        self.assertIn(Path("architecture/INDEX.md"), expected)
         for label, source, skill_relative in (
             ("plugin", PLUGIN, "skills/bootstrap-agent-docs"),
             ("standalone", PLUGIN / "skills/bootstrap-agent-docs", "."),
@@ -37,7 +41,10 @@ class PackagingTest(unittest.TestCase):
             shutil.copytree(source, target)
             skill = target / skill_relative
             self.assertIn("(assets/templates/AGENTS.md)", (skill / "SKILL.md").read_text())
-            self.assertEqual(expected, (skill / "assets/templates/AGENTS.md").read_bytes())
+            assets = skill / "assets/templates"
+            actual = {path.relative_to(assets): path.read_bytes()
+                      for path in assets.rglob("*") if path.is_file()}
+            self.assertEqual(expected, actual)
         self.assertFalse((self.root / "standalone/.claude-plugin").exists())
         self.assertFalse((self.root / "plugin/skills/remember").exists())
 

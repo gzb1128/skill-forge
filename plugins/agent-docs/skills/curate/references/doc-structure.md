@@ -20,11 +20,15 @@ Common categories include:
 | `docs/runbooks/` | Deterministic operational procedures |
 | `docs/verify/` | Repeatable verification flows and expected results |
 | `docs/troubleshoot/` | Symptom-to-cause diagnosis |
-| `docs/codemaps/` | Architecture navigation and concept-to-source maps |
 | `docs/lib/` | Project-relevant third-party behavior and usage |
 
 An absent category is not a defect. A category containing documents should
 normally have an `INDEX.md`.
+
+Use an existing architecture overview or living document when it adequately
+explains the system. A separate architecture category, including `docs/codemaps/`,
+is optional. Existing codemap filenames may remain; maintain their useful
+architecture content under the contract below without a directory-wide rename.
 
 ## Do Not Create Agent Execution Plan Docs
 
@@ -50,7 +54,7 @@ plan wholesale into a design.
 - **Decision records** (`YYYY-MM-DD-` prefixed): background, alternatives,
   decision, verification and rollback boundaries for one change. Freeze a
   record once its decision lands; later edits only update its Status line.
-  Current-state maintenance belongs to code comments, codemaps, or
+  Current-state maintenance belongs to code comments, architecture descriptions, or
   `AGENTS.md` — never to rewriting a landed record. To change a decision,
   write a new record and supersede the old one explicitly.
 - **Living contracts**: documents stating currently binding constraints,
@@ -83,12 +87,13 @@ also land as doc comments on the owning symbols.
 - Prefix designs with `YYYY-MM-DD-` when chronological browsing adds value.
 - Avoid `-v2` and similar suffixes; supersede or archive explicitly.
 
-## Maps, Not Encyclopedias
+## Architecture and Responsibilities
 
-Codemaps map concepts and entry flows to authoritative source. They may identify
-the owning package, stable symbols, and major call or data-flow transitions,
-but should not copy function bodies, configuration dumps, or behavior-changing
-policy.
+Record components, data flow, inputs and outputs, responsibility boundaries,
+data authority, dependencies, state ownership, recovery, compatibility, and
+rationale when they help a future task. Name the responsible packages and link
+existing contracts. Scale detail to the system; a small script needs no invented
+layers. Do not copy implementation bodies, configuration dumps, or source trees.
 
 Route knowledge by authority:
 
@@ -97,13 +102,32 @@ Route knowledge by authority:
 - durable contracts, constraints, alternatives, and rationale belong in
   `docs/design/`;
 - operational procedures belong in `docs/runbooks/`;
-- codemaps link those surfaces to source instead of restating them.
+- architecture descriptions connect those surfaces to responsible packages.
 
 Depth should scale with navigation value and workflow complexity rather than an
 arbitrary global line limit.
 
-## Stable References
+## Source References
 
-Prefer package paths, files, symbols, headings, and named commands over line
-numbers. A line number may be included only when a tool requires it and should
-not be treated as the durable identity of a source concept.
+Package paths are the smallest maintained unit for source navigation in living
+architecture descriptions and instruction entries. Do not maintain file lists,
+private-symbol indexes, or call-chain transcripts. Moving files within the same
+owner normally requires no documentation update; moving responsibility does.
+
+Keep exact paths when the path itself is the object of a rule or a required
+operation input/output: for example, "edit `api/schema.yaml`, regenerate, and
+never hand-edit `internal/api/generated.go`." Runnable commands, scripts, config
+files, documentation links, and instruction-file links may also need exact paths.
+Public APIs, protocol fields, domain types, state values, and configuration keys
+remain precise when behavior depends on them. Code-adjacent comments may name
+their artifact. These exceptions do not justify a separate file-location table.
+
+Find current implementation details through actual callers, registered handlers
+or commands, dependency wiring, and relevant configuration. A matching name or
+existing path is a lead, not proof that the implementation serves the current
+flow. Inspect only what the task needs; source reachability alone does not prove
+production deployment or configuration.
+
+Task-specific investigation may cite exact files, symbols, and lines as evidence,
+with a revision when retained. Do not promote those observations into a living
+location index or rewrite frozen historical evidence to today's paths.

@@ -2,6 +2,7 @@
 
 | Date | Document | Decision | When to Read |
 |---|---|---|---|
+| 2026-09-23 | [Agent Documentation Consolidation](2026-09-23-agent-docs-consolidation-design.md) | Approved: unified curation, remember retirement, package-level architecture, and portable bootstrap templates | Implementing the agent-docs maintenance redesign and its behavioral verification |
 | 2026-09-18 | [Knowledge Admission](2026-09-18-knowledge-admission-design.md) | Shared value and placement criteria; workflow-owned investigation and audits | Maintaining admission, retention, or knowledge placement |
 | 2026-09-18 | [Explicit Coding-rule Setup](2026-09-18-coding-rule-setup-design.md) | Opt-in adaptation of pre-edit rules into repository-owned instruction surfaces; narrow extension of knowledge lifecycle policy | Installing or updating coding rules before ordinary edits |
 | 2026-09-18 | [Code Design Plugin](2026-09-18-code-design-plugin-design.md) | Approved conditional-method integration: independent investigate-design-rationale/architect, shared how reference, and pre-change knowledge placement | Reviewing code-design scope and pre-change knowledge placement |

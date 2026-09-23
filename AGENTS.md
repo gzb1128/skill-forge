@@ -58,7 +58,7 @@ diverge, not merely because its skill count grows.
 
 | Plugin | Purpose | Skills |
 |---|---|---|
-| `agent-docs` | Agent-First documentation scaffolding and knowledge management | `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `remember`, `curate` |
+| `agent-docs` | Agent-First documentation scaffolding and knowledge management | `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `curate` |
 | `code-design` | Investigate code-design rationale and shape APIs, types, and module boundaries | `investigate-design-rationale`, `architect` |
 | `code-quality` | Code review, commit gates, diff cleanup, and autonomous fix loops | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Skill creation, upstream skill migration, behavioral evals, and trigger tuning | `skill-creator` |
@@ -71,9 +71,9 @@ diverge, not merely because its skill count grows.
 | Path | Purpose |
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`skill-forge`) |
-| `plugins/agent-docs/` | Repository knowledge plugin: `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `remember`, `curate` |
+| `plugins/agent-docs/` | Repository knowledge plugin: `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `curate` |
 | `plugins/agent-docs/references/` | Single-source shared policy; `make sync-references` fans it out into each consuming skill's `references/` (drift-gated by `make validate`) |
-| `plugins/agent-docs/templates/` | Minimal `AGENTS.md` payload copied by `bootstrap-agent-docs` |
+| `plugins/agent-docs/templates/` | Editable bootstrap template source; synced into the skill assets for both distributions |
 | `plugins/code-design/` | Code-design investigation and design skills; plugin-owned references are synced into each consumer |
 | `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `plugins/code-quality/references/` | Shared Git scope and verification-result procedures; workflow-specific safeguards live in each skill |
@@ -92,6 +92,7 @@ diverge, not merely because its skill count grows.
 |--------|---------|
 | Validate marketplace + plugins | `make validate` |
 | Propagate shared references into consuming skills | `make sync-references` |
+| Propagate bootstrap templates into skill assets | `make sync-templates` |
 | Link skills into `~/.agents/skills/` for testing | `make test-skills-link` then restart opencode |
 | Check current symlink state | `make test-skills-status` |
 | Build a scenario for GREEN testing | `bash docs/verify/scenarios/<skill>/build-<letter>.sh` |
@@ -151,14 +152,12 @@ claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
 
 ### Editing the template payload
 
-1. Edit `plugins/agent-docs/templates/<path>` — that's the rsync source for `bootstrap-agent-docs`.
-2. Re-run a bootstrap against a throwaway target dir to verify the change lands as intended:
-   ```bash
-   TMP=$(mktemp -d) && cd "$TMP" && git init -q
-   rsync -av --ignore-existing /path/to/skill-forge/plugins/agent-docs/templates/ ./
-   git status
-   ```
-3. Commit.
+1. Edit `plugins/agent-docs/templates/<path>`; never edit the skill asset copy.
+2. Run `make sync-templates` and commit the source and copy together.
+3. Run `make validate` and the focused bootstrap packaging checks under
+   `docs/verify/scenarios/agent-docs-consolidation/`. Verify a copied standalone
+   skill and an isolated plugin install; the template must work without
+   `CLAUDE_PLUGIN_ROOT` or access to this checkout.
 
 ### Editing shared references
 
@@ -173,7 +172,7 @@ claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
   caches through `~/.agents/skills/<skill>`. Evaluate runtime-specific behavior
   at the `SKILL.md` surface; do not require the containing plugin to execute in
   Claude Code.
-- **`bootstrap-agent-docs` resolves templates from `${CLAUDE_PLUGIN_ROOT}/templates/`**. This env var is set automatically by Claude Code when the plugin is enabled. Do NOT reference templates by repo-relative paths — the plugin is installed into `~/.claude/plugins/cache/...` and cannot see this repo's working tree.
+- **Bootstrap templates travel with the skill.** Resolve `assets/templates/AGENTS.md` relative to the loaded bootstrap skill directory. Plugin and standalone skill installs use the same asset; `make check-templates` rejects copy drift. The plugin-level `templates/` directory remains the only editable source.
 - **Plugin install only copies content inside the plugin directory.** Paths outside `plugins/<name>/` are invisible to installed plugins. Never write `../../something` in a skill; pack everything the skill needs into its plugin directory.
 - **Marketplace source uses the `git-subdir.url` field.** The current Claude Code schema requires `git-subdir` sources to use `url`, not the legacy `repo` field.
 

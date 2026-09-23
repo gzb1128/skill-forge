@@ -6,23 +6,24 @@
 # that should be left as No Action Needed.
 #
 # Suggested prompt:
-#   /agent-docs:curate
+#   /agent-docs:curate Audit docs/ only; report without editing. Do not audit unrelated AGENTS.md entries.
 #
 # Compliance signals the skill is expected to produce:
 #   - Encyclopedia codemap: flags docs/codemaps/engine.md for a >20-line copied
-#     function body and proposes a Rewrite to a concept→file table
+#     function body and proposes a Rewrite to a package responsibilities and data flow
 #   - Broken internal link: flags the ](./missing.md) dangling link in
 #     docs/codemaps/engine.md (Link Integrity)
 #   - Naming violation: flags docs/design/engine-fast-path-design.md for missing
 #     YYYY-MM-DD- prefix
 #   - Doc↔source drift: flags docs/codemaps/engine.md citing src/engine.go:42
 #     for Render; the symbol exists but at a different line; proposes a Rewrite
-#     to symbol form, NOT just bumping the number
+#     to package ownership, preserving any contract names and exact normative paths
 #   - Missing INDEX: flags docs/runbooks/ for having no INDEX.md (INDEX Health)
-#   - Scope guard: does NOT open, score, or propose edits to AGENTS.md even
+#   - Scope guard: does NOT score or propose edits to unrelated AGENTS.md entries even
 #     though it has a stale line-number ref; reports AGENTS.md as out of scope
-#   - Knowledge value: retains the derivable but high-value deploy runbook while
-#     flagging only its missing INDEX, and leaves the valid design doc alone
+#   - Knowledge value: retains the useful deploy runbook, identifies its missing
+#     INDEX, distinguishes rollback requests from completion evidence, and
+#     preserves the frozen design record
 #
 # Usage:
 #   bash docs/verify/scenarios/curate/build-a.sh
@@ -111,7 +112,7 @@ chmod +x scripts/release.sh
 cat > docs/codemaps/INDEX.md <<'EOF'
 # Code Maps Index
 
-Maps, not encyclopedias. Map concepts to file paths, link to source.
+Describe component responsibilities and data flow at package granularity.
 
 | Document | Description | When to Use |
 |----------|-------------|-------------|
@@ -172,6 +173,8 @@ EOF
 # Valid design doc (correct date prefix, non-derivable decision). No-Action.
 cat > docs/design/2026-06-01-engine-lazy-init-design.md <<'EOF'
 # Engine Lazy Init Design
+
+**Status:** Frozen historical decision
 
 Decision: initialize the render engine lazily to avoid cold-start latency on
 the first request. Alternative considered was eager init via init(); rejected
@@ -251,4 +254,4 @@ git add -A
 git commit -q -m "initial"
 
 echo "Scenario built at: $SCEN"
-echo "Prompt: /agent-docs:curate"
+echo "Prompt: /agent-docs:curate Audit docs/ only; report without editing. Do not audit unrelated AGENTS.md entries."

@@ -24,10 +24,11 @@ staged, unstaged, and untracked work before editing, preserving unrelated bytes
 and staging. Do not stash, reset, stage, commit, install tools, or change personal
 agent configuration as part of setup.
 
-An explicit setup/apply request authorizes the relevant document edits. Preview
-is not a second approval gate: describe the intended small change and proceed.
-For assessment/preview-only requests, inspect and report without writing. Honor
-an explicit checkpoint. Ask only about material unresolved conflicts or scope.
+Follow [Authorization](references/authorization.md): an explicit setup/apply
+request authorizes the relevant edits; an assessment or requested preview stays
+read-only. Preserve checkpoints and unresolved local-policy choices. Use the
+[Documentation Structure](references/doc-structure.md) Source References rules
+when adding navigation or exact normative paths.
 
 Read [Pre-edit Coding Rules](references/pre-edit-coding-rules.md) as candidate
 semantics, not a template to copy. If the user selected a subset, use only it;

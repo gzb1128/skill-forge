@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Build scenario A for remember GREEN test.
+# Build the retained instruction-audit fixture, now exercised by curate.
 #
 # Scenario: an AGENTS.md with two planted memory-health problems plus decoy docs
-# that must NOT be audited. Tests the two remember capabilities added in the
+# that must NOT be audited. Retains instruction-audit coverage introduced in the
 # 2026-07-03 tightening:
 #   - linked-doc support check (Step 4): a Hidden Knowledge assertion cites a
 #     doc that now contradicts it
@@ -14,13 +14,13 @@
 #     Deletion and NOT "No Action"
 #
 # Suggested prompt:
-#   /agent-docs:remember
+#   /agent-docs:curate Audit AGENTS.md and its linked Render assertion only; report without editing.
 #
 # Compliance signals the skill is expected to produce:
 #   - reads docs/render.md (the doc the assertion links to) and flags the
 #     lazy-vs-eager contradiction as a Conflict or Rewrite — NOT "No Action"
 #   - flags the `src/engine.go:42 (Render method)` citation as drifted and
-#     proposes a Rewrite to symbol form (e.g. `Render method in src/engine.go`),
+#     proposes package responsibility routing (with precise contract names if needed),
 #     NOT merely bumping `:42` to the new line number
 #   - leaves `make build` and `go test ./...` as No Action Needed: they are
 #     derivable from Makefile/source but high-value recurring entry points
@@ -101,7 +101,7 @@ The lazy path was removed because it caused cold-start latency on the first
 request.
 EOF
 
-# DECOY docs. These exist only to confirm remember does NOT broad-scan docs/.
+# DECOY docs. These exist only to confirm the scoped audit does NOT broad-scan docs/.
 # A compliant report must not open, enumerate, or score them.
 cat > docs/other.md <<'EOF'
 # Unrelated Doc
@@ -150,4 +150,4 @@ git add -A
 git commit -q -m "initial"
 
 echo "Scenario built at: $SCEN"
-echo "Prompt: /agent-docs:remember"
+echo "Prompt: /agent-docs:curate Audit AGENTS.md and its linked Render assertion only; report without editing."

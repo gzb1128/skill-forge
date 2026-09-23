@@ -43,7 +43,7 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 
 | Plugin | Purpose | Skills |
 |---|---|---|
-| `agent-docs` | Bootstrap and maintain valuable repository knowledge with focused capture and audit workflows | `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `remember`, `curate` |
+| `agent-docs` | Bootstrap and maintain valuable repository knowledge with focused capture and audit workflows | `bootstrap-agent-docs`, `setup-coding-rules`, `learn`, `curate` |
 | `code-design` | Investigate code-design rationale and shape APIs, types, and module boundaries | `investigate-design-rationale`, `architect` |
 | `code-quality` | Turn code review, commit gates, diff cleanup, and fix loops into repeatable agent workflows | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
 | `skill-creator` | Create, migrate, evaluate, and tune skills for Skill Forge plugin workflows | `skill-creator` |
@@ -59,11 +59,20 @@ Plugin versions are resolved to git commit SHA. Every push produces a new instal
 |---|---|---|
 | `bootstrap-agent-docs` | model-invoked | Create a minimal root `AGENTS.md` with verified commands and architecture routing |
 | `setup-coding-rules` | manual skill (`/agent-docs:setup-coding-rules`) | Explicitly adapt pre-edit coding rules to existing or minimal repository entry points, preserving local policy and semantic coverage |
-| `learn` | manual skill (`/agent-docs:learn`) | Retrospectively evaluate, route, and propose newly discovered session knowledge — never a substitute for direct documentation maintenance |
-| `remember` | manual skill (`/agent-docs:remember`) | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
-| `curate` | manual skill (`/agent-docs:curate`) | Audit the `docs/` knowledge base for stale links, encyclopedia bloat, naming drift, and missing indexes — the docs counterpart to `/agent-docs:remember` |
+| `learn` | manual skill (`/agent-docs:learn`) | Capture verified session knowledge in the requested proposal or apply mode; direct documentation maintenance remains a separate task |
+| `curate` | manual skill (`/agent-docs:curate`) | Assess or repair knowledge by topic across `AGENTS.md`, architecture, contracts, rules, and indexes |
 
-The minimal `AGENTS.md` template used by `bootstrap-agent-docs` lives at `plugins/agent-docs/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone is needed.
+The bootstrap template has one editable source in `plugins/agent-docs/templates/`.
+`make sync-templates` copies it into the bootstrap skill at
+`assets/templates/AGENTS.md`; plugin and standalone skill distributions both carry
+that asset. Runtime lookup is relative to the loaded skill directory.
+
+`remember` is retired. Use `curate` for instruction audits and rule promotion as
+well as docs maintenance. Existing cached versions remain unchanged until updated.
+`make test-skills-status` identifies retired links; `make test-skills-unlink`
+removes only links whose exact target belongs to this checkout, including the
+retired path. Links from another install and real directories are preserved.
+These commands do not run automatically during installation.
 
 ### `code-design`
 
@@ -122,7 +131,8 @@ installers expose installed skills through `~/.agents/skills/<skill>`.
 ## What `agent-docs` Scaffolds
 
 When you ask Claude to "bootstrap agent docs" in a target repo, the plugin
-creates one project entry point after showing the plan and receiving approval:
+creates one project entry point under that authorization. A requested preview
+shows the concrete proposal without writing:
 
 ```text
 your-repo/
@@ -148,7 +158,7 @@ The target repository owns the resulting rules. Setup preserves local policy,
 uses repository-relative contract links, and reports unresolved conflicts.
 It does not install hooks, modify personal configuration, or copy the complete
 code-quality workflow. `bootstrap-agent-docs` still creates a minimal entry for
-an uninitialized repository; `remember` audits existing knowledge; `learn`
+an uninitialized repository; `curate` maintains existing knowledge; `learn`
 captures session discoveries. Plugin installation alone never runs setup.
 
 ## Practices
@@ -157,14 +167,14 @@ captures session discoveries. Plugin installation alone never runs setup.
 |----------|---------|
 | **Scenario-based plugin names** | Plugin names identify a work context and responsibility; individual skill descriptions define precise triggers. Packaging does not dictate execution order. |
 | **Repo as record system** | Knowledge agents can't see doesn't exist. Critical constraints must not live only in chat logs or external docs. |
-| **Progressive disclosure** | `AGENTS.md` provides the entry navigation, `docs/codemaps/*.md` points to components, source code carries the details. |
+| **Progressive disclosure** | `AGENTS.md` provides the entry navigation, architecture documents explain package responsibilities and data flow, source code carries the details. |
 | **Lean prompt surfaces** | State prompt-resident rules once, expose only task-relevant tools, and keep examples only when they encode a requirement or fix a measured gap. Validate removals against the same representative tasks. |
 | **INDEX with the first doc** | A category containing useful documents normally has an `INDEX.md` with routing context; absent categories need no placeholders. |
 | **Value-based admission** | Persist knowledge with identifiable future use and residual value beyond existing carriers; choose the least costly authoritative surface. Neither derivability nor a numeric score decides admission. |
-| **Maps, not encyclopedias** | Codemaps maintain concept-to-path tables only — they link to source, never copy code. |
+| **Architecture over file inventories** | Record responsibilities, data flow, and boundaries at package granularity. Preserve exact rule targets and runnable inputs/outputs; find implementation details through current callers and wiring. |
 | **Durable designs, transient task plans** | `YYYY-MM-DD-<topic>-design.md` records lasting decisions and delivery boundaries; step-by-step agent plans stay in the task session. |
 
-Rationale: [Knowledge Admission](docs/design/2026-09-18-knowledge-admission-design.md) and the earlier [Repository Knowledge Lifecycle](docs/design/2026-08-03-repository-knowledge-lifecycle-design.md).
+Rationale: [Documentation maintenance](docs/design/2026-09-23-agent-docs-consolidation-design.md), [Knowledge Admission](docs/design/2026-09-18-knowledge-admission-design.md) and the earlier [Repository Knowledge Lifecycle](docs/design/2026-08-03-repository-knowledge-lifecycle-design.md).
 
 ## Development
 

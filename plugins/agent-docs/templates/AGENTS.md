@@ -16,10 +16,12 @@ Keep it concise, verified, and useful across repeated tasks.
 
 ## Architecture
 
-<!-- TODO: Briefly describe the project and its main components. For recurring
-     cross-module work, trace one verified entry flow and identify who owns
-     inputs, business decisions, durable effects, and runtime state as applicable.
-     Link the existing module docs or living contract; do not invent layers.
+<!-- TODO: Briefly describe the project and its main runtime components. Route
+     readers to adequate existing architecture docs; otherwise use
+     docs/architecture/overview.md for a system needing separate explanation.
+     A simple tool may be fully explained here. Cover core flows, handoff data,
+     decision owners, durable effects, and runtime state as applicable.
+     Link existing living contracts instead of duplicating them; do not invent layers.
      A small responsibility table or diagram is useful when it prevents wrong-layer edits.
      Example:
      Three components, one repo:
@@ -57,10 +59,14 @@ Keep it concise, verified, and useful across repeated tasks.
   newly discovered repository knowledge. Handle requested document and task-list
   updates directly without routing them through `learn`.
 - Use `/agent-docs:curate` to assess or repair existing knowledge by topic across
-  instruction entries and docs. Preserve explicit assessment/proposal checkpoints.
+  instruction entries and docs, including missing architecture coverage.
+  Preserve explicit assessment/proposal checkpoints.
 - Use `/agent-docs:setup-coding-rules` for explicit adoption of selected coding rules.
 - Create a docs category and its `INDEX.md` only when the first useful document
   in that category is admitted.
+- Maintain current architecture in the linked existing home or, by default,
+  `docs/architecture/`. Update responsibilities, data handoffs, dependencies, and
+  state ownership when behavior changes; keep implementation navigation at packages.
 
 ## Development Workflow
 

@@ -1,6 +1,6 @@
 # Agent Documentation Maintenance and Architecture Documentation
 
-**Status:** Implemented in the working tree; focused behavior and packaging checks passed, installed discovery unverified
+**Status:** Implemented; root-only bootstrap and optional architecture coverage superseded by [default architecture coverage](2026-09-23-architecture-coverage-default-design.md); other decisions and historical verification remain valid
 **Date:** 2026-09-23
 **Source baseline:** `8bfa69802c13c50246f8446d25ea2955d5c5f4c0`
 

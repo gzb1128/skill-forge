@@ -186,6 +186,11 @@ Structure Reference. Create the category and `INDEX.md` only with the first
 admitted document; never scaffold empty categories. Prefer updating an
 existing authoritative document over creating a duplicate.
 
+For newly confirmed responsibilities, data handoffs, or state ownership, update
+the existing architecture topic; otherwise use the shared `docs/architecture/`
+default when a separate explanation is warranted. Keep session capture scoped to
+the insight, without turning it into a whole-repository architecture bootstrap.
+
 ## Step 5: Prepare reviewable changes
 
 For proposal mode, show exact diffs and stop at the requested checkpoint. In

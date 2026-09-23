@@ -5,6 +5,11 @@ The old five-workflow plugin is frozen at
 `8bfa69802c13c50246f8446d25ea2955d5c5f4c0`. The candidate has four workflows:
 bootstrap, learn, curate, and setup-coding-rules. `remember` is retired.
 
+The subsequent [architecture coverage revision](architecture-coverage.md) expands
+bootstrap output when needed and checks missing explanations during audits.
+Observed results below describe this consolidation revision, not a rerun of that
+later behavior.
+
 ## Reproduce the focused checks
 
 ```bash
@@ -27,7 +32,7 @@ loading; they do not test installed selection.
 
 | Case | Observable criterion |
 |---|---|
-| Bootstrap apply | Creates only a usable root `AGENTS.md` under existing authorization; no command placeholders or extra docs tree |
+| Bootstrap apply | Creates a usable root `AGENTS.md` under existing authorization; architecture output follows the current shared coverage policy, without command placeholders or empty categories |
 | Bootstrap preview | Shows concrete proposed content and writes nothing |
 | Curation apply | Completes the generation-rule relocation across instructions, rules, and navigation; corrects ownership from actual wiring, preserves exact normative schema/output paths, removes redundant file inventory |
 | Assessment | Reports findings without editing |
@@ -153,9 +158,10 @@ per-configuration source hashes, raw requests, reports, target repositories, and
 maps are `86afc1ac7ee0888bb349e4b038fe7cab3cab6c9565d9ef50e39900e6f37e711f`
 for the 19-file baseline and
 `77c1c9d66bd65a5d26929d7ce6d056f6fa63b7e5332cf8bb4a4baff116187f9a`
-for the 24-file candidate. Current plugin source still matches the evaluated
-candidate. Temporary raw artifacts are local evidence; the builder and this
-record provide the durable reproduction entry.
+for the 24-file candidate. The frozen snapshot identifies the evaluated
+candidate; later source changes have separate verification. Temporary raw
+artifacts are local evidence; the builder and this record provide the durable
+reproduction entry.
 
 No installed-discovery claim is made for Claude Code, Codex, or OpenCode.
 Plugin installation and direct skill loading provide different evidence. Normal

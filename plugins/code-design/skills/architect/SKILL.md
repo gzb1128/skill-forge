@@ -26,7 +26,12 @@ because a more extensive design looks attractive.
 
 ## Ground the change in the existing system
 
-Read the relevant repository entry points, current contracts, and actual source.
+Read the relevant repository entry points, architecture descriptions, current
+contracts, and actual source. Use the repository's architecture route; for a new
+separate current-system description, `docs/architecture/` is the default unless
+local conventions choose another home. Reuse adequate descriptions wherever
+they live. Missing architecture is a context gap to investigate within this
+task, not a reason to require whole-repository documentation before designing.
 Reuse adequate context instead of repeating discovery. Trace the affected path
 far enough to explain why it currently works, where the requested outcome first
 fails, and which owner should address that gap. Separate current behavior from
@@ -81,7 +86,12 @@ scope, preserve unrelated work, and surface changes that need user judgment.
 Do not force an entire redesign for a routine implementation adjustment.
 
 When contracts or ownership change, update the affected authoritative material
-as required by the repository. Keep historical decision records distinct from
+as required by the repository, including current architecture when implementation
+changes responsibilities, handoff data, dependencies, or state authority. In a
+design-only task, keep the proposal distinct from implemented current state.
+Maintain architecture navigation at package granularity, preserving exact public
+contract names and normative rule/operation paths; find private implementation
+details in source. Keep historical decision records distinct from
 living contracts; task steps stay in session state. This does not automatically
 invoke knowledge capture, review, commit, or publication workflows.
 

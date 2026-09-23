@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "agent-docs",
-      "description": "Repository knowledge tools for minimal AGENTS.md bootstrap, explicit coding-rule setup, value-based capture, and topic-scoped maintenance across instructions and docs",
+      "description": "Repository knowledge tools for AGENTS.md and architecture bootstrap, explicit coding-rule setup, value-based capture, and scoped coverage and drift maintenance",
       "author": {
         "name": "Skill Forge Team"
       },

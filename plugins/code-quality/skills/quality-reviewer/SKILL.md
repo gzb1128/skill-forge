@@ -47,11 +47,12 @@ Give the reviewer:
 - the exact user request and acceptance criteria
 - the working directory, resolved scope, and base ref
 - paths to relevant `AGENTS.md`, plans, and design docs
-- instructions to inspect the diff, untracked files, and full changed files without editing, apply the integrated rubric and triggered lenses, and return only reviewer candidates
+- task-relevant session decisions, including earlier accepted choices and later replacements, as verbatim excerpts or accessible records rather than the primary's interpretation
+- instructions to inspect the diff, untracked files, and full changed files without editing, apply the integrated rubric and triggered lenses, and return candidate findings plus API contract changes and superseded session decisions
 
 Do not include the main agent's self-review, implementation defense, or conclusions. Point at repository files instead of pasting large contents when the reviewer can read them.
 
-The reviewer returns only candidate findings with `file:line`, severity, confidence, realistic failure scenario, and evidence, followed by the conditional lenses it applied. If it finds nothing, it says so directly.
+The reviewer returns candidate findings with `file:line`, severity, confidence, realistic failure scenario, and evidence, followed by the conditional lenses it applied. If it finds nothing, it says so directly. It also returns API contract changes and superseded session decisions as defined below, even when there are no findings.
 
 If Task is unavailable, report `Independent reviewer: unavailable` and stop without reviewing. Do not substitute the main agent's self-review; the only permitted readiness verdict is `Ready to commit: no` because the required review did not occur.
 
@@ -68,6 +69,7 @@ The single reviewer uses one shared understanding of the task for all applicable
 | **Silent failure** | Error handling, fallback, retry, ignored error, or log-and-continue changed | Could this hide a failure that a user, caller, operator, or test should see? |
 | **Test quality** | Tests changed | Would the tests fail for the important regressions introduced by this diff? |
 | **Skill quality** | A `SKILL.md` behavior changed | Will another agent reliably trigger and follow it, and is there RED/GREEN evidence? |
+| **Session decision reconciliation** | A later session decision replaces an earlier accepted choice relevant to the reviewed change | Which earlier decisions and artifacts need retirement under the final decision? |
 | **Comment accuracy** | Comments or docstrings changed | Do they still match the code, signature, and behavior? |
 
 Focus on bugs and behavior. Flag structure or performance only when there is concrete impact; do not report taste, hypothetical problems, or micro-optimizations. These checks are questions inside one review, never reasons to launch more agents.
@@ -91,6 +93,25 @@ change of responsibility needs authorized scope and matching contract updates.
 Routine wording and local mechanical edits need no architecture investigation;
 review does not require proof that `architect` or `investigate-design-rationale` ran.
 
+### Session decision reconciliation
+
+When the session changes an accepted decision, reconcile the earlier choice with
+the final decision and current artifacts. Include relevant code paths, API fields,
+tests, configuration, and living documentation even if the residual item is absent
+from the latest diff. Keep the check bounded to choices superseded by this task;
+do not turn it into a repository-wide retirement audit. An explored alternative
+is not an accepted replacement, and compatibility explicitly retained by the
+final decision is not obsolete.
+
+Report each superseded choice with the earlier → final decision, supporting
+session evidence, affected artifacts, and remaining action. Mark pending cleanup
+or status updates **Needs retirement**; mark **Retired** only when removal or an
+appropriate superseded marker is verified. Preserve historical decision records
+as history rather than deleting them. A superseded proposal with no durable
+artifacts can be reported as such. If decision history or completion evidence is
+unavailable, state that gap rather than inventing a decision or claiming cleanup.
+Reporting retirement work does not authorize edits outside the current fix scope.
+
 ### 4. Run gates directly
 
 The primary agent runs `git diff --check`, lint, and relevant tests with direct tools while the reviewer works when concurrency is available. Prefer commands from `AGENTS.md`. The reviewer may run targeted checks to substantiate a finding but does not repeat the primary's full gates. Never create separate Task agents for mechanical commands, and name any unavailable gate.
@@ -100,6 +121,12 @@ For each public symbol whose signature, return shape, or error contract changed,
 ```bash
 git grep -n '<symbol>' -- ':!vendor' ':!node_modules'
 ```
+
+Also inspect the actual external contract: endpoint/schema and serialized request
+or response changes may not alter a public symbol's signature. Check affected
+callers against field names, nesting, requiredness, defaults, and error semantics.
+Local caller checks do not establish compatibility with uninspected external
+consumers; keep that coverage gap explicit.
 
 Classify checks using [Verification Results](references/verification-results.md). Respect explicit skips even when a check would be quick. Give a concrete next diagnostic or decision for a blocking verdict; do not promise an arbitrary duration.
 
@@ -120,9 +147,32 @@ In fix mode, apply only validated safe fixes. After any edit, re-read the touche
 
 ### 7. Report the verdict
 
+When the diff introduces or changes an externally consumed API, proactively
+include an API contract change summary even if the change is compatible,
+authorized, and has no findings. Show the before → after shape: for HTTP/RPC,
+identify the endpoint or operation and include concrete request and response
+bodies for affected sides, stating when a side is unchanged or has no body.
+Preserve enough envelope and nesting to locate changed fields. Use annotated
+examples (such as `jsonc` for JSON) with comments beside additions, removals,
+moves, and semantic changes, including requiredness, defaults, and omitted versus
+null values where relevant. Show removed fields in the old body or explicit
+removal comments and representative variants for conditional contracts. For
+library APIs, use annotated signatures and caller examples. Mark new or removed
+APIs explicitly rather than inventing an old or new body. Explain the reason,
+affected consumers, compatibility or migration implications, and verified versus
+unverified consumer coverage. Report the final reviewed shape after any fixes.
+These are contract facts; classify them as findings only when evidence establishes
+a defect. Private implementation-only changes do not trigger this summary.
+
 Omit empty optional sections:
 
 ```text
+### API contract changes
+- <endpoint/operation/symbol> — annotated before → after examples and consumer impact
+
+### Superseded session decisions
+- <earlier → final decision> — evidence; affected artifacts; Needs retirement / Retired / superseded proposal only; remaining action or verification gap
+
 ### Fixed
 - <file>:<line> — change and reason
 

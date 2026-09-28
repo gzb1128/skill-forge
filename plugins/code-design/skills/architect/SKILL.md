@@ -79,6 +79,22 @@ constraints, and the evidence or checks still needed. Omit inapplicable parts.
 A diagram or design document is useful only when it improves understanding or
 is requested by the user or repository; no mandatory scaffold or document set.
 
+When introducing or changing an externally consumed API, proactively show the
+before → after contract in the design response. Published contracts are costly
+to revise. For HTTP/RPC APIs, identify the endpoint or operation and show concrete
+request and response bodies for the affected sides; state when a side is unchanged
+or has no body. Preserve enough envelope and nesting to locate each changed field.
+Use annotated examples (such as `jsonc` for JSON) with comments beside additions,
+removals, moves, and semantic changes, including requiredness, defaults, and
+omitted versus null values where relevant. Make removed fields visible in the old
+body or explicit removal comments; show representative variants when the contract
+depends on item type. For library APIs, show annotated signatures and caller
+examples. Mark new or removed APIs as such rather than inventing an old or new
+body. Explain why the shape changes, affected consumers, compatibility or migration
+requirements, and unverified consumer coverage. Keep proposed and implemented
+shapes distinct; after implementation, report the final shape and departures from
+the proposal. Private implementation-only changes do not trigger this report.
+
 If implementation is authorized, implement against these decisions. Revisit a
 decision when concrete friction or new evidence invalidates its assumptions;
 do not defend a sketch by accumulating escape hatches. Stay within the approved

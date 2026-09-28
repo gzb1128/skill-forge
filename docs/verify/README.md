@@ -25,6 +25,13 @@ is not installed in the current runtime, read
 `plugins/skill-creator/skills/skill-creator/SKILL.md` directly and record that
 fallback in the scenario notes.
 
+## Current API and session decision reporting validation
+
+[API and session decision reporting](api-contract-reporting.md) records annotated
+API bodies, superseded decision statuses, and focused baseline/candidate output
+trials. Those trials passed using Codex after Claude authentication was
+unavailable; full workflow execution and automatic discovery remain unverified.
+
 ## Admission policy update
 
 [Knowledge admission verification](knowledge-admission.md) records the focused
@@ -229,11 +236,12 @@ Record the actual edits, preserved state, commands, and findings alongside verba
 ```text
 You are the single designated independent reviewer for this quality-review cycle.
 Load quality-reviewer in reviewer role. Do not dispatch nested reviewers or
-lens agents. Inspect the requested scope and return candidate findings only;
-do not run the primary's full gates, edit files, or issue the final verdict.
+lens agents. Inspect the requested scope and return candidate findings plus
+API contract changes and superseded session decisions. Do not run the primary's
+full gates, edit files, or issue the final verdict.
 ```
 
-The harness agent then validates the candidates against current source and authoritative evidence and writes the final report. For a `loopfix` prompt, the scenario Task remains the primary loop orchestrator and may dispatch exactly one designated reviewer per iteration; do not apply the reviewer-role header to the loop orchestrator itself.
+The harness agent then validates the candidates against current source and authoritative evidence and writes the final report, preserving API contract changes and superseded session decisions even when there are no findings. For a `loopfix` prompt, the scenario Task remains the primary loop orchestrator and may dispatch exactly one designated reviewer per iteration; do not apply the reviewer-role header to the loop orchestrator itself.
 
 For the RED phase, use the same template but change CONSTRAINTS to:
 
